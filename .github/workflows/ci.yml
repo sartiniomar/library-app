@@ -21,5 +21,8 @@ jobs:
           java-version: '21'
           cache: 'maven'
 
+      - name: Give execute permission to mvnw
+        run: chmod +x mvnw
+
       - name: Build with Maven
-        run: mvn clean install
+        run: ./mvnw clean install
