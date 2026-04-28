@@ -12,3 +12,8 @@ EXPOSE 8080
 
 # Comando de ejecución
 ENTRYPOINT ["java","-jar","app.jar"]
+
+RUN apt-get update && apt-get install -y curl
+
+HEALTHCHECK --interval=30s --timeout=5s --retries=3 --start-period=20s \
+CMD curl -f http://localhost:8080/actuator/health || exit 1
