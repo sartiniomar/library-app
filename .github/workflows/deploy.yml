@@ -1,64 +1,51 @@
-name: Deploy to ECS
+name: CD - Deploy to ECS
 
 on:
-  push:
-    branches: [ "main" ]
+  workflow_run:
+    workflows: ["CI - Build & Push to ECR"]
+    types:
+      - completed
 
 env:
   AWS_REGION: us-east-1
-  ECR_REPOSITORY: library
+  ECR_REPOSITORY: library-app
   ECS_SERVICE: library-task-service
   ECS_CLUSTER: library-cluster
   TASK_DEFINITION: library-task
 
 jobs:
   deploy:
+    if: ${{ github.event.workflow_run.head_branch == 'main' }}
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-
       - name: Set image tag
-        id: vars
-        run: echo "IMAGE_TAG=${GITHUB_SHA}" >> $GITHUB_ENV
+        run: echo "IMAGE_TAG=${{ github.event.workflow_run.head_sha }}" >> $GITHUB_ENV
 
-      - name: Configure AWS
-        uses: aws-actions/configure-aws-credentials@v2
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
 
-      - name: Login to ECR
-        uses: aws-actions/amazon-ecr-login@v1
-
-      - name: Build image
-        run: |
-          docker build -t $ECR_REPOSITORY:$IMAGE_TAG .
-
-      - name: Tag image
-        run: |
-          docker tag $ECR_REPOSITORY:$IMAGE_TAG \
-          688674376208.dkr.ecr.us-east-1.amazonaws.com/$ECR_REPOSITORY:$IMAGE_TAG
-
-      - name: Push image
-        run: |
-          docker push 688674376208.dkr.ecr.us-east-1.amazonaws.com/$ECR_REPOSITORY:$IMAGE_TAG
-
-      - name: Update task definition
+      - name: Get current task definition
         run: |
           aws ecs describe-task-definition \
             --task-definition $TASK_DEFINITION \
             --query taskDefinition > task.json
 
-          jq --arg IMAGE "688674376208.dkr.ecr.us-east-1.amazonaws.com/$ECR_REPOSITORY:$IMAGE_TAG" \
+      - name: Update image in task definition
+        run: |
+          jq --arg IMAGE "${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/$ECR_REPOSITORY:$IMAGE_TAG" \
           '.containerDefinitions[0].image = $IMAGE' task.json > new-task.json
 
+      - name: Register new task definition
+        run: |
           aws ecs register-task-definition \
             --cli-input-json file://new-task.json
 
-      - name: Deploy
+      - name: Deploy to ECS
         run: |
           aws ecs update-service \
             --cluster $ECS_CLUSTER \
