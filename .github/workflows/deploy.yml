@@ -1,53 +1,37 @@
-name: CD - Deploy to ECS
+name: Deploy
 
 on:
-  workflow_run:
-    workflows: ["CI - Build & Push to ECR"]
-    types:
-      - completed
-
-env:
-  AWS_REGION: us-east-1
-  ECR_REPOSITORY: library-app
-  ECS_SERVICE: library-task-service
-  ECS_CLUSTER: library-cluster
-  TASK_DEFINITION: library-task
+  push:
+    branches:
+      - main
 
 jobs:
   deploy:
-    if: ${{ github.event.workflow_run.head_branch == 'main' }}
     runs-on: ubuntu-latest
 
     steps:
-      - name: Set image tag
-        run: echo "IMAGE_TAG=${{ github.event.workflow_run.head_sha }}" >> $GITHUB_ENV
+      - name: Checkout
+        uses: actions/checkout@v4
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ env.AWS_REGION }}
+          aws-region: us-east-1
 
-      - name: Get current task definition
-        run: |
-          aws ecs describe-task-definition \
-            --task-definition $TASK_DEFINITION \
-            --query taskDefinition > task.json
-
-      - name: Update image in task definition
-        run: |
-          jq --arg IMAGE "${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/$ECR_REPOSITORY:$IMAGE_TAG" \
-          '.containerDefinitions[0].image = $IMAGE' task.json > new-task.json
-
-      - name: Register new task definition
-        run: |
-          aws ecs register-task-definition \
-            --cli-input-json file://new-task.json
+      - name: Render task definition
+        id: task-def
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: task-definition.json
+          container-name: library-app
+          image: 688674376208.dkr.ecr.us-east-1.amazonaws.com/library-app:${{ github.sha }}
 
       - name: Deploy to ECS
-        run: |
-          aws ecs update-service \
-            --cluster $ECS_CLUSTER \
-            --service $ECS_SERVICE \
-            --force-new-deployment
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+        with:
+          service: library-service
+          cluster: library-cluster
+          task-definition: ${{ steps.task-def.outputs.task-definition }}
+          wait-for-service-stability: true
