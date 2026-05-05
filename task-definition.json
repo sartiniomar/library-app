@@ -13,7 +13,7 @@
       "portMappings": [
         {
           "containerPort": 8080,
-          "hostPort": 8080
+          "protocol": "tcp"
         }
       ],
       "healthCheck": {
@@ -24,7 +24,7 @@
         "interval": 30,
         "timeout": 5,
         "retries": 3,
-        "startPeriod": 20
+        "startPeriod": 60
       },
       "logConfiguration": {
         "logDriver": "awslogs",
