@@ -10,6 +10,9 @@
       "name": "library-app",
       "image": "REPLACED_BY_CI",
       "essential": true,
+      "cpu": 512,
+      "memory": 1024,
+      "memoryReservation": 512,
       "portMappings": [
         {
           "containerPort": 8080,
