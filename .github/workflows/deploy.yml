@@ -3,7 +3,7 @@ name: Deploy to EC2
 on:
   push:
     branches:
-      - main   # solo deployamos desde main
+      - develop
 
 jobs:
   deploy:
@@ -31,5 +31,8 @@ jobs:
             docker stop library-app || true
             docker rm library-app || true
             docker load < app.tar.gz
-            docker run -d -p 8080:8080 --name library-app library-app
+            docker run -d -p 8080:8080 \
+            --restart unless-stopped \
+            --name library-app \
+            library-app
           "
