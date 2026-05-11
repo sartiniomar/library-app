@@ -1,53 +1,35 @@
-name: CD - Deploy to ECS
+name: Deploy to EC2
 
 on:
-  workflow_run:
-    workflows: ["CI - Build & Push to ECR"]
-    types:
-      - completed
-
-env:
-  AWS_REGION: us-east-1
-  ECR_REPOSITORY: library-app
-  ECS_SERVICE: library-task-service
-  ECS_CLUSTER: library-cluster
-  TASK_DEFINITION: library-task
+  push:
+    branches:
+      - main   # solo deployamos desde main
 
 jobs:
   deploy:
-    if: ${{ github.event.workflow_run.head_branch == 'main' }}
     runs-on: ubuntu-latest
 
     steps:
-      - name: Set image tag
-        run: echo "IMAGE_TAG=${{ github.event.workflow_run.head_sha }}" >> $GITHUB_ENV
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ env.AWS_REGION }}
+      - name: Build Docker image
+        run: docker build -t library-app .
 
-      - name: Get current task definition
+      - name: Save image
+        run: docker save library-app | gzip > app.tar.gz
+
+      - name: Copy image to EC2
         run: |
-          aws ecs describe-task-definition \
-            --task-definition $TASK_DEFINITION \
-            --query taskDefinition > task.json
+          echo "${{ secrets.EC2_KEY }}" > key.pem
+          chmod 400 key.pem
+          scp -i key.pem -o StrictHostKeyChecking=no app.tar.gz ec2-user@${{ secrets.EC2_HOST }}:/home/ec2-user/
 
-      - name: Update image in task definition
+      - name: Deploy on EC2
         run: |
-          jq --arg IMAGE "${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/$ECR_REPOSITORY:$IMAGE_TAG" \
-          '.containerDefinitions[0].image = $IMAGE' task.json > new-task.json
-
-      - name: Register new task definition
-        run: |
-          aws ecs register-task-definition \
-            --cli-input-json file://new-task.json
-
-      - name: Deploy to ECS
-        run: |
-          aws ecs update-service \
-            --cluster $ECS_CLUSTER \
-            --service $ECS_SERVICE \
-            --force-new-deployment
+          ssh -i key.pem -o StrictHostKeyChecking=no ec2-user@${{ secrets.EC2_HOST }} "
+            docker stop library-app || true
+            docker rm library-app || true
+            docker load < app.tar.gz
+            docker run -d -p 8080:8080 --name library-app library-app
+          "
