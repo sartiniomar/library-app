@@ -31,11 +31,19 @@ jobs:
       - name: Deploy on EC2
         run: |
           ssh -i key.pem -o StrictHostKeyChecking=no ec2-user@${{ secrets.EC2_HOST }} "
-            docker stop library-app || true
-            docker rm library-app || true
-            docker load < app.tar.gz
-            docker run -d -p 8080:8080 \
-              --restart unless-stopped \
-              --name library-app \
-              library-app
-          "
+          
+          echo '🔴 Matando contenedor viejo...'
+          docker stop library-app || true
+          docker rm library-app || true
+        
+          echo '🧹 Liberando puerto 8080...'
+          sudo fuser -k 8080/tcp || true
+        
+          echo '📦 Cargando nueva imagen...'
+          docker load < app.tar.gz
+        
+          echo '🚀 Levantando nueva versión...'
+          docker run -d -p 8080:8080 \
+          --restart unless-stopped \
+          --name library-app \
+          library-app"
