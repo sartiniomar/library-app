@@ -3,14 +3,14 @@ package com.sartiniomar.library.lending.application.usecase;
 import com.sartiniomar.library.lending.application.port.in.PlaceHoldCommand;
 import com.sartiniomar.library.lending.application.port.in.PlaceHoldUseCase;
 import com.sartiniomar.library.lending.application.port.out.*;
-import com.sartiniomar.library.lending.model.book.BookInstance;
-import com.sartiniomar.library.lending.model.book.BookNotFoundException;
-import com.sartiniomar.library.lending.model.hold.PlacingOnHoldService;
-import com.sartiniomar.library.lending.model.hold.Hold;
-import com.sartiniomar.library.lending.model.hold.DomainResult;
-import com.sartiniomar.library.lending.model.patron.Patron;
-import com.sartiniomar.library.lending.model.patron.PatronNotFoundException;
-import com.sartiniomar.library.lending.model.patron.HoldLimitExceededException;
+import com.sartiniomar.library.lending.domain.book.BookInstance;
+import com.sartiniomar.library.lending.domain.book.BookInstanceNotFoundException;
+import com.sartiniomar.library.lending.domain.hold.PlacingOnHoldService;
+import com.sartiniomar.library.lending.domain.hold.Hold;
+import com.sartiniomar.library.lending.domain.hold.DomainResult;
+import com.sartiniomar.library.lending.domain.patron.Patron;
+import com.sartiniomar.library.lending.domain.patron.PatronNotFoundException;
+import com.sartiniomar.library.lending.domain.patron.HoldLimitExceededException;
 import org.springframework.transaction.annotation.Transactional;
 
 public class PlaceHoldService implements PlaceHoldUseCase {
@@ -43,7 +43,7 @@ public class PlaceHoldService implements PlaceHoldUseCase {
         .orElseThrow(() -> new PatronNotFoundException(command.getPatronId().toString()));
 
     BookInstance book = bookInstanceRepository.findById(command.getBookId())
-        .orElseThrow(() -> new BookNotFoundException(command.getBookId()));
+        .orElseThrow(() -> new BookInstanceNotFoundException("UUID=" + command.getBookId()));
 
     int currentHolds = holdRepository.countByPatronId(patron.getId());
 

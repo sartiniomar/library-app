@@ -1,7 +1,7 @@
 package com.sartiniomar.library.lending.infrastructure.persistence.jpa.mapper;
 
 import com.sartiniomar.library.lending.infrastructure.persistence.jpa.model.BookInstanceEntity;
-import com.sartiniomar.library.lending.model.book.BookInstance;
+import com.sartiniomar.library.lending.domain.book.BookInstance;
 
 public class BookInstanceMapper {
 

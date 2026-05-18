@@ -1,7 +1,7 @@
 package com.sartiniomar.library.lending.infrastructure.persistence.jpa.mapper;
 
 import com.sartiniomar.library.lending.infrastructure.persistence.jpa.model.PatronEntity;
-import com.sartiniomar.library.lending.model.patron.Patron;
+import com.sartiniomar.library.lending.domain.patron.Patron;
 
 public class PatronMapper {
 

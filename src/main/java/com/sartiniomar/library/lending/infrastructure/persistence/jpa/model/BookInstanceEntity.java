@@ -1,6 +1,6 @@
 package com.sartiniomar.library.lending.infrastructure.persistence.jpa.model;
 
-import com.sartiniomar.library.lending.model.book.BookType;
+import com.sartiniomar.library.lending.domain.book.BookType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;

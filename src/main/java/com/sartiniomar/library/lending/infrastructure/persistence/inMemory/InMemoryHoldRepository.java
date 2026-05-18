@@ -1,8 +1,9 @@
 package com.sartiniomar.library.lending.infrastructure.persistence.inMemory;
 
 import com.sartiniomar.library.lending.application.port.out.HoldRepository;
-import com.sartiniomar.library.lending.model.hold.Hold;
+import com.sartiniomar.library.lending.domain.hold.Hold;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -20,5 +21,10 @@ public class InMemoryHoldRepository implements HoldRepository {
   @Override
   public void save(Hold hold) {
     storage.put(hold.getId(), hold);
+  }
+
+  @Override
+  public Optional<Hold> findById(UUID id) {
+    return Optional.ofNullable(storage.get(id));
   }
 }

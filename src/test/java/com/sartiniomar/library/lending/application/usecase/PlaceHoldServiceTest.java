@@ -5,10 +5,10 @@ import com.sartiniomar.library.lending.application.support.InMemoryEventPublishe
 import com.sartiniomar.library.lending.infrastructure.persistence.inMemory.InMemoryBookInstanceRepository;
 import com.sartiniomar.library.lending.infrastructure.persistence.inMemory.InMemoryHoldRepository;
 import com.sartiniomar.library.lending.infrastructure.persistence.inMemory.InMemoryPatronRepository;
-import com.sartiniomar.library.lending.model.book.BookInstance;
-import com.sartiniomar.library.lending.model.hold.BookPlacedOnHoldEvent;
-import com.sartiniomar.library.lending.model.hold.PlacingOnHoldService;
-import com.sartiniomar.library.lending.model.patron.Patron;
+import com.sartiniomar.library.lending.domain.book.BookInstance;
+import com.sartiniomar.library.lending.domain.hold.BookPlacedOnHoldEvent;
+import com.sartiniomar.library.lending.domain.hold.PlacingOnHoldService;
+import com.sartiniomar.library.lending.domain.patron.Patron;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 

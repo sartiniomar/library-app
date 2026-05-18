@@ -1,7 +1,7 @@
 package com.sartiniomar.library.lending.infrastructure.persistence.jpa.mapper;
 
 import com.sartiniomar.library.lending.infrastructure.persistence.jpa.model.HoldEntity;
-import com.sartiniomar.library.lending.model.hold.Hold;
+import com.sartiniomar.library.lending.domain.hold.Hold;
 
 public class HoldMapper {
 

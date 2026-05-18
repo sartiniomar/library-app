@@ -1,7 +1,7 @@
 package com.sartiniomar.library.lending.infrastructure.persistence.inMemory;
 
 import com.sartiniomar.library.lending.application.port.out.BookInstanceRepository;
-import com.sartiniomar.library.lending.model.book.BookInstance;
+import com.sartiniomar.library.lending.domain.book.BookInstance;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;

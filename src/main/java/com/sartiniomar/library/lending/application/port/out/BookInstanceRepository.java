@@ -1,6 +1,6 @@
 package com.sartiniomar.library.lending.application.port.out;
 
-import com.sartiniomar.library.lending.model.book.BookInstance;
+import com.sartiniomar.library.lending.domain.book.BookInstance;
 import java.util.Optional;
 import java.util.UUID;
 

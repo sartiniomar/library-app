@@ -1,7 +1,7 @@
 package com.sartiniomar.library.lending.infrastructure.persistence.inMemory;
 
 import com.sartiniomar.library.lending.application.port.out.PatronRepository;
-import com.sartiniomar.library.lending.model.patron.Patron;
+import com.sartiniomar.library.lending.domain.patron.Patron;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;

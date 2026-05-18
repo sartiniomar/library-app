@@ -4,8 +4,9 @@ import com.sartiniomar.library.lending.application.port.in.PlaceHoldCommand;
 import com.sartiniomar.library.lending.application.port.in.PlaceHoldUseCase;
 import com.sartiniomar.library.lending.application.port.out.BookInstanceRepository;
 import com.sartiniomar.library.lending.application.port.out.PatronRepository;
-import com.sartiniomar.library.lending.model.book.BookInstance;
-import com.sartiniomar.library.lending.model.patron.Patron;
+import com.sartiniomar.library.lending.domain.hold.BookAlreadyOnHoldException;
+import com.sartiniomar.library.lending.domain.book.BookInstance;
+import com.sartiniomar.library.lending.domain.patron.Patron;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.concurrent.CountDownLatch;
@@ -79,7 +80,7 @@ class PlaceHoldConcurrencyTest {
 
   private boolean isConcurrencyRelated(Throwable e) {
     return e instanceof org.springframework.orm.ObjectOptimisticLockingFailureException
-        || e instanceof com.sartiniomar.library.lending.model.hold.BookAlreadyOnHoldException
+        || e instanceof BookAlreadyOnHoldException
         || (e.getCause() instanceof jakarta.persistence.OptimisticLockException);
   }
 }
