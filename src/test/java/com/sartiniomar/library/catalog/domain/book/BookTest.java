@@ -40,42 +40,42 @@ class BookTest {
   }
 
   @Test
-  void shouldNotAllowEmptyTitle() {
+  void shouldNotAllowCreateBookWithEmptyTitle() {
     assertThrows(IllegalArgumentException.class, () ->
         Book.create("", "Author", "123")
     );
   }
 
   @Test
-  void shouldNotAllowEmptyAuthor() {
+  void shouldNotAllowCreateBookWithEmptyAuthor() {
     assertThrows(IllegalArgumentException.class, () ->
         Book.create("Title", "", "123")
     );
   }
 
   @Test
-  void shouldNotAllowEmptyIsbn() {
+  void shouldNotAllowCreateBookWithEmptyIsbn() {
     assertThrows(IllegalArgumentException.class, () ->
         Book.create("Title", "Author", "")
     );
   }
 
   @Test
-  void shouldNotAllowNullTitle() {
+  void shouldNotAllowCreateBookWithNullTitle() {
     assertThrows(IllegalArgumentException.class, () ->
         Book.create(null, "Author", "123")
     );
   }
 
   @Test
-  void shouldNotAllowNullAuthor() {
+  void shouldNotAllowCreateBookWithNullAuthor() {
     assertThrows(IllegalArgumentException.class, () ->
         Book.create("Title", null, "123")
     );
   }
 
   @Test
-  void shouldNotAllowNullIsbn() {
+  void shouldNotAllowCreateBookWithNullIsbn() {
     assertThrows(IllegalArgumentException.class, () ->
         Book.create("Title", "Author", null)
     );

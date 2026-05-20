@@ -25,7 +25,6 @@ public class CreateBookUseCaseImplTest {
 
   @Test
   void shouldCreateBookSuccessfully() {
-
     when(repository.existsByIsbn("123")).thenReturn(false);
     when(repository.save(any())).thenAnswer(i -> i.getArgument(0));
 
@@ -33,7 +32,7 @@ public class CreateBookUseCaseImplTest {
         "Title", "Author", "123"
     );
 
-    Book result = useCase.execute(command);
+    Book result = useCase.create(command);
 
     assertEquals("Title", result.getTitle());
     assertEquals("Author", result.getAuthor());
@@ -45,7 +44,6 @@ public class CreateBookUseCaseImplTest {
 
   @Test
   void shouldThrowWhenIsbnAlreadyExists() {
-
     when(repository.existsByIsbn("123")).thenReturn(true);
 
     CreateBookCommand command = new CreateBookCommand(
@@ -53,6 +51,6 @@ public class CreateBookUseCaseImplTest {
     );
 
     assertThrows(BookAlreadyExistsException.class,
-        () -> useCase.execute(command));
+        () -> useCase.create(command));
   }
 }

@@ -15,14 +15,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 public class PlaceHoldService implements PlaceHoldUseCase {
 
-  private final PatronRepository patronRepository;
+  private final PatronLendingRepository patronRepository;
   private final BookInstanceRepository bookInstanceRepository;
   private final HoldRepository holdRepository;
   private final DomainEventPublisher eventPublisher;
   private final PlacingOnHoldService domainService;
 
   public PlaceHoldService(
-      PatronRepository patronRepository,
+      PatronLendingRepository patronRepository,
       BookInstanceRepository bookInstanceRepository,
       HoldRepository holdRepository,
       DomainEventPublisher eventPublisher,

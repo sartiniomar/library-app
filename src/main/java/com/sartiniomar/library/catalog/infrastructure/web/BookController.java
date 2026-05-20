@@ -49,7 +49,7 @@ public class BookController {
         createBookRequest.author(),
         createBookRequest.isbn()
     );
-    return ResponseEntity.ok(createBook.execute(cmd));
+    return ResponseEntity.ok(createBook.create(cmd));
   }
 
   @PutMapping("/{id}")

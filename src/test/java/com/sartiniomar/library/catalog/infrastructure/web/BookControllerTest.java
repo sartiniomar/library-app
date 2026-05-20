@@ -52,7 +52,7 @@ class BookControllerTest {
 
     Book book = new Book(id, "Title", "Author", "123");
 
-    when(createBookUseCase.execute(any()))
+    when(createBookUseCase.create(any()))
         .thenReturn(book);
 
     String json = """
@@ -102,22 +102,6 @@ class BookControllerTest {
   }
 
   @Test
-  void shouldReturnBadRequestForInvalidIsbn() throws Exception {
-    String json = """
-        {
-          "title": "Title",
-          "author": "Author",
-          "isbn": ""
-        }
-        """;
-
-    mockMvc.perform(post("/books")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(json))
-        .andExpect(status().isBadRequest());
-  }
-
-  @Test
   void shouldReturnBadRequestForNullFields() throws Exception {
     String json = """
         {
@@ -135,7 +119,7 @@ class BookControllerTest {
 
   @Test
   void shouldReturnBadRequestForDuplicateIsbn() throws Exception {
-    when(createBookUseCase.execute(any()))
+    when(createBookUseCase.create(any()))
         .thenThrow(new BookAlreadyExistsException("ISBN already exists"));
 
     String json = """

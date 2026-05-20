@@ -4,7 +4,6 @@ import com.sartiniomar.library.lending.domain.patron.Patron;
 import java.util.Optional;
 import java.util.UUID;
 
-public interface PatronRepository {
+public interface PatronLendingRepository {
   Optional<Patron> findById(UUID patronId);
-  void save(Patron patron);
 }

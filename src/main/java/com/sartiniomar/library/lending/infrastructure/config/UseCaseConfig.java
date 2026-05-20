@@ -4,7 +4,7 @@ import com.sartiniomar.library.lending.application.port.in.PlaceHoldUseCase;
 import com.sartiniomar.library.lending.application.port.out.BookInstanceRepository;
 import com.sartiniomar.library.lending.application.port.out.DomainEventPublisher;
 import com.sartiniomar.library.lending.application.port.out.HoldRepository;
-import com.sartiniomar.library.lending.application.port.out.PatronRepository;
+import com.sartiniomar.library.lending.application.port.out.PatronLendingRepository;
 import com.sartiniomar.library.lending.application.usecase.PlaceHoldService;
 import com.sartiniomar.library.lending.domain.hold.PlacingOnHoldService;
 import org.springframework.context.annotation.Bean;
@@ -15,7 +15,7 @@ public class UseCaseConfig {
 
   @Bean
   PlaceHoldUseCase placeHoldUseCase(
-      PatronRepository patronRepository,
+      PatronLendingRepository patronRepository,
       BookInstanceRepository bookInstanceRepository,
       HoldRepository holdRepository,
       DomainEventPublisher eventPublisher,

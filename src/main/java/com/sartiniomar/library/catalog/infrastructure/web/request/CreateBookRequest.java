@@ -10,5 +10,4 @@ public record CreateBookRequest(
     @NotBlank(message = "isbn is required")
     String isbn
 ) {
-
 }

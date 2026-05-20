@@ -8,7 +8,7 @@ import lombok.Setter;
 import java.util.UUID;
 
 @Entity
-@Table(name = "books")
+@Table(name = "book")
 @Getter
 @Setter
 public class BookEntity {

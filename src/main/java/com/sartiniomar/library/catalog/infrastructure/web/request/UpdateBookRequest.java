@@ -5,5 +5,4 @@ public record UpdateBookRequest(
     String author,
     String isbn
 ) {
-
 }

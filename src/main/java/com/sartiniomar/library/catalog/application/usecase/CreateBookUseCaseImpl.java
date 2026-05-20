@@ -15,7 +15,7 @@ public class CreateBookUseCaseImpl implements CreateBookUseCase {
   }
 
   @Override
-  public Book execute(CreateBookCommand command) {
+  public Book create(CreateBookCommand command) {
 
     if (repository.existsByIsbn(command.isbn())) {
       throw new BookAlreadyExistsException("ISBN already exists");
