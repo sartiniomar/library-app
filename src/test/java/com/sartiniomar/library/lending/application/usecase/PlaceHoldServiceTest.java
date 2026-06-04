@@ -37,7 +37,7 @@ public class PlaceHoldServiceTest {
     InMemoryHoldRepository holdRepo = new InMemoryHoldRepository();
 
     Patron patron = Patron.regular();
-    BookInstance book = BookInstance.circulating("book-1");
+    BookInstance book = BookInstance.circulating(UUID.randomUUID());
 
     setupPatronInRepo(patronRepo, patron);  // ← Setup solo aquí, sin tocar productivo
     bookRepo.save(book);
@@ -63,7 +63,7 @@ public class PlaceHoldServiceTest {
     Patron patron = Patron.regular();
     setupPatronInRepo(patronRepo, patron);  // ← Setup solo aquí
 
-    BookInstance book = BookInstance.circulating("book-1");
+    BookInstance book = BookInstance.circulating(UUID.randomUUID());
     bookRepo.save(book);
 
     InMemoryEventPublisher publisher = new InMemoryEventPublisher();

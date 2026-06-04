@@ -39,11 +39,11 @@ public class PlaceHoldService implements PlaceHoldUseCase {
   @Transactional
   public void execute(PlaceHoldCommand command) {
 
-    Patron patron = patronRepository.findById(command.getPatronId())
-        .orElseThrow(() -> new PatronNotFoundException(command.getPatronId().toString()));
+    Patron patron = patronRepository.findById(command.patronId())
+        .orElseThrow(() -> new PatronNotFoundException(command.patronId().toString()));
 
-    BookInstance book = bookInstanceRepository.findById(command.getBookId())
-        .orElseThrow(() -> new BookInstanceNotFoundException("UUID=" + command.getBookId()));
+    BookInstance book = bookInstanceRepository.findById(command.bookInstanceId())
+        .orElseThrow(() -> new BookInstanceNotFoundException("UUID=" + command.bookInstanceId()));
 
     int currentHolds = holdRepository.countByPatronId(patron.getId());
 

@@ -52,7 +52,7 @@ class PlaceHoldConcurrencyTest {
     );
 
     // Preparar datos
-    BookInstance book = BookInstance.circulating("book-1");
+    BookInstance book = BookInstance.circulating(UUID.randomUUID());
     bookInstanceRepository.save(book);
 
     Patron patron = Patron.researcher();

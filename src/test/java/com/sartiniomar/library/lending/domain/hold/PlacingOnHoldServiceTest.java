@@ -3,6 +3,9 @@ package com.sartiniomar.library.lending.domain.hold;
 import com.sartiniomar.library.lending.domain.book.BookInstance;
 import com.sartiniomar.library.lending.domain.patron.Patron;
 import org.junit.jupiter.api.Test;
+
+import java.util.UUID;
+
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
@@ -13,7 +16,7 @@ public class PlacingOnHoldServiceTest {
   void should_place_hold_when_all_conditions_are_met() {
 
     Patron patron = Patron.regular();
-    BookInstance book = BookInstance.circulating("book-1");
+    BookInstance book = BookInstance.circulating(UUID.randomUUID());
 
     PlacingOnHoldService service = new PlacingOnHoldService();
 

@@ -20,9 +20,19 @@ public class JpaBookInstanceRepository implements BookInstanceRepository {
   }
 
   @Override
-  public Optional<BookInstance> findById(UUID id) {
-    return jpaRepo.findById(id)
+  public Optional<BookInstance> findById(UUID bookInstanceId) {
+    return jpaRepo.findById(bookInstanceId)
         .map(BookInstanceMapper::toDomain);
+  }
+
+  @Override
+  public Iterable<BookInstance> findAllByBookId(UUID bookId) {
+    return null;
+  }
+
+  @Override
+  public void delete(UUID id) {
+
   }
 
   @Override

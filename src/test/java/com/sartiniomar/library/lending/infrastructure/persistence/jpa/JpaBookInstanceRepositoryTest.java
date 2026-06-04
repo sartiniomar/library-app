@@ -8,6 +8,8 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 import java.util.Optional;
+import java.util.UUID;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
@@ -20,7 +22,7 @@ class JpaBookInstanceRepositoryTest {
 
   @Test
   void shouldSaveAndFindBook() {
-    BookInstance book = BookInstance.circulating("book-1");
+    BookInstance book = BookInstance.circulating(UUID.randomUUID());
 
     repository.save(book);
 

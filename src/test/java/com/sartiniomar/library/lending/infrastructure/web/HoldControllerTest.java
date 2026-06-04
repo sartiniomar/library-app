@@ -13,6 +13,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+
+import java.util.UUID;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -34,7 +37,7 @@ public class HoldControllerTest {
 
   @Test
   void shouldCallUseCase_whenRequestIsValid() throws Exception {
-    BookInstance book = BookInstance.circulating("book-1");
+    BookInstance book = BookInstance.circulating(UUID.randomUUID());
     Patron patron = Patron.regular();
 
     PlaceHoldRequest request = new PlaceHoldRequest(book.getId(), patron.getId());

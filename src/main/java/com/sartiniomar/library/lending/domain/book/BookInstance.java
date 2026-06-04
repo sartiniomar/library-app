@@ -8,33 +8,33 @@ import java.util.UUID;
 public class BookInstance {
 
   private final UUID id;
-  private final String bookId;
-  private final BookType type;
+  private UUID bookId;
+  private BookType type;
   private boolean onHold;
 
-  protected BookInstance(String bookId, BookType type, boolean onHold) {
+  protected BookInstance(UUID bookId, BookType type, boolean onHold) {
     this.id = UUID.randomUUID();
     this.bookId = bookId;
     this.type = type;
     this.onHold = onHold;
   }
 
-  protected BookInstance(UUID id, String bookId, BookType type, boolean onHold) {
+  protected BookInstance(UUID id, UUID bookId, BookType type, boolean onHold) {
     this.id = id;
     this.bookId = bookId;
     this.type = type;
     this.onHold = onHold;
   }
 
-  public static BookInstance circulating(String bookId) {
+  public static BookInstance circulating(UUID bookId) {
     return new BookInstance(bookId, BookType.CIRCULATING, false);
   }
 
-  public static BookInstance restricted(String bookId) {
+  public static BookInstance restricted(UUID bookId) {
     return new BookInstance(bookId, BookType.RESTRICTED, false);
   }
 
-  public static BookInstance restore(UUID id, String bookId, BookType type, boolean onHold) {
+  public static BookInstance restore(UUID id, UUID bookId, BookType type, boolean onHold) {
     return new BookInstance(id, bookId, type, onHold);
   }
 
@@ -42,7 +42,7 @@ public class BookInstance {
     return this.id;
   }
 
-  public String getBookId() {
+  public UUID getBookId() {
     return bookId;
   }
 
@@ -56,6 +56,18 @@ public class BookInstance {
 
   public boolean isOnHold() {
     return onHold;
+  }
+
+  public void setBookId(UUID bookId) {
+    this.bookId = bookId;
+  }
+
+  public void setType(BookType type) {
+    this.type = type;
+  }
+
+  public void setOnHold(boolean onHold) {
+    this.onHold = onHold;
   }
 
   public void markOnHold() {

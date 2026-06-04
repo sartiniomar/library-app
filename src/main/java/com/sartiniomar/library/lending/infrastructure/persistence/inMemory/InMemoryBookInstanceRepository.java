@@ -12,8 +12,18 @@ public class InMemoryBookInstanceRepository implements BookInstanceRepository {
   private final Map<UUID, BookInstance> storage = new ConcurrentHashMap<>();
 
   @Override
-  public Optional<BookInstance> findById(UUID id) {
-    return Optional.ofNullable(storage.getOrDefault(id, BookInstance.circulating("book-1")));
+  public Optional<BookInstance> findById(UUID bookInstanceId) {
+    return Optional.ofNullable(storage.getOrDefault(bookInstanceId, BookInstance.circulating(bookInstanceId)));
+  }
+
+  @Override
+  public Iterable<BookInstance> findAllByBookId(UUID bookId) {
+    return null;
+  }
+
+  @Override
+  public void delete(UUID id) {
+
   }
 
   @Override

@@ -5,6 +5,8 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface BookInstanceRepository {
-  Optional<BookInstance> findById(UUID bookId);
   void save(BookInstance book);
+  Optional<BookInstance> findById(UUID bookInstanceId);
+  Iterable<BookInstance> findAllByBookId(UUID bookId);
+  void delete(UUID id);
 }

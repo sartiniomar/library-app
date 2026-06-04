@@ -21,7 +21,7 @@ public class BookInstanceEntity {
   @Id
   private UUID id;
 
-  private String bookId;
+  private UUID bookId;
 
   @Enumerated(EnumType.STRING)
   private BookType type;
@@ -31,7 +31,7 @@ public class BookInstanceEntity {
   @Version
   private Long version;
 
-  public BookInstanceEntity(UUID id, String bookId, BookType type, boolean onHold) {
+  public BookInstanceEntity(UUID id, UUID bookId, BookType type, boolean onHold) {
     this.id = id;
     this.bookId = bookId;
     this.type = type;

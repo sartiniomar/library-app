@@ -8,8 +8,7 @@ import com.sartiniomar.library.catalog.application.port.in.GetBookByIsbnUseCase;
 import com.sartiniomar.library.catalog.application.port.in.UpdateBookCommand;
 import com.sartiniomar.library.catalog.application.port.in.UpdateBookUseCase;
 import com.sartiniomar.library.catalog.domain.book.Book;
-import com.sartiniomar.library.catalog.infrastructure.web.request.CreateBookRequest;
-import com.sartiniomar.library.catalog.infrastructure.web.request.UpdateBookRequest;
+import com.sartiniomar.library.catalog.infrastructure.web.request.BookRequest;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -42,7 +41,7 @@ public class BookController {
   }
 
   @PostMapping
-  public ResponseEntity<Book> create(@Valid @RequestBody CreateBookRequest createBookRequest) {
+  public ResponseEntity<Book> create(@Valid @RequestBody BookRequest createBookRequest) {
 
     CreateBookCommand cmd = new CreateBookCommand(
         createBookRequest.title(),
@@ -54,7 +53,7 @@ public class BookController {
 
   @PutMapping("/{id}")
   public ResponseEntity<Book> update(@PathVariable UUID id,
-      @Valid @RequestBody UpdateBookRequest updateBookRequest) {
+      @RequestBody BookRequest updateBookRequest) {
 
     UpdateBookCommand cmd = new UpdateBookCommand(
         id,

@@ -2,7 +2,7 @@ package com.sartiniomar.library.catalog.infrastructure.web.request;
 
 import jakarta.validation.constraints.NotBlank;
 
-public record CreateBookRequest(
+public record BookRequest(
     @NotBlank(message = "title is required")
     String title,
     @NotBlank(message = "author is required")
