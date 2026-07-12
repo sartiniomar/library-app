@@ -17,7 +17,7 @@ LendingExceptionHandler {
   @ExceptionHandler(BookInstanceNotFoundException.class)
   public ResponseEntity<ErrorResponse> handleBookInstanceNotFound(BookInstanceNotFoundException ex) {
     Map<String, String> errors = Map.of(
-        "bookId", ex.getMessage()
+        "bookInstanceId", ex.getMessage()
     );
 
     return ResponseEntity.status(404).body(

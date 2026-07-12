@@ -60,7 +60,7 @@ public class HoldControllerTest extends LibraryApplicationTests {
             .content(objectMapper.writeValueAsString(request))
         )
         .andExpect(status().isBadRequest())
-        .andExpect(jsonPath("$.errors.bookId").exists())
+        .andExpect(jsonPath("$.errors.bookInstanceId").exists())
         .andExpect(jsonPath("$.errors.patronId").exists());
   }
 }
