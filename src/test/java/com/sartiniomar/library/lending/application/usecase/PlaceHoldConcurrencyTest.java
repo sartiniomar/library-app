@@ -7,10 +7,10 @@ import com.sartiniomar.library.lending.application.support.InMemoryEventPublishe
 import com.sartiniomar.library.lending.domain.hold.BookAlreadyOnHoldException;
 import com.sartiniomar.library.lending.domain.book.BookInstance;
 import com.sartiniomar.library.lending.domain.hold.PlacingOnHoldService;
-import com.sartiniomar.library.lending.infrastructure.persistence.inMemory.InMemoryBookInstanceRepository;
-import com.sartiniomar.library.lending.infrastructure.persistence.inMemory.InMemoryHoldRepository;
+import com.sartiniomar.library.lending.infrastructure.persistence.inMemory.BookInstanceInMemoryRepository;
+import com.sartiniomar.library.lending.infrastructure.persistence.inMemory.HoldInMemoryRepository;
 import com.sartiniomar.library.lending.domain.patron.Patron;
-import org.junit.jupiter.api.Test;
+
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -35,8 +35,8 @@ class PlaceHoldConcurrencyTest {
 
     // Repositorios in-memory (implementaciones de test)
     TestPatronLendingRepository patronRepo = new TestPatronLendingRepository();
-    InMemoryBookInstanceRepository bookInstanceRepository = new InMemoryBookInstanceRepository();
-    InMemoryHoldRepository holdRepository = new InMemoryHoldRepository();
+    BookInstanceInMemoryRepository bookInstanceRepository = new BookInstanceInMemoryRepository();
+    HoldInMemoryRepository holdRepository = new HoldInMemoryRepository();
 
     // Event publisher + domain service
     InMemoryEventPublisher publisher = new InMemoryEventPublisher();

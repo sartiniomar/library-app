@@ -14,8 +14,9 @@ public class CreateRestrictedBookInstanceService implements CreateRestrictedBook
   }
 
   @Override
-  public void execute(CreateBookInstanceCommand command) {
-    BookInstance instance = BookInstance.restricted(command.bookId());
-    repository.save(instance);
+  public BookInstance execute(CreateBookInstanceCommand command) {
+    BookInstance bookInstance = BookInstance.restricted(command.bookId());
+    repository.save(bookInstance);
+    return bookInstance;
   }
 }

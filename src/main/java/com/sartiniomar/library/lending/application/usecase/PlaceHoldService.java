@@ -37,7 +37,7 @@ public class PlaceHoldService implements PlaceHoldUseCase {
 
   @Override
   @Transactional
-  public void execute(PlaceHoldCommand command) {
+  public Hold execute(PlaceHoldCommand command) {
 
     Patron patron = patronRepository.findById(command.patronId())
         .orElseThrow(() -> new PatronNotFoundException(command.patronId().toString()));
@@ -59,5 +59,7 @@ public class PlaceHoldService implements PlaceHoldUseCase {
     holdRepository.save(result.result());
 
     result.events().forEach(eventPublisher::publish);
+
+    return result.result();
   }
 }

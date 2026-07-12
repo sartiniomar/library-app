@@ -1,28 +1,35 @@
 package com.sartiniomar.library.patron.infrastructure.persistence;
 
 import com.sartiniomar.library.patron.domain.patron.Patron;
-import com.sartiniomar.library.patron.infrastructure.persistence.jpa.adapter.PatronSpringDataRepository;
-import com.sartiniomar.library.patron.infrastructure.persistence.jpa.repository.JpaPatronRepository;
+import com.sartiniomar.library.patron.infrastructure.mapper.PatronMapper;
+import com.sartiniomar.library.patron.infrastructure.mapper.PatronMapperImpl;
+import com.sartiniomar.library.patron.infrastructure.persistence.jpa.repository.PatronSpringDataRepository;
+import com.sartiniomar.library.patron.infrastructure.persistence.jpa.adapter.PatronJpaRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.context.annotation.Import;
 import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @DataJpaTest
+@Import(PatronMapperImpl.class)
 public class JpaPatronRepositoryTest {
 
   @Autowired
   private PatronSpringDataRepository jpaRepo;
 
-  private JpaPatronRepository repository;
+  @Autowired
+  private PatronMapper mapper;
+
+  private PatronJpaRepository repository;
 
   @BeforeEach
   void setup() {
-    repository = new JpaPatronRepository(jpaRepo);
+    repository = new PatronJpaRepository(jpaRepo, mapper);
   }
 
   @Test

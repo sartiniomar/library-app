@@ -15,18 +15,18 @@ public class UpdateBookInstanceService implements UpdateBookInstanceUseCase {
   }
 
   @Override
-  public void execute(UpdateBookInstanceCommand cmd) {
-    BookInstance instance = repository.findById(cmd.id())
+  public BookInstance execute(UpdateBookInstanceCommand cmd) {
+    BookInstance bookInstance = repository.findById(cmd.id())
         .orElseThrow(() -> new BookInstanceNotFoundException(cmd.id().toString()));
 
-    if (cmd.bookId() != null) {
-      instance.setBookId(cmd.bookId());
-    }
-
     if (cmd.type() != null) {
-      instance.setType(cmd.type());
+      bookInstance.setType(cmd.type());
     }
 
-    repository.save(instance);
+    if (cmd.onHold() != null) {
+      bookInstance.setOnHold(cmd.onHold());
+    }
+
+    return repository.save(bookInstance);
   }
 }

@@ -7,9 +7,11 @@ import com.sartiniomar.library.catalog.application.port.in.GetBookByIdUseCase;
 import com.sartiniomar.library.catalog.application.port.in.GetBookByIsbnUseCase;
 import com.sartiniomar.library.catalog.application.port.in.UpdateBookCommand;
 import com.sartiniomar.library.catalog.application.port.in.UpdateBookUseCase;
-import com.sartiniomar.library.catalog.domain.book.Book;
-import com.sartiniomar.library.catalog.infrastructure.web.request.BookRequest;
+import com.sartiniomar.library.catalog.infrastructure.mapper.BookMapper;
+import com.sartiniomar.library.catalog.infrastructure.web.dto.BookRequest;
+import com.sartiniomar.library.catalog.infrastructure.web.dto.BookResponse;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,6 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.UUID;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/books")
 public class BookController {
 
@@ -31,47 +34,28 @@ public class BookController {
   private final GetBookByIdUseCase getBookById;
   private final GetBookByIsbnUseCase getBookByIsbn;
   private final DeleteBookUseCase deleteBook;
-
-  public BookController(CreateBookUseCase createBook, UpdateBookUseCase updateBook, GetBookByIdUseCase getBookById, GetBookByIdUseCase getBookById1, GetBookByIsbnUseCase getBookByIsbn, DeleteBookUseCase deleteBook) {
-    this.createBook = createBook;
-    this.updateBook = updateBook;
-    this.getBookById = getBookById1;
-    this.getBookByIsbn = getBookByIsbn;
-    this.deleteBook = deleteBook;
-  }
+  private final BookMapper bookMapper;
 
   @PostMapping
-  public ResponseEntity<Book> create(@Valid @RequestBody BookRequest createBookRequest) {
-
-    CreateBookCommand cmd = new CreateBookCommand(
-        createBookRequest.title(),
-        createBookRequest.author(),
-        createBookRequest.isbn()
-    );
-    return ResponseEntity.ok(createBook.create(cmd));
+  public ResponseEntity<BookResponse> create(@Valid @RequestBody BookRequest createBookRequest) {
+    CreateBookCommand cmd = bookMapper.bookRequestToCreateBookCommand(createBookRequest);
+    return ResponseEntity.ok(bookMapper.bookToBookResponse(createBook.create(cmd)));
   }
 
   @PutMapping("/{id}")
-  public ResponseEntity<Book> update(@PathVariable UUID id,
-      @RequestBody BookRequest updateBookRequest) {
-
-    UpdateBookCommand cmd = new UpdateBookCommand(
-        id,
-        updateBookRequest.title(),
-        updateBookRequest.author(),
-        updateBookRequest.isbn()
-    );
-    return ResponseEntity.ok(updateBook.update(cmd));
+  public ResponseEntity<BookResponse> update(@PathVariable UUID id, @RequestBody BookRequest updateBookRequest) {
+    UpdateBookCommand cmd = bookMapper.bookRequestToUpdateBookCommand(updateBookRequest, id);
+    return ResponseEntity.ok(bookMapper.bookToBookResponse(updateBook.update(cmd)));
   }
 
   @GetMapping("/{id}")
-  public ResponseEntity<Book> getById(@PathVariable UUID id) {
-    return ResponseEntity.ok(getBookById.get(id));
+  public ResponseEntity<BookResponse> getById(@PathVariable UUID id) {
+    return ResponseEntity.ok(bookMapper.bookToBookResponse(getBookById.get(id)));
   }
 
   @GetMapping
-  public ResponseEntity<Book> getByIsbn(@RequestParam String isbn) {
-    return ResponseEntity.ok(getBookByIsbn.get(isbn));
+  public ResponseEntity<BookResponse> getByIsbn(@RequestParam String isbn) {
+    return ResponseEntity.ok(bookMapper.bookToBookResponse(getBookByIsbn.get(isbn)));
   }
 
   @DeleteMapping("/{id}")

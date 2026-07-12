@@ -1,5 +1,8 @@
 package com.sartiniomar.library.patron.infrastructure.web;
 
+import com.sartiniomar.library.LibraryApplicationTests;
+import com.sartiniomar.library.lending.infrastructure.mapper.BookInstanceMapper;
+import com.sartiniomar.library.lending.infrastructure.persistence.jpa.repository.BookInstanceSpringDataRepository;
 import com.sartiniomar.library.patron.application.port.in.CreateRegularPatronUseCase;
 import com.sartiniomar.library.patron.application.port.in.CreateResearcherPatronUseCase;
 import com.sartiniomar.library.patron.application.port.in.DeletePatronUseCase;
@@ -9,12 +12,12 @@ import com.sartiniomar.library.patron.domain.patron.Patron;
 import com.sartiniomar.library.patron.domain.patron.PatronAlreadyExistsException;
 import com.sartiniomar.library.patron.domain.patron.PatronNotFoundException;
 import com.sartiniomar.library.patron.domain.patron.PatronType;
+import com.sartiniomar.library.patron.infrastructure.mapper.PatronMapper;
+import com.sartiniomar.library.patron.infrastructure.persistence.jpa.repository.PatronSpringDataRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import java.util.UUID;
 
@@ -25,11 +28,13 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(PatronController.class)
-public class PatronControllerTest {
+class PatronControllerTest extends LibraryApplicationTests {
 
   @Autowired
-  private MockMvc mockMvc;
+  private PatronMapper mapper;
+
+  @MockBean
+  PatronSpringDataRepository patronSpringDataRepository;
 
   @MockBean
   private CreateRegularPatronUseCase createRegularPatron;
@@ -225,10 +230,13 @@ public class PatronControllerTest {
   @Test
   void shouldUpdatePatron() throws Exception {
     UUID id = UUID.randomUUID();
-    Patron patron = new Patron(id, PatronType.RESEARCHER, "John Doe", "johnDoe2@example.com");
+    Patron patron = new Patron(id, PatronType.REGULAR, "John Doe", "johnDoe@example.com");
+    Patron patronUpdated = new Patron(id, PatronType.RESEARCHER, "John Doe", "johnDoe2@example.com");
+
+    patronSpringDataRepository.save(mapper.toEntity(patron));
 
     when(updatePatron.execute(any()))
-        .thenReturn(patron);
+        .thenReturn(patronUpdated);
 
     String json = """
         {

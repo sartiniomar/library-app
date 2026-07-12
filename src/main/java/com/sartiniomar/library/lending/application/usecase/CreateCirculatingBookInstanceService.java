@@ -14,8 +14,9 @@ public class CreateCirculatingBookInstanceService implements CreateCirculatingBo
   }
 
   @Override
-  public void execute(CreateBookInstanceCommand command) {
-    BookInstance instance = BookInstance.circulating(command.bookId());
-    repository.save(instance);
+  public BookInstance execute(CreateBookInstanceCommand command) {
+    BookInstance bookInstance = BookInstance.circulating(command.bookId());
+    repository.save(bookInstance);
+    return bookInstance;
   }
 }

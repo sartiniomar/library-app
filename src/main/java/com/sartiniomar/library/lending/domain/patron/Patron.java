@@ -9,6 +9,11 @@ public class Patron {
 
   private static final Integer MAX_VALUE_HOLDS_REGULAR_PATRON = 5;
 
+  public Patron(UUID id, PatronType type) {
+    this.id = id;
+    this.type = type;
+  }
+
   private Patron(PatronType type) {
     this.id = UUID.randomUUID();
     this.type = type;

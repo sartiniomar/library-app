@@ -1,16 +1,21 @@
 package com.sartiniomar.library;
 
-import org.junit.jupiter.api.Test;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.web.servlet.MockMvc;
 
 @SpringBootTest
+@AutoConfigureMockMvc
 @ActiveProfiles("test")
-class LibraryApplicationTests {
+public class LibraryApplicationTests {
 
-	@Test
-	void
-  contextLoads() {
-	}
+  @Autowired
+  protected MockMvc mockMvc;
+
+  @Autowired
+  protected ObjectMapper objectMapper;
 
 }

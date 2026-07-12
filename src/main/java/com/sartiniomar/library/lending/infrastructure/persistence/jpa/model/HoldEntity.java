@@ -14,15 +14,15 @@ public class HoldEntity {
   @Id
   private UUID id;
 
-  private UUID bookId;
+  private UUID bookInstanceId;
 
   private UUID patronId;
 
   protected HoldEntity() {}
 
-  public HoldEntity(UUID id, UUID bookId, UUID patronId) {
+  public HoldEntity(UUID id, UUID bookInstanceId, UUID patronId) {
     this.id = id;
-    this.bookId = bookId;
+    this.bookInstanceId = bookInstanceId;
     this.patronId = patronId;
   }
 }

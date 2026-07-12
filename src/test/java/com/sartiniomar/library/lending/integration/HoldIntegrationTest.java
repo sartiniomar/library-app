@@ -1,7 +1,7 @@
 package com.sartiniomar.library.lending.integration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sartiniomar.library.lending.infrastructure.web.request.PlaceHoldRequest;
+import com.sartiniomar.library.lending.infrastructure.web.dto.PlaceHoldRequest;
 import com.sartiniomar.library.lending.domain.patron.Patron;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

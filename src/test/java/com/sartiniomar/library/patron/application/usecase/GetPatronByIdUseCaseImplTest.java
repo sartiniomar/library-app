@@ -19,7 +19,7 @@ import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.times;
 
 @ExtendWith(MockitoExtension.class)
-public class GetPatronByIdUseCaseImplTest {
+class GetPatronByIdUseCaseImplTest {
 
   @Mock
   private PatronRepository repository;

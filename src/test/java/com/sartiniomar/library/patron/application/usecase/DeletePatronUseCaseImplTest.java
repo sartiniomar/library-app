@@ -18,7 +18,7 @@ import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.never;
 
 @ExtendWith(MockitoExtension.class)
-public class DeletePatronUseCaseImplTest {
+class DeletePatronUseCaseImplTest {
 
   @Mock
   private PatronRepository repository;

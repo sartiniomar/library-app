@@ -19,7 +19,7 @@ public class BookInstance {
     this.onHold = onHold;
   }
 
-  protected BookInstance(UUID id, UUID bookId, BookType type, boolean onHold) {
+  public BookInstance(UUID id, UUID bookId, BookType type, boolean onHold) {
     this.id = id;
     this.bookId = bookId;
     this.type = type;

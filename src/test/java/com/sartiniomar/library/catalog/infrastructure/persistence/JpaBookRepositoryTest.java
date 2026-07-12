@@ -1,27 +1,34 @@
 package com.sartiniomar.library.catalog.infrastructure.persistence;
 
 import com.sartiniomar.library.catalog.domain.book.Book;
-import com.sartiniomar.library.catalog.infrastructure.persistence.jpa.adapter.SpringDataBookRepository;
-import com.sartiniomar.library.catalog.infrastructure.persistence.jpa.repository.JpaBookRepository;
+import com.sartiniomar.library.catalog.infrastructure.mapper.BookMapper;
+import com.sartiniomar.library.catalog.infrastructure.mapper.BookMapperImpl;
+import com.sartiniomar.library.catalog.infrastructure.persistence.jpa.repository.BookSpringDataRepository;
+import com.sartiniomar.library.catalog.infrastructure.persistence.jpa.adapter.BookJpaRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.context.annotation.Import;
 import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @DataJpaTest
+@Import(BookMapperImpl.class)
 class JpaBookRepositoryTest {
 
   @Autowired
-  private SpringDataBookRepository jpaRepo;
+  private BookSpringDataRepository jpaRepo;
 
-  private JpaBookRepository repository;
+  @Autowired
+  private BookMapper mapper;
+
+  private BookJpaRepository repository;
 
   @BeforeEach
   void setup() {
-    repository = new JpaBookRepository(jpaRepo);
+    repository = new BookJpaRepository(jpaRepo, mapper);
   }
 
   @Test

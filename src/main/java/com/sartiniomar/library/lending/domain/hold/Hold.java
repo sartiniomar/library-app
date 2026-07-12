@@ -5,8 +5,8 @@ import java.util.UUID;
 public class Hold {
 
   private final UUID id;
-  private final UUID patronId;
   private final UUID bookInstanceId;
+  private final UUID patronId;
 
   public Hold(UUID patronId, UUID bookInstanceId) {
     this.id = UUID.randomUUID();

@@ -1,6 +1,5 @@
 package com.sartiniomar.library.commons.infrastructure.web.error;
 
-
 import com.sartiniomar.library.commons.infrastructure.web.response.ErrorResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;

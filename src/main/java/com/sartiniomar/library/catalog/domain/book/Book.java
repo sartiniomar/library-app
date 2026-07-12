@@ -9,7 +9,7 @@ public class Book {
   private String author;
   private String isbn;
 
-  public Book(UUID uuid, String title, String author, String isbn) {
+  public Book(UUID id, String title, String author, String isbn) {
     if (title == null || title.isBlank()) {
       throw new IllegalArgumentException("Title cannot be empty");
     }
@@ -20,7 +20,7 @@ public class Book {
       throw new IllegalArgumentException("ISBN cannot be empty");
     }
 
-    this.id = uuid;
+    this.id = id;
     this.title = title;
     this.author = author;
     this.isbn = isbn;

@@ -2,9 +2,9 @@ package com.sartiniomar.library.lending.application.usecase;
 
 import com.sartiniomar.library.lending.application.port.in.PlaceHoldCommand;
 import com.sartiniomar.library.lending.application.support.InMemoryEventPublisher;
-import com.sartiniomar.library.lending.infrastructure.persistence.inMemory.InMemoryBookInstanceRepository;
-import com.sartiniomar.library.lending.infrastructure.persistence.inMemory.InMemoryHoldRepository;
-import com.sartiniomar.library.lending.infrastructure.persistence.inMemory.InMemoryPatronLendingRepository;
+import com.sartiniomar.library.lending.infrastructure.persistence.inMemory.BookInstanceInMemoryRepository;
+import com.sartiniomar.library.lending.infrastructure.persistence.inMemory.HoldInMemoryRepository;
+import com.sartiniomar.library.lending.infrastructure.persistence.inMemory.PatronLendingInMemoryRepository;
 import com.sartiniomar.library.lending.domain.book.BookInstance;
 import com.sartiniomar.library.lending.domain.hold.BookPlacedOnHoldEvent;
 import com.sartiniomar.library.lending.domain.hold.PlacingOnHoldService;
@@ -18,9 +18,9 @@ import static org.junit.jupiter.api.Assertions.*;
 public class PlaceHoldServiceTest {
 
   // Helper solo para tests — acceso by reflection (sin tocar código productivo)
-  private void setupPatronInRepo(InMemoryPatronLendingRepository repo, Patron patron) {
+  private void setupPatronInRepo(PatronLendingInMemoryRepository repo, Patron patron) {
     try {
-      java.lang.reflect.Field storageField = InMemoryPatronLendingRepository.class.getDeclaredField("storage");
+      java.lang.reflect.Field storageField = PatronLendingInMemoryRepository.class.getDeclaredField("storage");
       storageField.setAccessible(true);
       @SuppressWarnings("unchecked")
       Map<UUID, Patron> storage = (Map<UUID, Patron>) storageField.get(repo);
@@ -32,9 +32,9 @@ public class PlaceHoldServiceTest {
 
   @Test
   void should_place_hold_via_use_case() {
-    InMemoryPatronLendingRepository patronRepo = new InMemoryPatronLendingRepository();
-    InMemoryBookInstanceRepository bookRepo = new InMemoryBookInstanceRepository();
-    InMemoryHoldRepository holdRepo = new InMemoryHoldRepository();
+    PatronLendingInMemoryRepository patronRepo = new PatronLendingInMemoryRepository();
+    BookInstanceInMemoryRepository bookRepo = new BookInstanceInMemoryRepository();
+    HoldInMemoryRepository holdRepo = new HoldInMemoryRepository();
 
     Patron patron = Patron.regular();
     BookInstance book = BookInstance.circulating(UUID.randomUUID());
@@ -56,9 +56,9 @@ public class PlaceHoldServiceTest {
 
   @Test
   void should_publish_event_when_hold_is_created() {
-    InMemoryPatronLendingRepository patronRepo = new InMemoryPatronLendingRepository();
-    InMemoryBookInstanceRepository bookRepo = new InMemoryBookInstanceRepository();
-    InMemoryHoldRepository holdRepo = new InMemoryHoldRepository();
+    PatronLendingInMemoryRepository patronRepo = new PatronLendingInMemoryRepository();
+    BookInstanceInMemoryRepository bookRepo = new BookInstanceInMemoryRepository();
+    HoldInMemoryRepository holdRepo = new HoldInMemoryRepository();
 
     Patron patron = Patron.regular();
     setupPatronInRepo(patronRepo, patron);  // ← Setup solo aquí

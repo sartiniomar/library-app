@@ -2,7 +2,6 @@ package com.sartiniomar.library.catalog.application.usecase;
 
 import com.sartiniomar.library.catalog.application.port.in.DeleteBookUseCase;
 import com.sartiniomar.library.catalog.application.port.out.BookRepository;
-import com.sartiniomar.library.catalog.domain.book.Book;
 import com.sartiniomar.library.catalog.domain.book.BookNotFoundException;
 import java.util.UUID;
 
@@ -16,7 +15,7 @@ public class DeleteBookUseCaseImpl implements DeleteBookUseCase {
 
   @Override
   public void delete(UUID id) {
-    Book existingBook = bookRepository.findById(id)
+    bookRepository.findById(id)
         .orElseThrow(() -> new BookNotFoundException("UUID=" + id.toString()));
     bookRepository.delete(id);
   }
