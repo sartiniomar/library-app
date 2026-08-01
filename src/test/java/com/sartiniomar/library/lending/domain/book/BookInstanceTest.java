@@ -1,7 +1,5 @@
 package com.sartiniomar.library.lending.domain.book;
 
-import com.sartiniomar.library.lending.domain.hold.BookAlreadyOnHoldException;
-import com.sartiniomar.library.lending.domain.patron.OnlyResearcherCanHoldRestrictedBooksException;
 import com.sartiniomar.library.lending.domain.patron.Patron;
 import org.junit.jupiter.api.Test;
 import java.util.UUID;
@@ -46,7 +44,7 @@ public class BookInstanceTest {
 
     book.markOnHold();
 
-    assertThrows(BookAlreadyOnHoldException.class, book::markOnHold);
+    assertThrows(BookType.BookAlreadyOnHoldException.class, book::markOnHold);
   }
 
   @Test
@@ -56,7 +54,7 @@ public class BookInstanceTest {
 
     book.markOnHold();
 
-    assertThrows(BookAlreadyOnHoldException.class, () ->
+    assertThrows(BookType.BookAlreadyOnHoldException.class, () ->
         book.ensureCanBePlacedOnHoldBy(patron));
   }
 

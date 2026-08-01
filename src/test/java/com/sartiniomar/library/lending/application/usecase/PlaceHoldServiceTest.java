@@ -10,6 +10,7 @@ import com.sartiniomar.library.lending.domain.hold.BookPlacedOnHoldEvent;
 import com.sartiniomar.library.lending.domain.hold.PlacingOnHoldService;
 import com.sartiniomar.library.lending.domain.patron.Patron;
 import org.junit.jupiter.api.Test;
+import java.lang.reflect.Field;
 import java.util.Map;
 import java.util.UUID;
 
@@ -17,10 +18,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class PlaceHoldServiceTest {
 
-  // Helper solo para tests — acceso by reflection (sin tocar código productivo)
   private void setupPatronInRepo(PatronLendingInMemoryRepository repo, Patron patron) {
     try {
-      java.lang.reflect.Field storageField = PatronLendingInMemoryRepository.class.getDeclaredField("storage");
+      Field storageField = PatronLendingInMemoryRepository.class.getDeclaredField("storage");
       storageField.setAccessible(true);
       @SuppressWarnings("unchecked")
       Map<UUID, Patron> storage = (Map<UUID, Patron>) storageField.get(repo);
@@ -39,7 +39,7 @@ public class PlaceHoldServiceTest {
     Patron patron = Patron.regular();
     BookInstance book = BookInstance.circulating(UUID.randomUUID());
 
-    setupPatronInRepo(patronRepo, patron);  // ← Setup solo aquí, sin tocar productivo
+    setupPatronInRepo(patronRepo, patron);
     bookRepo.save(book);
 
     InMemoryEventPublisher publisher = new InMemoryEventPublisher();

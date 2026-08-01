@@ -10,7 +10,7 @@ import com.sartiniomar.library.lending.domain.hold.Hold;
 import com.sartiniomar.library.lending.domain.hold.DomainResult;
 import com.sartiniomar.library.lending.domain.patron.Patron;
 import com.sartiniomar.library.lending.domain.patron.PatronNotFoundException;
-import com.sartiniomar.library.lending.domain.patron.HoldLimitExceededException;
+import com.sartiniomar.library.lending.domain.hold.HoldLimitExceededException;
 import org.springframework.transaction.annotation.Transactional;
 
 public class PlaceHoldService implements PlaceHoldUseCase {
@@ -51,7 +51,6 @@ public class PlaceHoldService implements PlaceHoldUseCase {
       throw new HoldLimitExceededException("Hold Limit Exceeded");
     }
 
-    // 🔥 persistimos estado del agregado (ACTIVA @Version)
     bookInstanceRepository.save(book);
 
     DomainResult<Hold> result = domainService.placeOnHold(patron, book);

@@ -1,4 +1,4 @@
-package com.sartiniomar.library.lending.domain.patron;
+package com.sartiniomar.library.lending.domain.hold;
 
 public class HoldLimitExceededException extends RuntimeException {
   public HoldLimitExceededException(String message) {

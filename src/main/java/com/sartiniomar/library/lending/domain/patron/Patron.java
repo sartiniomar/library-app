@@ -7,7 +7,7 @@ public class Patron {
   private final UUID id;
   private final PatronType type;
 
-  private static final Integer MAX_VALUE_HOLDS_REGULAR_PATRON = 5;
+  private static final Integer MAX_VALUE_HOLDS_REGULAR_PATRON = 3;
 
   public Patron(UUID id, PatronType type) {
     this.id = id;

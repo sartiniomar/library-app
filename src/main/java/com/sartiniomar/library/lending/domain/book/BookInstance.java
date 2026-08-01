@@ -1,7 +1,5 @@
 package com.sartiniomar.library.lending.domain.book;
 
-import com.sartiniomar.library.lending.domain.hold.BookAlreadyOnHoldException;
-import com.sartiniomar.library.lending.domain.patron.OnlyResearcherCanHoldRestrictedBooksException;
 import com.sartiniomar.library.lending.domain.patron.Patron;
 import java.util.UUID;
 
@@ -72,7 +70,7 @@ public class BookInstance {
 
   public void markOnHold() {
     if (onHold) {
-      throw new BookAlreadyOnHoldException("Book Already On Hold");
+      throw new BookType.BookAlreadyOnHoldException("Book Already On Hold");
     }
     this.onHold = true;
   }
@@ -86,7 +84,7 @@ public class BookInstance {
     }
 
     if (onHold) {
-      throw new BookAlreadyOnHoldException("Book Already On Hold!");
+      throw new BookType.BookAlreadyOnHoldException("Book Already On Hold!");
     }
   }
 }

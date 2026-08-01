@@ -13,7 +13,7 @@ public record PlaceHoldRequest(
     return this.patronId;
   }
 
-  public UUID getBookId() {
+  public UUID getBookInstanceId() {
     return this.bookInstanceId;
   }
 }

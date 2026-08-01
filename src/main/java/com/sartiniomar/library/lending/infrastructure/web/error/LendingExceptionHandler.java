@@ -2,7 +2,7 @@ package com.sartiniomar.library.lending.infrastructure.web.error;
 
 import com.sartiniomar.library.lending.domain.book.BookInstanceNotFoundException;
 import com.sartiniomar.library.commons.infrastructure.web.response.ErrorResponse;
-import com.sartiniomar.library.lending.domain.hold.BookAlreadyOnHoldException;
+import com.sartiniomar.library.lending.domain.book.BookType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -29,8 +29,8 @@ LendingExceptionHandler {
     );
   }
 
-  @ExceptionHandler(BookAlreadyOnHoldException.class)
-  public ResponseEntity<ErrorResponse> handleBookAlreadyOnHold(BookAlreadyOnHoldException ex) {
+  @ExceptionHandler(BookType.BookAlreadyOnHoldException.class)
+  public ResponseEntity<ErrorResponse> handleBookAlreadyOnHold(BookType.BookAlreadyOnHoldException ex) {
 
     Map<String, String> errors = Map.of(
         "book", ex.getMessage()

@@ -7,4 +7,5 @@ import org.mapstruct.Mapper;
 @Mapper(componentModel = "spring")
 public interface PatronHoldMapper {
   Patron toDomain(PatronEntity entity);
+  PatronEntity toEntity(Patron patron);
 }

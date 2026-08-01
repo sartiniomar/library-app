@@ -25,10 +25,10 @@ public class PatronTest {
   }
 
   @Test
-  void regular_patron_has_limit_of_5_holds() {
+  void regular_patron_has_limit_of_3_holds() {
     Patron patron = Patron.regular();
 
-    assertEquals(5, patron.maxHolds());
+    assertEquals(3, patron.maxHolds());
   }
 
   @Test
