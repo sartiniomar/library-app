@@ -1,6 +1,6 @@
 package com.sartiniomar.library.lending.domain.hold;
 
-import com.sartiniomar.library.lending.domain.book.BookInstance;
+import com.sartiniomar.library.catalog.domain.bookInstance.BookInstance;
 import com.sartiniomar.library.lending.domain.patron.Patron;
 import org.junit.jupiter.api.Test;
 

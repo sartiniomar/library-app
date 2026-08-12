@@ -1,11 +1,28 @@
 package com.sartiniomar.library.catalog.domain.book;
 
+import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import java.util.UUID;
+import java.util.stream.Stream;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class BookTest {
+
+  private static Stream<Arguments> provideDataForGroupBadRequest() {
+    return Stream.of(
+        Arguments.of("", "Author", "123"),
+        Arguments.of("Title", "", "123"),
+        Arguments.of("Title", "Author", ""),
+        Arguments.of(null, "Author", "123"),
+        Arguments.of("Title", null, "123"),
+        Arguments.of("Title", "Author", null)
+    );
+  }
 
   @Test
   void shouldCreateBookWithValidData() {
@@ -39,45 +56,12 @@ class BookTest {
     assertEquals("123", book.getIsbn());
   }
 
-  @Test
-  void shouldNotAllowCreateBookWithEmptyTitle() {
+  @ParameterizedTest
+  @MethodSource("provideDataForGroupBadRequest")
+  @SneakyThrows
+  void shouldNotAllowCreateBookWithEmptyRequiredData(String title, String author, String isbn) {
     assertThrows(IllegalArgumentException.class, () ->
-        Book.create("", "Author", "123")
-    );
-  }
-
-  @Test
-  void shouldNotAllowCreateBookWithEmptyAuthor() {
-    assertThrows(IllegalArgumentException.class, () ->
-        Book.create("Title", "", "123")
-    );
-  }
-
-  @Test
-  void shouldNotAllowCreateBookWithEmptyIsbn() {
-    assertThrows(IllegalArgumentException.class, () ->
-        Book.create("Title", "Author", "")
-    );
-  }
-
-  @Test
-  void shouldNotAllowCreateBookWithNullTitle() {
-    assertThrows(IllegalArgumentException.class, () ->
-        Book.create(null, "Author", "123")
-    );
-  }
-
-  @Test
-  void shouldNotAllowCreateBookWithNullAuthor() {
-    assertThrows(IllegalArgumentException.class, () ->
-        Book.create("Title", null, "123")
-    );
-  }
-
-  @Test
-  void shouldNotAllowCreateBookWithNullIsbn() {
-    assertThrows(IllegalArgumentException.class, () ->
-        Book.create("Title", "Author", null)
+        Book.create(title, author, isbn)
     );
   }
 }

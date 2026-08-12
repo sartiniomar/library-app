@@ -1,6 +1,10 @@
 package com.sartiniomar.library.patron.infrastructure.persistence.jpa.model;
 
+import com.sartiniomar.library.patron.domain.patron.PatronType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.Getter;
@@ -14,7 +18,8 @@ import java.util.UUID;
 public class PatronEntity {
   @Id
   private UUID id;
-  private String type;
+  @Enumerated(EnumType.STRING)
+  private PatronType type;
   private String name;
   private String email;
 }

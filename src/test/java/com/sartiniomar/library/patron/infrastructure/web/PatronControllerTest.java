@@ -1,8 +1,6 @@
 package com.sartiniomar.library.patron.infrastructure.web;
 
 import com.sartiniomar.library.LibraryApplicationTests;
-import com.sartiniomar.library.lending.infrastructure.mapper.BookInstanceMapper;
-import com.sartiniomar.library.lending.infrastructure.persistence.jpa.repository.BookInstanceSpringDataRepository;
 import com.sartiniomar.library.patron.application.port.in.CreateRegularPatronUseCase;
 import com.sartiniomar.library.patron.application.port.in.CreateResearcherPatronUseCase;
 import com.sartiniomar.library.patron.application.port.in.DeletePatronUseCase;

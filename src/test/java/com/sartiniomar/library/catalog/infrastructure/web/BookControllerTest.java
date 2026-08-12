@@ -1,25 +1,34 @@
 package com.sartiniomar.library.catalog.infrastructure.web;
 
 import com.sartiniomar.library.LibraryApplicationTests;
-import com.sartiniomar.library.catalog.application.port.in.CreateBookUseCase;
-import com.sartiniomar.library.catalog.application.port.in.DeleteBookUseCase;
-import com.sartiniomar.library.catalog.application.port.in.GetBookByIdUseCase;
-import com.sartiniomar.library.catalog.application.port.in.GetBookByIsbnUseCase;
-import com.sartiniomar.library.catalog.application.port.in.UpdateBookUseCase;
+import com.sartiniomar.library.catalog.application.port.in.book.CreateBookCommand;
+import com.sartiniomar.library.catalog.application.port.in.book.CreateBookUseCase;
+import com.sartiniomar.library.catalog.application.port.in.book.DeleteBookUseCase;
+import com.sartiniomar.library.catalog.application.port.in.book.GetBookByIdUseCase;
+import com.sartiniomar.library.catalog.application.port.in.book.GetBookByIsbnUseCase;
+import com.sartiniomar.library.catalog.application.port.in.book.UpdateBookCommand;
+import com.sartiniomar.library.catalog.application.port.in.book.UpdateBookUseCase;
 import com.sartiniomar.library.catalog.domain.book.Book;
 import com.sartiniomar.library.catalog.domain.book.BookAlreadyExistsException;
 import com.sartiniomar.library.catalog.domain.book.BookNotFoundException;
+import com.sartiniomar.library.catalog.support.builder.BookTestDataBuilder;
+import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.ArgumentCaptor;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import java.util.UUID;
+import java.util.stream.Stream;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -40,276 +49,284 @@ class BookControllerTest extends LibraryApplicationTests {
   @MockBean
   private DeleteBookUseCase deleteBookUseCase;
 
+  private static Stream<Arguments> provideDataForGroupBadRequest() {
+    return Stream.of(
+        Arguments.of("catalog/book/createBookRequestWithTitleBlank.json", "title is required"),
+        Arguments.of("catalog/book/createBookRequestWithAuthorBlank.json", "author is required"),
+        Arguments.of("catalog/book/createBookRequestWithIsbnBlank.json", "isbn is required"),
+        Arguments.of("catalog/book/createBookRequestWithTitleNull.json", "title is required"),
+        Arguments.of("catalog/book/createBookRequestWithAuthorNull.json", "author is required"),
+        Arguments.of("catalog/book/createBookRequestWithIsbnNull.json", "isbn is required")
+    );
+  }
+
   @Test
-  void shouldCreateBook() throws Exception {
+  @SneakyThrows
+  void shouldCreateBookResponse() {
+    ArgumentCaptor<CreateBookCommand> createBookCommandArgumentCaptor = ArgumentCaptor.forClass(CreateBookCommand.class);
 
-    UUID id = UUID.randomUUID();
+    Book book = new BookTestDataBuilder().buildDefault();
 
-    Book book = new Book(id, "Title", "Author", "123");
+    when(createBookUseCase.execute(createBookCommandArgumentCaptor.capture())).thenReturn(book);
 
-    when(createBookUseCase.create(any()))
-        .thenReturn(book);
-
-    String json = """
-        {
-          "title": "Title",
-          "author": "Author",
-          "isbn": "123"
-        }
-        """;
+    String bodyRequest = getContentFromFile("catalog/book/createBookRequest.json");
 
     mockMvc.perform(post("/books")
             .contentType(MediaType.APPLICATION_JSON)
-            .content(json))
+            .content(bodyRequest))
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.title").value("Title"));
+        .andExpect(jsonPath("$.title").value("Title"))
+        .andExpect(jsonPath("$.author").value("Author"))
+        .andExpect(jsonPath("$.isbn").value("123"));
+
+    assertEquals("Title", createBookCommandArgumentCaptor.getValue().title());
+    assertEquals("Author", createBookCommandArgumentCaptor.getValue().author());
+    assertEquals("123", createBookCommandArgumentCaptor.getValue().isbn());
+
+    verify(createBookUseCase, times(1)).execute(createBookCommandArgumentCaptor.getValue());
   }
 
-  @Test
-  void shouldReturnBadRequestForInvalidInput() throws Exception {
-    String json = """
-        {
-          "title": "",
-          "author": "Author",
-          "isbn": "123"
-        }
-        """;
+  @ParameterizedTest
+  @MethodSource("provideDataForGroupBadRequest")
+  @SneakyThrows
+  void shouldReturnBadRequestForInvalidInput(String requestFilePath, String description) {
+    String bodyRequest = getContentFromFile(requestFilePath);
 
     mockMvc.perform(post("/books")
             .contentType(MediaType.APPLICATION_JSON)
-            .content(json))
-        .andExpect(status().isBadRequest());
+            .content(bodyRequest))
+        .andExpect(status().isBadRequest())
+        .andExpect(jsonPath("$.code").value("400 BAD_REQUEST"))
+        .andExpect(jsonPath("$.errors[0].description").value(description));
+
+    verify(createBookUseCase, never()).execute(any());
   }
 
   @Test
-  void shouldReturnBadRequestForMissingFields() throws Exception {
-    String json = """
-        {
-          "author": "Author",
-          "isbn": "123"
-        }
-        """;
+  @SneakyThrows
+  void shouldReturnBadRequestForDuplicateIsbn() {
+    when(createBookUseCase.execute(any())).thenThrow(new BookAlreadyExistsException("ISBN already exists"));
+
+    String bodyRequest = getContentFromFile("catalog/book/createBookRequest.json");
 
     mockMvc.perform(post("/books")
             .contentType(MediaType.APPLICATION_JSON)
-            .content(json))
-        .andExpect(status().isBadRequest());
+            .content(bodyRequest))
+        .andExpect(status().is4xxClientError())
+        .andExpect(jsonPath("$.code").value("409 CONFLICT"))
+        .andExpect(jsonPath("$.errors[0].description").value("ISBN already exists"));
+
+    verify(createBookUseCase, times(1)).execute(any());
   }
 
   @Test
-  void shouldReturnBadRequestForNullFields() throws Exception {
-    String json = """
-        {
-          "title": null,
-          "author": "Author",
-          "isbn": "123"
-        }
-        """;
+  @SneakyThrows
+  void shouldReturnUpdateBookResponse() {
+    ArgumentCaptor<UpdateBookCommand> updateBookCommandArgumentCaptor = ArgumentCaptor.forClass(UpdateBookCommand.class);
 
-    mockMvc.perform(post("/books")
+    Book book = new BookTestDataBuilder().build("Other Title", "Other Author", "Other 123");
+
+    when(updateBookUseCase.execute(updateBookCommandArgumentCaptor.capture())).thenReturn(book);
+
+    String bodyRequest = getContentFromFile("catalog/book/updateBookRequest.json");
+
+    mockMvc.perform(MockMvcRequestBuilders.put("/books/{id}", book.getId())
             .contentType(MediaType.APPLICATION_JSON)
-            .content(json))
-        .andExpect(status().isBadRequest());
-  }
-
-  @Test
-  void shouldReturnBadRequestForDuplicateIsbn() throws Exception {
-    when(createBookUseCase.create(any()))
-        .thenThrow(new BookAlreadyExistsException("ISBN already exists"));
-
-    String json = """
-        {
-          "title": "Title",
-          "author": "Author",
-          "isbn": "123"
-        }
-        """;
-
-    mockMvc.perform(post("/books")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(json))
-        .andExpect(status().is4xxClientError());
-  }
-
-  @Test
-  void shouldUpdateBook() throws Exception {
-    UUID id = UUID.randomUUID();
-    Book book = new Book(id, "Other Title", "Other Author", "Other 123");
-
-    when(updateBookUseCase.update(any()))
-        .thenReturn(book);
-
-    String json = """
-        {
-          "title": "Other Title",
-          "author": "Other Author",
-          "isbn": "Other 123"
-        }
-        """;
-
-    mockMvc.perform(MockMvcRequestBuilders.put("/books/" + id)
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(json))
+            .content(bodyRequest))
         .andExpect(status().isOk())
+        .andExpect(jsonPath("$.id").value(book.getId().toString()))
         .andExpect(jsonPath("$.title").value("Other Title"))
         .andExpect(jsonPath("$.author").value("Other Author"))
         .andExpect(jsonPath("$.isbn").value("Other 123"));
 
+    assertEquals("Other Title", updateBookCommandArgumentCaptor.getValue().title());
+    assertEquals("Other Author", updateBookCommandArgumentCaptor.getValue().author());
+    assertEquals("Other 123", updateBookCommandArgumentCaptor.getValue().isbn());
+
+    verify(updateBookUseCase, times(1)).execute(updateBookCommandArgumentCaptor.getValue());
   }
 
   @Test
-  void shouldReturnBadRequestForDuplicateIsbnOnUpdate() throws Exception {
+  @SneakyThrows
+  void shouldReturnBadRequestForDuplicateIsbnOnUpdate() {
     UUID id = UUID.randomUUID();
 
-    when(updateBookUseCase.update(any()))
-        .thenThrow(new BookAlreadyExistsException("ISBN already exists"));
+    when(updateBookUseCase.execute(any())).thenThrow(new BookAlreadyExistsException("ISBN already exists"));
 
-    String json = """
-        {
-          "title": "Other Title",
-          "author": "Other Author",
-          "isbn": "Other 123"
-        }
-        """;
+    String bodyRequest = getContentFromFile("catalog/book/updateBookRequest.json");
 
-    mockMvc.perform(MockMvcRequestBuilders.put("/books/" + id)
+    mockMvc.perform(MockMvcRequestBuilders.put("/books/{id}", id)
             .contentType(MediaType.APPLICATION_JSON)
-            .content(json))
-        .andExpect(status().is4xxClientError());
+            .content(bodyRequest))
+        .andExpect(status().is4xxClientError())
+        .andExpect(jsonPath("$.code").value("409 CONFLICT"))
+        .andExpect(jsonPath("$.errors[0].description").value("ISBN already exists"));
+
+    verify(updateBookUseCase, times(1)).execute(any());
   }
 
   @Test
-  void shouldReturnBadRequestForInvalidUuidOnUpdate() throws Exception {
-    String invalidId = "invalid-uuid";
+  @SneakyThrows
+  void shouldReturnBadRequestForInvalidUuidOnUpdate() {
+    String bodyRequest = getContentFromFile("catalog/book/updateBookRequest.json");
 
-    String json = """
-        {
-          "title": "Other Title",
-          "author": "Other Author",
-          "isbn": "Other 123"
-        }
-        """;
-
-    mockMvc.perform(MockMvcRequestBuilders.put("/books/" + invalidId)
+    mockMvc.perform(MockMvcRequestBuilders.put("/books/{id}", "invalid-uuid")
             .contentType(MediaType.APPLICATION_JSON)
-            .content(json))
-        .andExpect(status().isBadRequest());
+            .content(bodyRequest))
+        .andExpect(status().isBadRequest())
+        .andExpect(jsonPath("$.code").value("400 BAD_REQUEST"))
+        .andExpect(jsonPath("$.errors[0].description").value("Parameter 'id' with value 'invalid-uuid' could not be converted to type UUID"));
+
+    verify(updateBookUseCase, never()).execute(any());
   }
 
   @Test
-  void shouldReturnNotFoundForNonExistingBookOnUpdate() throws Exception {
+  @SneakyThrows
+  void shouldReturnNotFoundForNonExistingBookOnUpdate() {
     UUID id = UUID.randomUUID();
 
-    when(updateBookUseCase.update(any()))
-        .thenThrow(new BookNotFoundException("Book not found"));
+    when(updateBookUseCase.execute(any())).thenThrow(new BookNotFoundException("Book not found"));
 
-    String json = """
-        {
-          "title": "Other Title",
-          "author": "Other Author",
-          "isbn": "Other 123"
-        }
-        """;
+    String bodyRequest = getContentFromFile("catalog/book/updateBookRequest.json");
 
-    mockMvc.perform(MockMvcRequestBuilders.put("/books/" + id)
+    mockMvc.perform(MockMvcRequestBuilders.put("/books/{id}", id)
             .contentType(MediaType.APPLICATION_JSON)
-            .content(json))
-        .andExpect(status().isNotFound());
+            .content(bodyRequest))
+        .andExpect(status().isNotFound())
+        .andExpect(jsonPath("$.code").value("404 NOT_FOUND"))
+        .andExpect(jsonPath("$.errors[0].description").value("Book not found"));
+
+    verify(updateBookUseCase, times(1)).execute(any());
   }
 
   @Test
-  void shouldGetById() throws Exception {
-    UUID id = UUID.randomUUID();
-    Book book = new Book(id, "Title", "Author", "123");
+  @SneakyThrows
+  void shouldGetById() {
+    ArgumentCaptor<UUID> uuidArgumentCaptor = ArgumentCaptor.forClass(UUID.class);
 
-    when(getBookByIdUseCase.get(any()))
-        .thenReturn(book);
+    Book book = new BookTestDataBuilder().buildDefault();
 
-    mockMvc.perform(get("/books/" + id)
-            .contentType(MediaType.APPLICATION_JSON))
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$.id").value(id.toString()))
-        .andExpect(jsonPath("$.title").value("Title"))
-        .andExpect(jsonPath("$.author").value("Author"))
-        .andExpect(jsonPath("$.isbn").value("123"));
-  }
+    when(getBookByIdUseCase.execute(uuidArgumentCaptor.capture())).thenReturn(book);
 
-  @Test
-  void shouldReturnNotFoundForNonExistingBookOnGetById() throws Exception {
-    UUID inexistentId = UUID.randomUUID();
-
-    when(getBookByIdUseCase.get(inexistentId))
-        .thenThrow(new BookNotFoundException("Book not found"));
-
-    mockMvc.perform(get("/books/" + inexistentId)
-            .contentType(MediaType.APPLICATION_JSON))
-        .andExpect(status().isNotFound());
-  }
-
-  @Test
-  void shouldReturnBadRequestForInvalidUuidOnGetById() throws Exception {
-    String invalidId = "invalid-uuid";
-
-    mockMvc.perform(get("/books/" + invalidId)
-            .contentType(MediaType.APPLICATION_JSON))
-        .andExpect(status().isBadRequest());
-  }
-
-  @Test
-  void shouldGetByIsbn() throws Exception {
-    String isbn = "123";
-    Book book = new Book(UUID.randomUUID(), "Title", "Author", isbn);
-
-    when(getBookByIsbnUseCase.get(isbn))
-        .thenReturn(book);
-
-    mockMvc.perform(get("/books")
-            .param("isbn", isbn)
+    mockMvc.perform(get("/books/{id}", book.getId())
             .contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.id").value(book.getId().toString()))
         .andExpect(jsonPath("$.title").value("Title"))
         .andExpect(jsonPath("$.author").value("Author"))
         .andExpect(jsonPath("$.isbn").value("123"));
+
+    assertEquals(book.getId(), uuidArgumentCaptor.getValue());
+
+    verify(getBookByIdUseCase, times(1)).execute(uuidArgumentCaptor.getValue());
   }
 
   @Test
-  void shouldReturnNotFoundForNonExistingBookOnGetByIsbn() throws Exception {
-    String inexistentIsbn = "inexistent-isbn";
+  @SneakyThrows
+  void shouldReturnNotFoundForNonExistingBookOnGetById() {
+    UUID inexistentId = UUID.randomUUID();
 
-    when(getBookByIsbnUseCase.get(inexistentIsbn))
+    when(getBookByIdUseCase.execute(inexistentId))
+        .thenThrow(new BookNotFoundException("Book not found"));
+
+    mockMvc.perform(get("/books/{id}", inexistentId)
+            .contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isNotFound())
+        .andExpect(jsonPath("$.code").value("404 NOT_FOUND"))
+        .andExpect(jsonPath("$.errors[0].description").value("Book not found"));
+
+    verify(getBookByIdUseCase, times(1)).execute(inexistentId);
+  }
+
+  @Test
+  @SneakyThrows
+  void shouldReturnBadRequestForInvalidUuidOnGetById() {
+    String invalidId = "invalid-uuid";
+
+    mockMvc.perform(get("/books/{id}", invalidId)
+            .contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isBadRequest())
+        .andExpect(jsonPath("$.code").value("400 BAD_REQUEST"))
+        .andExpect(jsonPath("$.errors[0].description").value("Parameter 'id' with value 'invalid-uuid' could not be converted to type UUID"));
+
+    verify(getBookByIdUseCase, never()).execute(any());
+  }
+
+  @Test
+  @SneakyThrows
+  void shouldGetByIsbn() {
+    Book book = new BookTestDataBuilder().buildDefault();
+
+    when(getBookByIsbnUseCase.execute(book.getIsbn()))
+        .thenReturn(book);
+
+    mockMvc.perform(get("/books")
+            .param("isbn", book.getIsbn())
+            .contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.id").value(book.getId().toString()))
+        .andExpect(jsonPath("$.title").value("Title"))
+        .andExpect(jsonPath("$.author").value("Author"))
+        .andExpect(jsonPath("$.isbn").value("123"));
+
+    verify(getBookByIsbnUseCase, times(1)).execute(book.getIsbn());
+  }
+
+  @Test
+  @SneakyThrows
+  void shouldReturnNotFoundForNonExistingBookOnGetByIsbn() {
+    Book book = new BookTestDataBuilder().buildDefault();
+
+    when(getBookByIsbnUseCase.execute(book.getIsbn()))
         .thenThrow(new BookNotFoundException("Book not found"));
 
     mockMvc.perform(get("/books")
-            .param("isbn", inexistentIsbn)
+            .param("isbn", book.getIsbn())
             .contentType(MediaType.APPLICATION_JSON))
-        .andExpect(status().isNotFound());
+        .andExpect(status().isNotFound())
+        .andExpect(jsonPath("$.code").value("404 NOT_FOUND"))
+        .andExpect(jsonPath("$.errors[0].description").value("Book not found"));
+
+    verify(getBookByIsbnUseCase, times(1)).execute(book.getIsbn());
   }
 
   @Test
-  void shouldDeleteBook() throws Exception {
+  @SneakyThrows
+  void shouldDeleteBook() {
     UUID id = UUID.randomUUID();
 
-    mockMvc.perform(MockMvcRequestBuilders.delete("/books/" + id))
+    mockMvc.perform(delete("/books/{id}", id))
         .andExpect(status().isNoContent());
+
+    verify(deleteBookUseCase, times(1)).execute(id);
   }
 
   @Test
-  void shouldReturnNotFoundForNonExistingBookOnDelete() throws Exception {
+  @SneakyThrows
+  void shouldReturnNotFoundForNonExistingBookOnDelete() {
     UUID id = UUID.randomUUID();
 
-    doThrow(new BookNotFoundException("Book not found"))
-        .when(deleteBookUseCase).delete(any());
+    doThrow(new BookNotFoundException("Book not found with id: " + id))
+        .when(deleteBookUseCase).execute(any());
 
-    mockMvc.perform(MockMvcRequestBuilders.delete("/books/" + id))
-        .andExpect(status().isNotFound());
+    mockMvc.perform(delete("/books/{id}", id))
+        .andExpect(status().isNotFound())
+        .andExpect(jsonPath("$.code").value("404 NOT_FOUND"))
+        .andExpect(jsonPath("$.errors[0].description").value("Book not found with id: " + id));
+
+    verify(deleteBookUseCase, times(1)).execute(id);
   }
 
   @Test
-  void shouldReturnBadRequestForInvalidUuidOnDelete() throws Exception {
+  @SneakyThrows
+  void shouldReturnBadRequestForInvalidUuidOnDelete() {
     String invalidId = "invalid-uuid";
 
-    mockMvc.perform(MockMvcRequestBuilders.delete("/books/" + invalidId))
-        .andExpect(status().isBadRequest());
+    mockMvc.perform(delete("/books/{id}", invalidId))
+        .andExpect(status().isBadRequest())
+        .andExpect(jsonPath("$.code").value("400 BAD_REQUEST"))
+        .andExpect(jsonPath("$.errors[0].description").value("Parameter 'id' with value 'invalid-uuid' could not be converted to type UUID"));
+
+    verify(deleteBookUseCase, never()).execute(any());
   }
 }

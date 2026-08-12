@@ -55,4 +55,8 @@ public class Patron {
   public String getEmail() {
     return email;
   }
+
+  public boolean isResearcher() {
+    return this.type == PatronType.RESEARCHER;
+  }
 }
