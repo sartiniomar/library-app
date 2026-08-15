@@ -1,4 +1,4 @@
-package com.sartiniomar.library.catalog.infrastructure.persistence.jpa.model;
+package com.sartiniomar.library.catalog.infrastructure.persistence.model;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;

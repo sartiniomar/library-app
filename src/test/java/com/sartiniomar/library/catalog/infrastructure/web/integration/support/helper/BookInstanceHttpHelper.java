@@ -1,6 +1,7 @@
 package com.sartiniomar.library.catalog.infrastructure.web.integration.support.helper;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.sartiniomar.library.LibraryApplicationTests;
 import com.sartiniomar.library.catalog.infrastructure.web.dto.BookInstanceResponse;
 import com.sartiniomar.library.commons.infrastructure.web.error.ErrorResponse;
 import org.springframework.http.MediaType;
@@ -10,7 +11,7 @@ import java.util.UUID;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-public class BookInstanceHttpHelper extends BasicHelper {
+public class BookInstanceHttpHelper extends LibraryApplicationTests {
 
   public BookInstanceResponse createBookInstanceCirculating(UUID bookId) throws Exception {
     String response = mockMvc.perform(post("/books/{bookId}/instances/circulating", bookId)

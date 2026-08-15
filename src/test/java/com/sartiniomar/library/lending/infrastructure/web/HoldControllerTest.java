@@ -6,11 +6,11 @@ import com.sartiniomar.library.lending.application.port.in.PlaceHoldUseCase;
 import com.sartiniomar.library.lending.domain.hold.Hold;
 import com.sartiniomar.library.catalog.infrastructure.mapper.BookInstanceMapper;
 import com.sartiniomar.library.lending.infrastructure.mapper.PatronHoldMapper;
-import com.sartiniomar.library.catalog.infrastructure.persistence.jpa.repository.BookInstanceSpringDataRepository;
+import com.sartiniomar.library.catalog.infrastructure.persistence.jpa.repository.BookInstanceJpaRepository;
 import com.sartiniomar.library.lending.infrastructure.web.dto.PlaceHoldRequest;
 import com.sartiniomar.library.catalog.domain.bookInstance.BookInstance;
 import com.sartiniomar.library.lending.domain.patron.Patron;
-import com.sartiniomar.library.patron.infrastructure.persistence.jpa.repository.PatronSpringDataRepository;
+import com.sartiniomar.library.patron.infrastructure.persistence.jpa.repository.PatronJpaRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -30,10 +30,10 @@ public class HoldControllerTest extends LibraryApplicationTests {
   PlaceHoldUseCase useCase;
 
   @MockBean
-  BookInstanceSpringDataRepository bookInstanceSpringDataRepository;
+  BookInstanceJpaRepository bookInstanceSpringDataRepository;
 
   @MockBean
-  PatronSpringDataRepository patronSpringDataRepository;
+  PatronJpaRepository patronSpringDataRepository;
 
   @Autowired
   private BookInstanceMapper bookInstanceMapper;

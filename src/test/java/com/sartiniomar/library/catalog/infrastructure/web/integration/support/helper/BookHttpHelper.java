@@ -1,5 +1,6 @@
 package com.sartiniomar.library.catalog.infrastructure.web.integration.support.helper;
 
+import com.sartiniomar.library.LibraryApplicationTests;
 import com.sartiniomar.library.catalog.infrastructure.web.dto.BookResponse;
 import com.sartiniomar.library.commons.infrastructure.web.error.ErrorResponse;
 import org.springframework.http.MediaType;
@@ -8,7 +9,7 @@ import java.util.UUID;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-public class BookHttpHelper extends BasicHelper {
+public class BookHttpHelper extends LibraryApplicationTests {
 
   public BookResponse createBook() throws Exception {
     String bodyRequest = getContentFromFile("catalog/book/createBookRequest.json");
@@ -89,17 +90,6 @@ public class BookHttpHelper extends BasicHelper {
         .getContentAsString();
 
     return objectMapper.readValue(response, BookResponse.class);
-  }
-
-  public ErrorResponse getByIdNotFound(String id) throws Exception {
-    String response = mockMvc.perform(get("/books/{id}", id)
-            .contentType(MediaType.APPLICATION_JSON))
-        .andExpect(status().isNotFound())
-        .andReturn()
-        .getResponse()
-        .getContentAsString();
-
-    return objectMapper.readValue(response, ErrorResponse.class);
   }
 
   public BookResponse getByIsbn(String isbn) throws Exception {

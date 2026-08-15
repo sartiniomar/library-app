@@ -1,7 +1,7 @@
 package com.sartiniomar.library.catalog.infrastructure.mapper;
 
 import com.sartiniomar.library.catalog.domain.bookInstance.BookInstance;
-import com.sartiniomar.library.catalog.infrastructure.persistence.jpa.model.BookInstanceEntity;
+import com.sartiniomar.library.catalog.infrastructure.persistence.model.BookInstanceEntity;
 import com.sartiniomar.library.catalog.infrastructure.web.dto.BookInstanceResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;

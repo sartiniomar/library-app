@@ -2,8 +2,8 @@ package com.sartiniomar.library.catalog.infrastructure.persistence.jpa.adapter;
 
 import com.sartiniomar.library.catalog.application.port.out.BookInstanceRepository;
 import com.sartiniomar.library.catalog.infrastructure.mapper.BookInstanceMapper;
-import com.sartiniomar.library.catalog.infrastructure.persistence.jpa.model.BookInstanceEntity;
-import com.sartiniomar.library.catalog.infrastructure.persistence.jpa.repository.BookInstanceSpringDataRepository;
+import com.sartiniomar.library.catalog.infrastructure.persistence.model.BookInstanceEntity;
+import com.sartiniomar.library.catalog.infrastructure.persistence.jpa.repository.BookInstanceJpaRepository;
 import com.sartiniomar.library.catalog.domain.bookInstance.BookInstance;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,13 +13,13 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Repository
-public class BookInstanceJpaRepository implements BookInstanceRepository {
+public class BookInstanceAdapterRepository implements BookInstanceRepository {
 
-  private final BookInstanceSpringDataRepository jpaRepo;
+  private final BookInstanceJpaRepository jpaRepo;
 
   private final BookInstanceMapper mapper;
 
-  public BookInstanceJpaRepository(BookInstanceSpringDataRepository jpaRepo, BookInstanceMapper bookInstanceMapper) {
+  public BookInstanceAdapterRepository(BookInstanceJpaRepository jpaRepo, BookInstanceMapper bookInstanceMapper) {
     this.jpaRepo = jpaRepo;
     this.mapper = bookInstanceMapper;
   }

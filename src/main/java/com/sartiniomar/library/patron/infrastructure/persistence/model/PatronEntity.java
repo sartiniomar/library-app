@@ -1,7 +1,6 @@
-package com.sartiniomar.library.patron.infrastructure.persistence.jpa.model;
+package com.sartiniomar.library.patron.infrastructure.persistence.model;
 
 import com.sartiniomar.library.patron.domain.patron.PatronType;
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;

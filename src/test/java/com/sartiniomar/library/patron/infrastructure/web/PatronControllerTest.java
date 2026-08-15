@@ -1,38 +1,39 @@
 package com.sartiniomar.library.patron.infrastructure.web;
 
 import com.sartiniomar.library.LibraryApplicationTests;
+import com.sartiniomar.library.patron.application.port.in.CreatePatronCommand;
 import com.sartiniomar.library.patron.application.port.in.CreateRegularPatronUseCase;
 import com.sartiniomar.library.patron.application.port.in.CreateResearcherPatronUseCase;
 import com.sartiniomar.library.patron.application.port.in.DeletePatronUseCase;
 import com.sartiniomar.library.patron.application.port.in.GetPatronByIdUseCase;
+import com.sartiniomar.library.patron.application.port.in.UpdatePatronCommand;
 import com.sartiniomar.library.patron.application.port.in.UpdatePatronUseCase;
 import com.sartiniomar.library.patron.domain.patron.Patron;
 import com.sartiniomar.library.patron.domain.patron.PatronAlreadyExistsException;
 import com.sartiniomar.library.patron.domain.patron.PatronNotFoundException;
 import com.sartiniomar.library.patron.domain.patron.PatronType;
-import com.sartiniomar.library.patron.infrastructure.mapper.PatronMapper;
-import com.sartiniomar.library.patron.infrastructure.persistence.jpa.repository.PatronSpringDataRepository;
+import com.sartiniomar.library.patron.support.builder.PatronTestDataBuilder;
+import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.ArgumentCaptor;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import java.util.UUID;
+import java.util.stream.Stream;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 class PatronControllerTest extends LibraryApplicationTests {
-
-  @Autowired
-  private PatronMapper mapper;
-
-  @MockBean
-  PatronSpringDataRepository patronSpringDataRepository;
 
   @MockBean
   private CreateRegularPatronUseCase createRegularPatron;
@@ -49,328 +50,297 @@ class PatronControllerTest extends LibraryApplicationTests {
   @MockBean
   private DeletePatronUseCase deletePatron;
 
+  private static Stream<Arguments> provideDataForGroupBadRequest() {
+    return Stream.of(
+        Arguments.of("patron/createPatronWithNameBlankRequest.json", "name is required"),
+        Arguments.of("patron/createPatronWithEmailBlankRequest.json", "email is required"),
+        Arguments.of("patron/createPatronWithNameNullRequest.json", "name is required"),
+        Arguments.of("patron/createPatronWithEmailNullRequest.json", "email is required")
+    );
+  }
+
   @Test
-  void shouldCreateRegularPatron() throws Exception {
+  @SneakyThrows
+  void shouldCreateRegularPatronResponse() {
+    ArgumentCaptor<CreatePatronCommand> patronCaptor = ArgumentCaptor.forClass(CreatePatronCommand.class);
 
-    UUID id = UUID.randomUUID();
+    Patron patron = new PatronTestDataBuilder().buildDefaultRegular();
 
-    Patron patron = new Patron(id, PatronType.REGULAR, "John Doe", "johnDoe@example.com");
+    when(createRegularPatron.execute(patronCaptor.capture())).thenReturn(patron);
 
-    when(createRegularPatron.execute(any()))
-        .thenReturn(patron);
-
-    String json = """
-        {
-          "name": "John Doe",
-          "email": "johnDoe@example.com"
-        }
-        """;
+    String bodyRequest = getContentFromFile("patron/createPatronRequest.json");
 
     mockMvc.perform(post("/patrons/regular")
             .contentType(MediaType.APPLICATION_JSON)
-            .content(json))
+            .content(bodyRequest))
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.name").value("John Doe"))
+        .andExpect(jsonPath("$.name").value("Name"))
         .andExpect(jsonPath("$.type").value("REGULAR"))
-        .andExpect(jsonPath("$.email").value("johnDoe@example.com"));
+        .andExpect(jsonPath("$.email").value("name@email.com"));
+
+    assertEquals("Name", patronCaptor.getValue().name());
+    assertEquals("name@email.com", patronCaptor.getValue().email());
+
+    verify(createRegularPatron, times(1)).execute(patronCaptor.getValue());
+  }
+
+  @ParameterizedTest
+  @MethodSource("provideDataForGroupBadRequest")
+  @SneakyThrows
+  void shouldReturnBadRequestForInvalidInputCreatingRegularPatron(String requestFilePath, String description) {
+    String bodyRequest = getContentFromFile(requestFilePath);
+
+    mockMvc.perform(post("/patrons/regular")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(bodyRequest))
+        .andExpect(status().isBadRequest())
+        .andExpect(jsonPath("$.code").value("400 BAD_REQUEST"))
+        .andExpect(jsonPath("$.errors[0].description").value(description));
+
+    verify(createRegularPatron, never()).execute(any());
   }
 
   @Test
-  void shouldCreateResearcherPatron() throws Exception {
+  @SneakyThrows
+  void shouldReturnBadRequestForDuplicateEmailCreateRegularPatron() {
+    when(createRegularPatron.execute(any())).thenThrow(new PatronAlreadyExistsException("Email already exists"));
 
-    UUID id = UUID.randomUUID();
+    String bodyRequest = getContentFromFile("patron/createPatronRequest.json");
 
-    Patron patron = new Patron(id, PatronType.RESEARCHER, "John Doe", "johnDoe@example.com");
+    mockMvc.perform(post("/patrons/regular")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(bodyRequest))
+        .andExpect(status().is4xxClientError())
+        .andExpect(jsonPath("$.code").value("409 CONFLICT"))
+        .andExpect(jsonPath("$.errors[0].description").value("Email already exists"));
 
-    when(createResearcherPatron.execute(any()))
-        .thenReturn(patron);
+    verify(createRegularPatron, times(1)).execute(any());
+  }
 
-    String json = """
-        {
-          "name": "John Doe",
-          "email": "johnDoe@example.com"
-        }
-        """;
+  @Test
+  @SneakyThrows
+  void shouldCreateResearcherPatronResponse() {
+    ArgumentCaptor<CreatePatronCommand> patronCaptor = ArgumentCaptor.forClass(CreatePatronCommand.class);
+
+    Patron patron = new PatronTestDataBuilder().buildDefaultResearcher();
+
+    when(createResearcherPatron.execute(patronCaptor.capture())).thenReturn(patron);
+
+    String bodyRequest = getContentFromFile("patron/createPatronRequest.json");
 
     mockMvc.perform(post("/patrons/researcher")
             .contentType(MediaType.APPLICATION_JSON)
-            .content(json))
+            .content(bodyRequest))
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.name").value("John Doe"))
-        .andExpect(jsonPath("$.email").value("johnDoe@example.com"))
+        .andExpect(jsonPath("$.name").value("Name"))
+        .andExpect(jsonPath("$.email").value("name@email.com"))
         .andExpect(jsonPath("$.type").value("RESEARCHER"));
+
+    assertEquals("Name", patronCaptor.getValue().name());
+    assertEquals("name@email.com", patronCaptor.getValue().email());
+
+    verify(createResearcherPatron, times(1)).execute(patronCaptor.getValue());
   }
 
-  @Test
-  void shouldReturnBadRequestForInvalidInputCreateRegularPatron() throws Exception {
-    String json = """
-        {
-          "name": "",
-          "email": "johnDoe@example.com"
-        }
-        """;
-
-    mockMvc.perform(post("/patrons/regular")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(json))
-        .andExpect(status().isBadRequest());
-  }
-
-  @Test
-  void shouldReturnBadRequestForInvalidInputCreateResearcherPatron() throws Exception {
-    String json = """
-        {
-          "name": "John Doe",
-          "email": "",
-        }
-        """;
+  @ParameterizedTest
+  @MethodSource("provideDataForGroupBadRequest")
+  @SneakyThrows
+  void shouldReturnBadRequestForInvalidInputCreatingResearcherPatron(String requestFilePath, String description) {
+    String bodyRequest = getContentFromFile(requestFilePath);
 
     mockMvc.perform(post("/patrons/researcher")
             .contentType(MediaType.APPLICATION_JSON)
-            .content(json))
-        .andExpect(status().isBadRequest());
+            .content(bodyRequest))
+        .andExpect(status().isBadRequest())
+        .andExpect(jsonPath("$.code").value("400 BAD_REQUEST"))
+        .andExpect(jsonPath("$.errors[0].description").value(description));
+
+    verify(createResearcherPatron, never()).execute(any());
   }
 
   @Test
-  void shouldReturnBadRequestForMissingFieldsCreateRegularPatron() throws Exception {
-    String json = """
-        {
-          "email": "johnDoe@example.com"
-        }
-        """;
+  @SneakyThrows
+  void shouldReturnBadRequestForDuplicateEmailCreateResearcherPatron() {
+    when(createResearcherPatron.execute(any())).thenThrow(new PatronAlreadyExistsException("Email already exists"));
 
-    mockMvc.perform(post("/patrons/regular")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(json))
-        .andExpect(status().isBadRequest());
-  }
-
-  @Test
-  void shouldReturnBadRequestForMissingFieldsCreateResearcherPatron() throws Exception {
-    String json = """
-        {
-          "name": "John Doe"
-        }
-        """;
+    String bodyRequest = getContentFromFile("patron/createPatronRequest.json");
 
     mockMvc.perform(post("/patrons/researcher")
             .contentType(MediaType.APPLICATION_JSON)
-            .content(json))
-        .andExpect(status().isBadRequest());
+            .content(bodyRequest))
+        .andExpect(status().is4xxClientError())
+        .andExpect(jsonPath("$.code").value("409 CONFLICT"))
+        .andExpect(jsonPath("$.errors[0].description").value("Email already exists"));
+
+    verify(createResearcherPatron, times(1)).execute(any());
   }
 
   @Test
-  void shouldReturnBadRequestForNullFieldsCreateRegularPatron() throws Exception {
-    String json = """
-        {
-          "name": null,
-          "email": "johnDoe@example.com"
-        }
-        """;
+  @SneakyThrows
+  void shouldReturnUpdateRegularPatronResponse() {
+    ArgumentCaptor<UpdatePatronCommand> updatePatronCommandArgumentCaptor =
+        ArgumentCaptor.forClass(UpdatePatronCommand.class);
 
-    mockMvc.perform(post("/patrons/regular")
+    Patron patron = new PatronTestDataBuilder()
+        .build(UUID.randomUUID(), PatronType.RESEARCHER, "Other name", "other@example.com");
+
+    when(updatePatron.execute(updatePatronCommandArgumentCaptor.capture())).thenReturn(patron);
+
+    String bodyRequest = getContentFromFile("patron/updatePatronRequest.json");
+
+    mockMvc.perform(put("/patrons/{id}", patron.getId())
             .contentType(MediaType.APPLICATION_JSON)
-            .content(json))
-        .andExpect(status().isBadRequest());
-  }
-
-  @Test   void shouldReturnBadRequestForNullFieldsCreateResearcherPatron() throws Exception {
-    String json = """
-        {
-          "name": "John Doe",
-          "email": null
-
-        }
-        """;
-
-    mockMvc.perform(post("/patrons/researcher")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(json))
-        .andExpect(status().isBadRequest());
-  }
-
-  @Test
-  void shouldReturnBadRequestForDuplicateEmailCreateRegularPatron() throws Exception {
-    when(createRegularPatron.execute(any()))
-        .thenThrow(new PatronAlreadyExistsException("Email already exists"));
-
-    String json = """
-        {
-          "name": "John Doe",
-          "email": "johnDoe@example.com"
-        }
-        """;
-
-    mockMvc.perform(post("/patrons/regular")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(json))
-        .andExpect(status().is4xxClientError());
-  }
-
-  @Test
-  void shouldReturnBadRequestForDuplicateEmailCreateResearcherPatron() throws Exception {
-    when(createResearcherPatron.execute(any()))
-        .thenThrow(new PatronAlreadyExistsException("Email already exists"));
-
-    String json = """
-        {
-          "name": "John Doe",
-          "email": "johnDoe@example.com"
-        }
-        """;
-
-    mockMvc.perform(post("/patrons/researcher")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(json))
-        .andExpect(status().is4xxClientError());
-  }
-
-  @Test
-  void shouldUpdatePatron() throws Exception {
-    UUID id = UUID.randomUUID();
-    Patron patron = new Patron(id, PatronType.REGULAR, "John Doe", "johnDoe@example.com");
-    Patron patronUpdated = new Patron(id, PatronType.RESEARCHER, "John Doe", "johnDoe2@example.com");
-
-    patronSpringDataRepository.save(mapper.toEntity(patron));
-
-    when(updatePatron.execute(any()))
-        .thenReturn(patronUpdated);
-
-    String json = """
-        {
-          "type": "RESEARCHER",
-          "email": "johnDoe2@example.com"
-        }
-        """;
-
-    mockMvc.perform(put("/patrons/{id}", id)
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(json))
+            .content(bodyRequest))
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.name").value("John Doe"))
+        .andExpect(jsonPath("$.name").value("Other name"))
         .andExpect(jsonPath("$.type").value("RESEARCHER"))
-        .andExpect(jsonPath("$.email").value("johnDoe2@example.com"));
+        .andExpect(jsonPath("$.email").value("other@example.com"));
+
+    assertEquals(patron.getId(), updatePatronCommandArgumentCaptor.getValue().id());
+    assertEquals(PatronType.RESEARCHER, updatePatronCommandArgumentCaptor.getValue().type());
+    assertEquals("Other name", updatePatronCommandArgumentCaptor.getValue().name());
+    assertEquals("other@example.com", updatePatronCommandArgumentCaptor.getValue().email());
+
+    verify(updatePatron, times(1)).execute(updatePatronCommandArgumentCaptor.getValue());
   }
 
   @Test
-  void shouldReturnBadRequestForDuplicateEmailOnUpdate() throws Exception {
+  @SneakyThrows
+  void shouldReturnBadRequestForDuplicateEmailOnUpdate() {
     UUID id = UUID.randomUUID();
+    when(updatePatron.execute(any())).thenThrow(new PatronAlreadyExistsException("Email already exists"));;
 
-    when(updatePatron.execute(any()))
-        .thenThrow(new PatronAlreadyExistsException("Email already exists"));;
+    String bodyRequest = getContentFromFile("patron/updatePatronRequest.json");
 
-    String json = """
-        {
-          "name": "Other Title",
-          "email": "other@example.com"
-        }
-        """;
-
-    mockMvc.perform(MockMvcRequestBuilders.put("/patrons/" + id)
+    mockMvc.perform(MockMvcRequestBuilders.put("/patrons/{id}", id)
             .contentType(MediaType.APPLICATION_JSON)
-            .content(json))
-        .andExpect(status().is4xxClientError());
+            .content(bodyRequest))
+        .andExpect(status().is4xxClientError())
+        .andExpect(jsonPath("$.code").value("409 CONFLICT"))
+        .andExpect(jsonPath("$.errors[0].description").value("Email already exists"));
+
+    verify(updatePatron, times(1)).execute(any());
   }
 
   @Test
-  void shouldReturnBadRequestForInvalidUuidOnUpdate() throws Exception {
-    String invalidId = "invalid-uuid";
+  @SneakyThrows
+  void shouldReturnBadRequestForInvalidUuidOnUpdate() {
+    String bodyRequest = getContentFromFile("patron/updatePatronRequest.json");
 
-    String json = """
-        {
-          "name": "Other Title",
-          "email": "other@example.com"
-        }
-        """;
-
-    mockMvc.perform(MockMvcRequestBuilders.put("/patrons/" + invalidId)
+    mockMvc.perform(MockMvcRequestBuilders.put("/patrons/invalid-uuid")
             .contentType(MediaType.APPLICATION_JSON)
-            .content(json))
-        .andExpect(status().isBadRequest());
+            .content(bodyRequest))
+        .andExpect(status().isBadRequest())
+        .andExpect(jsonPath("$.code").value("400 BAD_REQUEST"))
+        .andExpect(jsonPath("$.errors[0].description")
+            .value("Parameter 'id' with value 'invalid-uuid' could not be converted to type UUID"));
+
+    verify(updatePatron, never()).execute(any());
   }
 
   @Test
-  void shouldReturnNotFoundForNonExistingPatronOnUpdate() throws Exception {
+  @SneakyThrows
+  void shouldReturnNotFoundForNonExistingPatronOnUpdate() {
     UUID id = UUID.randomUUID();
+    when(updatePatron.execute(any())).thenThrow(new PatronNotFoundException("Patron not found with id: " + id));
 
-    when(updatePatron.execute(any()))
-        .thenThrow(new PatronNotFoundException("Patron not found"));
+    String bodyRequest = getContentFromFile("patron/updatePatronRequest.json");
 
-    String json = """
-        {
-          "name": "Other Name",
-          "email": "other@example.com"
-        }
-        """;
-
-    mockMvc.perform(MockMvcRequestBuilders.put("/patrons/" + id)
+    mockMvc.perform(MockMvcRequestBuilders.put("/patrons/{id}", id)
             .contentType(MediaType.APPLICATION_JSON)
-            .content(json))
-        .andExpect(status().isNotFound());
+            .content(bodyRequest))
+        .andExpect(status().isNotFound())
+        .andExpect(jsonPath("$.code").value("404 NOT_FOUND"))
+        .andExpect(jsonPath("$.errors[0].description").value("Patron not found with id: " + id));
+
+    verify(updatePatron, times(1)).execute(any());
   }
 
   @Test
-  void shouldGetById() throws Exception {
-    UUID id = UUID.randomUUID();
-    Patron patron = new Patron(id, PatronType.REGULAR, "Name", "name@email.com");
+  @SneakyThrows
+  void shouldGetById() {
+    ArgumentCaptor<UUID> uuidArgumentCaptor = ArgumentCaptor.forClass(UUID.class);
 
-    when(getPatronById.execute(any()))
-        .thenReturn(patron);
+    Patron patron = new PatronTestDataBuilder().buildDefaultRegular();
 
-    mockMvc.perform(get("/patrons/" + id)
+    when(getPatronById.execute(uuidArgumentCaptor.capture())).thenReturn(patron);
+
+    mockMvc.perform(get("/patrons/" + patron.getId())
             .contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.id").value(id.toString()))
+        .andExpect(jsonPath("$.id").value(patron.getId().toString()))
         .andExpect(jsonPath("$.name").value("Name"))
         .andExpect(jsonPath("$.email").value("name@email.com"))
         .andExpect(jsonPath("$.type").value("REGULAR"));
+
+    assertEquals(patron.getId(), uuidArgumentCaptor.getValue());
+
+    verify(getPatronById, times(1)).execute(uuidArgumentCaptor.getValue());
   }
 
   @Test
-  void shouldReturnNotFoundForNonExistingPatronOnGetById() throws Exception {
-    UUID inexistentId = UUID.randomUUID();
-
-    when(getPatronById.execute(inexistentId))
-        .thenThrow(new PatronNotFoundException("Patron not found"));
-
-    mockMvc.perform(get("/patrons/" + inexistentId)
-            .contentType(MediaType.APPLICATION_JSON))
-        .andExpect(status().isNotFound());
-  }
-
-  @Test
-  void shouldReturnBadRequestForInvalidUuidOnGetById() throws Exception {
-    String invalidId = "invalid-uuid";
-
-    mockMvc.perform(get("/patrons/" + invalidId)
-            .contentType(MediaType.APPLICATION_JSON))
-        .andExpect(status().isBadRequest());
-  }
-
-  @Test
-  void shouldDeletePatron() throws Exception {
+  @SneakyThrows
+  void shouldReturnNotFoundForNonExistingPatronOnGetById() {
     UUID id = UUID.randomUUID();
 
-    mockMvc.perform(MockMvcRequestBuilders.delete("/patrons/" + id))
+    when(getPatronById.execute(id)).thenThrow(new PatronNotFoundException("Patron not found with id: " + id));
+
+    mockMvc.perform(get("/patrons/{id}", id)
+            .contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isNotFound())
+        .andExpect(jsonPath("$.code").value("404 NOT_FOUND"))
+        .andExpect(jsonPath("$.errors[0].description").value("Patron not found with id: " + id));
+
+    verify(getPatronById, times(1)).execute(id);
+  }
+
+  @Test
+  @SneakyThrows
+  void shouldReturnBadRequestForInvalidUuidOnGetById() {
+    mockMvc.perform(get("/patrons/invalid-uuid")
+            .contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isBadRequest())
+        .andExpect(jsonPath("$.code").value("400 BAD_REQUEST"))
+        .andExpect(jsonPath("$.errors[0].description")
+            .value("Parameter 'id' with value 'invalid-uuid' could not be converted to type UUID"));
+
+    verify(getPatronById, never()).execute(any());
+  }
+
+  @Test
+  @SneakyThrows
+  void shouldDeletePatron() {
+    UUID id = UUID.randomUUID();
+
+    mockMvc.perform(MockMvcRequestBuilders.delete("/patrons/{id}", id))
         .andExpect(status().isNoContent());
+
+    verify(deletePatron, times(1)).execute(id);
   }
 
   @Test
-  void shouldReturnNotFoundForNonExistingPatronOnDelete() throws Exception {
+  @SneakyThrows
+  void shouldReturnNotFoundForNonExistingPatronOnDelete() {
     UUID id = UUID.randomUUID();
 
-    doThrow(new PatronNotFoundException("Patron not found"))
-        .when(deletePatron).execute(any());
+    doThrow(new PatronNotFoundException("Patron not found with id: " + id)).when(deletePatron).execute(any());
 
-    mockMvc.perform(MockMvcRequestBuilders.delete("/patrons/" + id))
-        .andExpect(status().isNotFound());
+    mockMvc.perform(MockMvcRequestBuilders.delete("/patrons/{id}", id))
+        .andExpect(status().isNotFound())
+        .andExpect(jsonPath("$.code").value("404 NOT_FOUND"))
+        .andExpect(jsonPath("$.errors[0].description").value("Patron not found with id: " + id));
+
+    verify(deletePatron, times(1)).execute(id);
   }
 
   @Test
-  void shouldReturnBadRequestForInvalidUuidOnDelete() throws Exception {
-    String invalidId = "invalid-uuid";
+  @SneakyThrows
+  void shouldReturnBadRequestForInvalidUuidOnDelete() {
+    mockMvc.perform(MockMvcRequestBuilders.delete("/patrons/invalid-uuid"))
+        .andExpect(status().isBadRequest())
+        .andExpect(jsonPath("$.code").value("400 BAD_REQUEST"))
+        .andExpect(jsonPath("$.errors[0].description").value("Parameter 'id' with value 'invalid-uuid' could not be converted to type UUID"));
 
-    mockMvc.perform(MockMvcRequestBuilders.delete("/patrons/" + invalidId))
-        .andExpect(status().isBadRequest());
+    verify(deletePatron, never()).execute(any());
   }
 }

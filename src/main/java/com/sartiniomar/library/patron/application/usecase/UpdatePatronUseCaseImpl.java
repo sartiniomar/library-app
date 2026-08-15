@@ -19,14 +19,14 @@ public class UpdatePatronUseCaseImpl implements UpdatePatronUseCase {
   public Patron execute(UpdatePatronCommand command) {
 
     Patron patron = repository.findById(command.id())
-      .orElseThrow(() -> new PatronNotFoundException("Patron not found: " + command.id()));
+      .orElseThrow(() -> new PatronNotFoundException("Patron not found with id: " + command.id()));
 
     if (command.email() != null &&
         !command.email().equals(patron.getEmail())) {
 
       repository.findByEmail(command.email())
           .ifPresent(b -> {
-            throw new PatronAlreadyExistsException(command.email());
+            throw new PatronAlreadyExistsException("Email " + command.email() + " already exists");
           });
     }
 

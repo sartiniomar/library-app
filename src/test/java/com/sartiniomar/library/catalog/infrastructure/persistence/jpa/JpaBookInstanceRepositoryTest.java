@@ -3,9 +3,10 @@ package com.sartiniomar.library.catalog.infrastructure.persistence.jpa;
 import com.sartiniomar.library.catalog.domain.bookInstance.BookType;
 import com.sartiniomar.library.catalog.infrastructure.mapper.BookInstanceMapper;
 import com.sartiniomar.library.catalog.infrastructure.mapper.BookInstanceMapperImpl;
-import com.sartiniomar.library.catalog.infrastructure.persistence.jpa.adapter.BookInstanceJpaRepository;
+import com.sartiniomar.library.catalog.infrastructure.persistence.jpa.adapter.BookInstanceAdapterRepository;
 import com.sartiniomar.library.catalog.domain.bookInstance.BookInstance;
-import com.sartiniomar.library.catalog.infrastructure.persistence.jpa.repository.BookInstanceSpringDataRepository;
+import com.sartiniomar.library.catalog.infrastructure.persistence.jpa.repository.BookInstanceJpaRepository;
+import com.sartiniomar.library.catalog.support.builder.BookInstanceTestDataBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,24 +30,21 @@ class JpaBookInstanceRepositoryTest {
   private TestEntityManager em;
 
   @Autowired
-  private BookInstanceSpringDataRepository jpaRepo;
+  private BookInstanceJpaRepository jpaRepo;
 
   @Autowired
   private BookInstanceMapper mapper;
 
-  private BookInstanceJpaRepository repository;
+  private BookInstanceAdapterRepository repository;
 
   @BeforeEach
   void setup() {
-    repository = new BookInstanceJpaRepository(jpaRepo, mapper);
+    repository = new BookInstanceAdapterRepository(jpaRepo, mapper);
   }
 
   @Test
   void givenNewBook_whenSave_thenCanFind() {
-    UUID bookId = UUID.randomUUID();
-    BookInstance toSave = BookInstance.circulating(bookId);
-
-    BookInstance saved = repository.save(toSave);
+    BookInstance saved = repository.save(new BookInstanceTestDataBuilder().buildCirculatingDefault());
     assertNotNull(saved.getId());
 
     em.flush();
@@ -56,19 +54,17 @@ class JpaBookInstanceRepositoryTest {
     assertAll(
         () -> assertEquals(BookType.CIRCULATING, found.getType()),
         () -> assertFalse(found.isOnHold()),
-        () -> assertEquals(bookId, found.getBookId())
+        () -> assertEquals(saved.getBookId(), found.getBookId())
     );
   }
 
   @Test
   void givenExistingBook_whenUpdate_thenPersisted() {
-    UUID bookId = UUID.randomUUID();
-    BookInstance saved = repository.save(BookInstance.circulating(bookId));
+    BookInstance saved = repository.save(new BookInstanceTestDataBuilder().buildCirculatingDefault());
 
     em.flush();
     em.clear();
 
-    //BookInstance toUpdate = new BookInstance(saved.getId(), saved.getBookId(), BookType.RESTRICTED, true);
     BookInstance toUpdate = repository.findById(saved.getId()).orElseThrow();
     toUpdate.setType(BookType.RESTRICTED);
     toUpdate.setOnHold(true);
@@ -88,9 +84,9 @@ class JpaBookInstanceRepositoryTest {
   @Test
   void givenManyInstances_whenFindAllByBookId_thenReturnsOnlyMatches() {
     UUID bookId = UUID.randomUUID();
-    BookInstance a = repository.save(BookInstance.circulating(bookId));
-    BookInstance b = repository.save(BookInstance.circulating(bookId));
-    repository.save(BookInstance.circulating(UUID.randomUUID()));
+    BookInstance a = repository.save(new BookInstanceTestDataBuilder().build(bookId, BookType.CIRCULATING, false));
+    BookInstance b = repository.save(new BookInstanceTestDataBuilder().build(bookId, BookType.CIRCULATING, false));
+    repository.save(new BookInstanceTestDataBuilder().build(UUID.randomUUID(), BookType.CIRCULATING, false));
 
     em.flush();
     em.clear();
@@ -104,8 +100,7 @@ class JpaBookInstanceRepositoryTest {
 
   @Test
   void givenExistingBook_whenDelete_thenNotFound() {
-    UUID bookId = UUID.randomUUID();
-    BookInstance saved = repository.save(BookInstance.circulating(bookId));
+    BookInstance saved = repository.save(new BookInstanceTestDataBuilder().buildCirculatingDefault());
     assertNotNull(saved.getId());
 
     em.flush();

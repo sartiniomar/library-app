@@ -3,8 +3,9 @@ package com.sartiniomar.library.catalog.infrastructure.persistence.jpa;
 import com.sartiniomar.library.catalog.domain.book.Book;
 import com.sartiniomar.library.catalog.infrastructure.mapper.BookMapper;
 import com.sartiniomar.library.catalog.infrastructure.mapper.BookMapperImpl;
-import com.sartiniomar.library.catalog.infrastructure.persistence.jpa.repository.BookSpringDataRepository;
-import com.sartiniomar.library.catalog.infrastructure.persistence.jpa.adapter.BookJpaRepository;
+import com.sartiniomar.library.catalog.infrastructure.persistence.jpa.repository.BookJpaRepository;
+import com.sartiniomar.library.catalog.infrastructure.persistence.jpa.adapter.BookAdapterRepository;
+import com.sartiniomar.library.catalog.support.builder.BookTestDataBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,26 +20,22 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class JpaBookRepositoryTest {
 
   @Autowired
-  private BookSpringDataRepository jpaRepo;
+  private BookJpaRepository jpaRepo;
 
   @Autowired
   private BookMapper mapper;
 
-  private BookJpaRepository repository;
+  private BookAdapterRepository repository;
 
   @BeforeEach
   void setup() {
-    repository = new BookJpaRepository(jpaRepo, mapper);
+    repository = new BookAdapterRepository(jpaRepo, mapper);
   }
 
   @Test
   void shouldSaveAndFindBookById() {
 
-    Book book = Book.create(
-        "Title",
-        "Author",
-        "123"
-    );
+    Book book = new BookTestDataBuilder().buildDefault();
 
     Book saved = repository.save(book);
 
@@ -50,11 +47,7 @@ class JpaBookRepositoryTest {
 
   @Test
   void shouldDeleteBook() {
-    Book book = Book.create(
-        "Title",
-        "Author",
-        "123"
-    );
+    Book book = new BookTestDataBuilder().buildDefault();
 
     Book saved = repository.save(book);
 
@@ -66,11 +59,7 @@ class JpaBookRepositoryTest {
 
   @Test
   void shouldExistByIsbn() {
-    Book book = Book.create(
-        "Title",
-        "Author",
-        "123"
-    );
+    Book book = new BookTestDataBuilder().buildDefault();
 
     repository.save(book);
 
@@ -79,11 +68,7 @@ class JpaBookRepositoryTest {
 
   @Test
   void shouldFindByIsbn() {
-    Book book = Book.create(
-        "Title",
-        "Author",
-        "123"
-    );
+    Book book = new BookTestDataBuilder().buildDefault();
 
     repository.save(book);
 

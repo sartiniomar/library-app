@@ -1,7 +1,7 @@
 package com.sartiniomar.library.lending.infrastructure.persistence;
 
 import com.sartiniomar.library.lending.domain.hold.Hold;
-import com.sartiniomar.library.lending.infrastructure.persistence.adapter.HoldJpaRepository;
+import com.sartiniomar.library.lending.infrastructure.persistence.jpa.adapter.HoldAdapterRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -12,11 +12,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @DataJpaTest
-@Import(HoldJpaRepository.class)
+@Import(HoldAdapterRepository.class)
 public class JpaHoldRepositoryTest {
 
   @Autowired
-  private HoldJpaRepository repository;
+  private HoldAdapterRepository repository;
 
   @Test
   void shouldSaveAndFindHold() {

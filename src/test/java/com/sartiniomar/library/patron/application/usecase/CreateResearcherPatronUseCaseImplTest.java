@@ -3,6 +3,7 @@ package com.sartiniomar.library.patron.application.usecase;
 import com.sartiniomar.library.patron.application.port.in.CreatePatronCommand;
 import com.sartiniomar.library.patron.application.port.out.PatronRepository;
 import com.sartiniomar.library.patron.domain.patron.Patron;
+import com.sartiniomar.library.patron.domain.patron.PatronAlreadyExistsException;
 import com.sartiniomar.library.patron.domain.patron.PatronType;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -51,6 +52,6 @@ class CreateResearcherPatronUseCaseImplTest {
         "Name", "email@example.com"
     );
 
-    assertThrows(IllegalArgumentException.class, () -> useCase.execute(command));
+    assertThrows(PatronAlreadyExistsException.class, () -> useCase.execute(command));
   }
 }

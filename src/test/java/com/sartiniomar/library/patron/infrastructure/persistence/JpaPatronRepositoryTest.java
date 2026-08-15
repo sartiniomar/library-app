@@ -3,8 +3,9 @@ package com.sartiniomar.library.patron.infrastructure.persistence;
 import com.sartiniomar.library.patron.domain.patron.Patron;
 import com.sartiniomar.library.patron.infrastructure.mapper.PatronMapper;
 import com.sartiniomar.library.patron.infrastructure.mapper.PatronMapperImpl;
-import com.sartiniomar.library.patron.infrastructure.persistence.jpa.repository.PatronSpringDataRepository;
-import com.sartiniomar.library.patron.infrastructure.persistence.jpa.adapter.PatronJpaRepository;
+import com.sartiniomar.library.patron.infrastructure.persistence.jpa.repository.PatronJpaRepository;
+import com.sartiniomar.library.patron.infrastructure.persistence.jpa.adapter.PatronAdapterRepository;
+import com.sartiniomar.library.patron.support.builder.PatronTestDataBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,25 +21,22 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class JpaPatronRepositoryTest {
 
   @Autowired
-  private PatronSpringDataRepository jpaRepo;
+  private PatronJpaRepository jpaRepo;
 
   @Autowired
   private PatronMapper mapper;
 
-  private PatronJpaRepository repository;
+  private PatronAdapterRepository repository;
 
   @BeforeEach
   void setup() {
-    repository = new PatronJpaRepository(jpaRepo, mapper);
+    repository = new PatronAdapterRepository(jpaRepo, mapper);
   }
 
   @Test
   void shouldSaveAndFindPatronById() {
 
-    Patron patron = Patron.regular(
-        "John Doe",
-        "john.doe@example.com"
-    );
+    Patron patron = new PatronTestDataBuilder().buildDefaultRegular();
 
     repository.save(patron);
 
@@ -46,15 +44,12 @@ public class JpaPatronRepositoryTest {
 
     assertTrue(foundPatron.isPresent());
     assertThat(foundPatron).isNotNull();
-    assertThat(foundPatron.get().getName()).isEqualTo("John Doe");
+    assertThat(foundPatron.get().getName()).isEqualTo("Name");
   }
 
   @Test
   void shouldDeletePatron() {
-    Patron patron = Patron.regular(
-        "John Doe",
-        "john.doe@example.com"
-    );
+    Patron patron = new PatronTestDataBuilder().buildDefaultRegular();
 
     Patron saved = repository.save(patron);
 
@@ -66,10 +61,7 @@ public class JpaPatronRepositoryTest {
 
   @Test
   void shouldExistByEmail() {
-    Patron patron = Patron.regular(
-        "John Doe",
-        "john.doe@example.com"
-    );
+    Patron patron = new PatronTestDataBuilder().buildDefaultRegular();
 
     repository.save(patron);
 
@@ -77,11 +69,8 @@ public class JpaPatronRepositoryTest {
   }
 
   @Test
-  void shoulFindByEmail() {
-    Patron patron = Patron.regular(
-        "John Doe",
-        "john.doe@example.com"
-    );
+  void shouldFindByEmail() {
+    Patron patron = new PatronTestDataBuilder().buildDefaultRegular();
 
     repository.save(patron);
 

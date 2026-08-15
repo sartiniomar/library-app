@@ -51,12 +51,12 @@ class BookControllerTest extends LibraryApplicationTests {
 
   private static Stream<Arguments> provideDataForGroupBadRequest() {
     return Stream.of(
-        Arguments.of("catalog/book/createBookRequestWithTitleBlank.json", "title is required"),
-        Arguments.of("catalog/book/createBookRequestWithAuthorBlank.json", "author is required"),
-        Arguments.of("catalog/book/createBookRequestWithIsbnBlank.json", "isbn is required"),
-        Arguments.of("catalog/book/createBookRequestWithTitleNull.json", "title is required"),
-        Arguments.of("catalog/book/createBookRequestWithAuthorNull.json", "author is required"),
-        Arguments.of("catalog/book/createBookRequestWithIsbnNull.json", "isbn is required")
+        Arguments.of("catalog/book/createBookWithTitleBlankRequest.json", "title is required"),
+        Arguments.of("catalog/book/createBookWithAuthorBlankRequest.json", "author is required"),
+        Arguments.of("catalog/book/createBookWithIsbnBlankRequest.json", "isbn is required"),
+        Arguments.of("catalog/book/createBookWithTitleNullRequest.json", "title is required"),
+        Arguments.of("catalog/book/createBookWithAuthorNullRequest.json", "author is required"),
+        Arguments.of("catalog/book/createBookWithIsbnNullRequest.json", "isbn is required")
     );
   }
 
@@ -277,8 +277,7 @@ class BookControllerTest extends LibraryApplicationTests {
   void shouldReturnNotFoundForNonExistingBookOnGetByIsbn() {
     Book book = new BookTestDataBuilder().buildDefault();
 
-    when(getBookByIsbnUseCase.execute(book.getIsbn()))
-        .thenThrow(new BookNotFoundException("Book not found"));
+    when(getBookByIsbnUseCase.execute(book.getIsbn())).thenThrow(new BookNotFoundException("Book not found"));
 
     mockMvc.perform(get("/books")
             .param("isbn", book.getIsbn())
@@ -306,8 +305,7 @@ class BookControllerTest extends LibraryApplicationTests {
   void shouldReturnNotFoundForNonExistingBookOnDelete() {
     UUID id = UUID.randomUUID();
 
-    doThrow(new BookNotFoundException("Book not found with id: " + id))
-        .when(deleteBookUseCase).execute(any());
+    doThrow(new BookNotFoundException("Book not found with id: " + id)).when(deleteBookUseCase).execute(any());
 
     mockMvc.perform(delete("/books/{id}", id))
         .andExpect(status().isNotFound())

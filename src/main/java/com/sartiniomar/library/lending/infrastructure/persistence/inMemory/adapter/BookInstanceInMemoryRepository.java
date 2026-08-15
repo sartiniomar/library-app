@@ -1,4 +1,4 @@
-package com.sartiniomar.library.lending.infrastructure.persistence.inMemory;
+package com.sartiniomar.library.lending.infrastructure.persistence.inMemory.adapter;
 
 import com.sartiniomar.library.lending.domain.bookInstance.BookInstance;
 import com.sartiniomar.library.lending.application.port.out.BookInstanceLendingRepository;

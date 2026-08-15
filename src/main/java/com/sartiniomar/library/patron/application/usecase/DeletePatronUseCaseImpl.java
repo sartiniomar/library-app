@@ -17,7 +17,7 @@ public class DeletePatronUseCaseImpl implements DeletePatronUseCase {
   @Override
   public void execute(UUID id) {
     Patron existingPatron = patronRepository.findById(id)
-        .orElseThrow(() -> new PatronNotFoundException("UUID=" + id.toString()));
+        .orElseThrow(() -> new PatronNotFoundException("Patron not found with id: " + id.toString()));
     patronRepository.delete(existingPatron.getId());
   }
 }

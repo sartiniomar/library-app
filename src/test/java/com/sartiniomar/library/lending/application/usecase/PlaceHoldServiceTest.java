@@ -1,20 +1,11 @@
 package com.sartiniomar.library.lending.application.usecase;
 
-import com.sartiniomar.library.lending.application.port.in.PlaceHoldCommand;
-import com.sartiniomar.library.lending.application.support.InMemoryEventPublisher;
-import com.sartiniomar.library.lending.infrastructure.persistence.inMemory.BookInstanceInMemoryRepository;
-import com.sartiniomar.library.lending.infrastructure.persistence.inMemory.HoldInMemoryRepository;
-import com.sartiniomar.library.lending.infrastructure.persistence.inMemory.PatronLendingInMemoryRepository;
-import com.sartiniomar.library.catalog.domain.bookInstance.BookInstance;
-import com.sartiniomar.library.lending.domain.hold.BookPlacedOnHoldEvent;
-import com.sartiniomar.library.lending.domain.hold.PlacingOnHoldService;
+import com.sartiniomar.library.lending.infrastructure.persistence.inMemory.adapter.PatronLendingInMemoryRepository;
 import com.sartiniomar.library.lending.domain.patron.Patron;
-import org.junit.jupiter.api.Test;
+
 import java.lang.reflect.Field;
 import java.util.Map;
 import java.util.UUID;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 public class PlaceHoldServiceTest {
 

@@ -4,6 +4,7 @@ import com.sartiniomar.library.patron.application.port.out.PatronRepository;
 import com.sartiniomar.library.patron.application.port.in.CreatePatronCommand;
 import com.sartiniomar.library.patron.application.port.in.CreateResearcherPatronUseCase;
 import com.sartiniomar.library.patron.domain.patron.Patron;
+import com.sartiniomar.library.patron.domain.patron.PatronAlreadyExistsException;
 
 public class CreateResearcherPatronUseCaseImpl implements CreateResearcherPatronUseCase {
 
@@ -16,7 +17,7 @@ public class CreateResearcherPatronUseCaseImpl implements CreateResearcherPatron
   @Override
   public Patron execute(CreatePatronCommand command) {
     if (repository.existsByEmail(command.getEmail())) {
-      throw new IllegalArgumentException("Email already exists");
+      throw new PatronAlreadyExistsException("Email " + command.getEmail() + " already exists");
     }
 
     Patron patron = Patron.researcher(command.getName(), command.getEmail());

@@ -1,10 +1,10 @@
 package com.sartiniomar.library.lending.infrastructure.persistence;
 
-import com.sartiniomar.library.catalog.infrastructure.persistence.jpa.model.BookInstanceEntity;
-import com.sartiniomar.library.catalog.infrastructure.persistence.jpa.repository.BookInstanceSpringDataRepository;
+import com.sartiniomar.library.catalog.infrastructure.persistence.model.BookInstanceEntity;
+import com.sartiniomar.library.catalog.infrastructure.persistence.jpa.repository.BookInstanceJpaRepository;
 import com.sartiniomar.library.lending.domain.bookInstance.BookInstance;
 import com.sartiniomar.library.lending.domain.bookInstance.BookType;
-import com.sartiniomar.library.lending.infrastructure.persistence.adapter.LendingBookInstanceJpaRepository;
+import com.sartiniomar.library.lending.infrastructure.persistence.jpa.adapter.LendingBookInstanceAdapterRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -15,14 +15,14 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
-@Import(LendingBookInstanceJpaRepository.class)
+@Import(LendingBookInstanceAdapterRepository.class)
 public class JpaLendingBookInstanceRepositoryTest {
 
   @Autowired
-  private LendingBookInstanceJpaRepository repository;
+  private LendingBookInstanceAdapterRepository repository;
 
   @Autowired
-  private BookInstanceSpringDataRepository bookInstanceDataRepository;
+  private BookInstanceJpaRepository bookInstanceDataRepository;
 
   @Test
   void shouldSaveAndFindBookInstance() {

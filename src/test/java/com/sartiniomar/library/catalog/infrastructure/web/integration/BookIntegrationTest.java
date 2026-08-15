@@ -14,7 +14,7 @@ import java.util.UUID;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class BookControllerIntegrationTest extends BookHttpHelper {
+public class BookIntegrationTest extends BookHttpHelper {
 
   @Autowired
   private BookRepository bookRepository;

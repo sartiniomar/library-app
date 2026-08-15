@@ -1,10 +1,10 @@
-package com.sartiniomar.library.lending.infrastructure.persistence.adapter;
+package com.sartiniomar.library.lending.infrastructure.persistence.jpa.adapter;
 
 import com.sartiniomar.library.lending.application.port.out.HoldRepository;
 import com.sartiniomar.library.lending.infrastructure.mapper.HoldMapperImpl;
 import com.sartiniomar.library.lending.infrastructure.mapper.HoldMapper;
 import com.sartiniomar.library.lending.infrastructure.persistence.model.HoldEntity;
-import com.sartiniomar.library.lending.infrastructure.persistence.repository.HoldSpringDataRepository;
+import com.sartiniomar.library.lending.infrastructure.persistence.jpa.repository.HoldJpaRepository;
 import com.sartiniomar.library.lending.domain.hold.Hold;
 import org.springframework.context.annotation.Import;
 import org.springframework.stereotype.Repository;
@@ -13,13 +13,13 @@ import java.util.UUID;
 
 @Repository
 @Import(HoldMapperImpl.class)
-public class HoldJpaRepository implements HoldRepository {
+public class HoldAdapterRepository implements HoldRepository {
 
-  private final HoldSpringDataRepository jpaRepo;
+  private final HoldJpaRepository jpaRepo;
 
   private HoldMapper holdMapper;
 
-  public HoldJpaRepository(HoldSpringDataRepository jpaRepo) {
+  public HoldAdapterRepository(HoldJpaRepository jpaRepo) {
     this.jpaRepo = jpaRepo;
     this.holdMapper = new HoldMapperImpl();
   }

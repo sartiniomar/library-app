@@ -1,7 +1,7 @@
 package com.sartiniomar.library.lending.infrastructure.mapper;
 
 import com.sartiniomar.library.lending.domain.bookInstance.BookInstance;
-import com.sartiniomar.library.catalog.infrastructure.persistence.jpa.model.BookInstanceEntity;
+import com.sartiniomar.library.catalog.infrastructure.persistence.model.BookInstanceEntity;
 import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")

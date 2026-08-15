@@ -1,10 +1,10 @@
 package com.sartiniomar.library.lending.infrastructure.persistence;
 
 import com.sartiniomar.library.lending.domain.patron.PatronType;
-import com.sartiniomar.library.lending.infrastructure.persistence.adapter.LendingPatronJpaRepository;
+import com.sartiniomar.library.lending.infrastructure.persistence.jpa.adapter.LendingPatronAdapterRepository;
 import com.sartiniomar.library.lending.domain.patron.Patron;
-import com.sartiniomar.library.patron.infrastructure.persistence.jpa.repository.PatronSpringDataRepository;
-import com.sartiniomar.library.patron.infrastructure.persistence.jpa.model.PatronEntity;
+import com.sartiniomar.library.patron.infrastructure.persistence.jpa.repository.PatronJpaRepository;
+import com.sartiniomar.library.patron.infrastructure.persistence.model.PatronEntity;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -15,14 +15,14 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
-@Import(LendingPatronJpaRepository.class)
+@Import(LendingPatronAdapterRepository.class)
 class JpaLendingPatronRepositoryTest {
 
   @Autowired
-  private LendingPatronJpaRepository repository;
+  private LendingPatronAdapterRepository repository;
 
   @Autowired
-  private PatronSpringDataRepository patronDataRepository;
+  private PatronJpaRepository patronDataRepository;
 
   @Test
   void shouldSaveAndFindPatron() {

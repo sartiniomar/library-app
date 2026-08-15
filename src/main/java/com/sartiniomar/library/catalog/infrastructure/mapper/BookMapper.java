@@ -3,7 +3,7 @@ package com.sartiniomar.library.catalog.infrastructure.mapper;
 import com.sartiniomar.library.catalog.application.port.in.book.CreateBookCommand;
 import com.sartiniomar.library.catalog.application.port.in.book.UpdateBookCommand;
 import com.sartiniomar.library.catalog.domain.book.Book;
-import com.sartiniomar.library.catalog.infrastructure.persistence.jpa.model.BookEntity;
+import com.sartiniomar.library.catalog.infrastructure.persistence.model.BookEntity;
 import com.sartiniomar.library.catalog.infrastructure.web.dto.BookRequest;
 import com.sartiniomar.library.catalog.infrastructure.web.dto.BookResponse;
 import org.mapstruct.Mapper;

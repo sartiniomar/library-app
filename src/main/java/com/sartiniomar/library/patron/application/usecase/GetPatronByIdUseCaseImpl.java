@@ -16,6 +16,6 @@ public class GetPatronByIdUseCaseImpl implements GetPatronByIdUseCase {
 
   @Override
   public Patron execute(UUID id) {
-    return repository.findById(id).orElseThrow(() -> new PatronNotFoundException("ID=" + id));
+    return repository.findById(id).orElseThrow(() -> new PatronNotFoundException("Patron not found with id: " + id));
   }
 }
