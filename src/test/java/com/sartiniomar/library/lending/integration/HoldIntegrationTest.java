@@ -1,15 +1,14 @@
 package com.sartiniomar.library.lending.integration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sartiniomar.library.lending.infrastructure.web.request.PlaceHoldRequest;
-import com.sartiniomar.library.lending.model.patron.Patron;
+import com.sartiniomar.library.lending.infrastructure.web.dto.PlaceHoldRequest;
+import com.sartiniomar.library.lending.domain.patron.Patron;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-
 import java.util.UUID;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
