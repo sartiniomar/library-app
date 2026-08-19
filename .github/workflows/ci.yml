@@ -1,11 +1,12 @@
-name: CI
+name: CI - Build & Push to ECR
 
 on:
   push:
-    branches:
-      - develop
-      - staging
-      - main
+    branches: [ "develop", "staging", "main" ]
+
+env:
+  AWS_REGION: us-east-1
+  ECR_REPOSITORY: library-app
 
 jobs:
   build:
@@ -15,11 +16,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Set up JDK 21
+      - name: Set up Java 21
         uses: actions/setup-java@v4
         with:
-          distribution: temurin
-          java-version: 21
+          distribution: 'temurin'
+          java-version: '21'
+          cache: 'maven'
 
       - name: Build JAR
         run: mvn clean package -DskipTests
