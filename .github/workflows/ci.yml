@@ -9,7 +9,7 @@ env:
   ECR_REPOSITORY: library-app
 
 jobs:
-  build-and-push:
+  build:
     runs-on: ubuntu-latest
 
     steps:
@@ -26,25 +26,5 @@ jobs:
       - name: Build JAR
         run: mvn clean package -DskipTests
 
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ env.AWS_REGION }}
-
-      - name: Login to ECR
-        uses: aws-actions/amazon-ecr-login@v2
-
       - name: Build Docker image
-        run: |
-          docker build -t $ECR_REPOSITORY:${{ github.sha }} .
-
-      - name: Tag image
-        run: |
-          docker tag $ECR_REPOSITORY:${{ github.sha }} \
-          ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/$ECR_REPOSITORY:${{ github.sha }}
-
-      - name: Push image
-        run: |
-          docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/$ECR_REPOSITORY:${{ github.sha }}
+        run: docker build -t library-app .

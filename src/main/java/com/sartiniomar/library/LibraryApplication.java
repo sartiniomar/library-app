@@ -7,9 +7,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class LibraryApplication {
 
 	public static void main(String[] args) {
-    System.out.println("🔥 VERSION version123 🔥");
-    System.out.println("BUILD TIME: " + java.time.Instant.now());
     SpringApplication.run(LibraryApplication.class, args);
 	}
-
 }
