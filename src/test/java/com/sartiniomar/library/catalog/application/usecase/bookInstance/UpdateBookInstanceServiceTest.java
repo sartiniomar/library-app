@@ -41,7 +41,7 @@ class UpdateBookInstanceServiceTest {
     assertEquals(existing.getId(), result.getId());
     assertEquals(existing.getBookId(), result.getBookId());
     assertEquals(BookType.CIRCULATING, result.getType());
-    assertTrue(result.isOnHold());
+    assertTrue(result.isOnLoan());
 
     verify(repository, times(1)).findById(existing.getId());
     verify(repository, times(1)).save(any());

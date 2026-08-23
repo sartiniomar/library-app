@@ -8,7 +8,7 @@ import com.sartiniomar.library.loan.domain.bookInstance.BookInstance;
 import com.sartiniomar.library.loan.application.port.in.PlaceHoldCommand;
 import com.sartiniomar.library.loan.application.port.in.PlaceHoldUseCase;
 import com.sartiniomar.library.loan.domain.bookInstance.BookInstanceNotFoundException;
-import com.sartiniomar.library.loan.domain.loan.PlacingOnHoldService;
+import com.sartiniomar.library.loan.domain.loan.ReserveService;
 import com.sartiniomar.library.loan.domain.loan.Loan;
 import com.sartiniomar.library.loan.domain.loan.DomainResult;
 import com.sartiniomar.library.loan.domain.patron.Patron;
@@ -22,14 +22,14 @@ public class PlaceHoldService implements PlaceHoldUseCase {
   private final BookInstanceLoanRepository bookInstanceLendingRepository;
   private final LoanRepository holdRepository;
   private final DomainEventPublisher eventPublisher;
-  private final PlacingOnHoldService domainService;
+  private final ReserveService domainService;
 
   public PlaceHoldService(
       PatronLoanRepository patronLoanRepository,
       BookInstanceLoanRepository bookInstanceLoanRepository,
       LoanRepository loanRepository,
       DomainEventPublisher eventPublisher,
-      PlacingOnHoldService domainService
+      ReserveService domainService
   ) {
     this.patronRepository = patronLoanRepository;
     this.bookInstanceLendingRepository = bookInstanceLoanRepository;
@@ -54,7 +54,7 @@ public class PlaceHoldService implements PlaceHoldUseCase {
       throw new LoanLimitExceededException("Hold Limit Exceeded");
     }
 
-    DomainResult<Loan> result = domainService.placeOnHold(patron, book);
+    DomainResult<Loan> result = domainService.reserve(patron, book);
 
     holdRepository.save(result.result());
 

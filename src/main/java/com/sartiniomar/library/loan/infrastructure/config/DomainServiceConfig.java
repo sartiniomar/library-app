@@ -1,6 +1,6 @@
 package com.sartiniomar.library.loan.infrastructure.config;
 
-import com.sartiniomar.library.loan.domain.loan.PlacingOnHoldService;
+import com.sartiniomar.library.loan.domain.loan.ReserveService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Configuration;
 public class DomainServiceConfig {
 
   @Bean
-  PlacingOnHoldService placingOnHoldService() {
-    return new PlacingOnHoldService();
+  ReserveService placingOnHoldService() {
+    return new ReserveService();
   }
 }

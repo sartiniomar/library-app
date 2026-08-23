@@ -1,11 +1,9 @@
-package com.sartiniomar.library.loan.domain.Loan;
+package com.sartiniomar.library.loan.domain.loan;
 
 import com.sartiniomar.library.loan.domain.bookInstance.BookInstance;
-import com.sartiniomar.library.loan.domain.loan.BookPlacedOnHoldEvent;
-import com.sartiniomar.library.loan.domain.loan.DomainResult;
-import com.sartiniomar.library.loan.domain.loan.Loan;
-import com.sartiniomar.library.loan.domain.loan.PlacingOnHoldService;
+import com.sartiniomar.library.loan.domain.bookInstance.BookType;
 import com.sartiniomar.library.loan.domain.patron.Patron;
+import com.sartiniomar.library.loan.domain.patron.PatronType;
 import org.junit.jupiter.api.Test;
 import java.util.UUID;
 
@@ -13,17 +11,17 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 
-public class PlacingOnHoldServiceTest {
+public class ReserveServiceTest {
 
   @Test
   void should_place_hold_when_all_conditions_are_met() {
 
-    Patron patron = Patron.regular();
-    BookInstance book = BookInstance.circulating(UUID.randomUUID());
+    Patron patron = new Patron(UUID.randomUUID(), PatronType.REGULAR);
+    BookInstance book = new BookInstance(UUID.randomUUID(), UUID.randomUUID(), BookType.CIRCULATING, false);
 
-    PlacingOnHoldService service = new PlacingOnHoldService();
+    ReserveService service = new ReserveService();
 
-    DomainResult<Loan> result = service.placeOnHold(patron, book);
+    DomainResult<Loan> result = service.reserve(patron, book);
 
     // ✅ resultado no nulo
     assertNotNull(result);
@@ -38,7 +36,7 @@ public class PlacingOnHoldServiceTest {
 
     // ✅ validar evento
     assertEquals(1, result.events().size());
-    assertInstanceOf(BookPlacedOnHoldEvent.class, result.events().get(0));
+    assertInstanceOf(ReserveBookEvent.class, result.events().get(0));
   }
 
 }
