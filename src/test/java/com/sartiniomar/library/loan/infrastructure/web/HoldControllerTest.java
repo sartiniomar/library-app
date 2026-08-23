@@ -5,6 +5,8 @@ import com.sartiniomar.library.loan.application.port.in.PlaceHoldCommand;
 import com.sartiniomar.library.loan.application.port.in.PlaceHoldUseCase;
 import com.sartiniomar.library.loan.domain.loan.Loan;
 import com.sartiniomar.library.catalog.infrastructure.mapper.BookInstanceMapper;
+import com.sartiniomar.library.loan.domain.loan.LoanStatus;
+import com.sartiniomar.library.loan.domain.patron.PatronType;
 import com.sartiniomar.library.loan.infrastructure.mapper.PatronLoanMapper;
 import com.sartiniomar.library.catalog.infrastructure.persistence.jpa.repository.BookInstanceJpaRepository;
 import com.sartiniomar.library.loan.infrastructure.web.dto.PlaceHoldRequest;
@@ -46,12 +48,12 @@ public class HoldControllerTest extends LibraryApplicationTests {
     BookInstance bookInstance = BookInstance.circulating(UUID.randomUUID());
     bookInstanceSpringDataRepository.save(bookInstanceMapper.toEntity(bookInstance));
 
-    Patron patron = Patron.regular();
+    Patron patron = new Patron(UUID.randomUUID(), PatronType.REGULAR);
     patronSpringDataRepository.save(patronHoldMapper.toEntity(patron));
 
     PlaceHoldRequest request = new PlaceHoldRequest(bookInstance.getId(), patron.getId());
 
-    Loan hold = new Loan(patron.getId(), bookInstance.getId());
+    Loan hold = Loan.createReserve(patron.getId(), bookInstance.getId());
 
     when(useCase.execute(any()))
         .thenReturn(hold);
@@ -70,7 +72,7 @@ public class HoldControllerTest extends LibraryApplicationTests {
 
   @Test
   void shouldReturn400_whenBookIdIsMissing() throws Exception {
-    Patron patron = Patron.regular();
+    Patron patron = new Patron(UUID.randomUUID(), PatronType.REGULAR);
     PlaceHoldRequest request = new PlaceHoldRequest(null, patron.getId());
 
     mockMvc.perform(post("/holds")

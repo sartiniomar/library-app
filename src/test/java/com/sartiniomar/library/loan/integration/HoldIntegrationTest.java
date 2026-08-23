@@ -1,6 +1,7 @@
 package com.sartiniomar.library.loan.integration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sartiniomar.library.loan.domain.patron.PatronType;
 import com.sartiniomar.library.loan.infrastructure.web.dto.PlaceHoldRequest;
 import com.sartiniomar.library.loan.domain.patron.Patron;
 import org.junit.jupiter.api.Test;
@@ -26,7 +27,7 @@ public class HoldIntegrationTest {
 
   @Test
   void shouldReturn404_whenBookDoesNotExist() throws Exception {
-    Patron patron = Patron.regular();
+    Patron patron = new Patron(UUID.randomUUID(), PatronType.REGULAR);
 
     PlaceHoldRequest request =
         new PlaceHoldRequest(UUID.randomUUID(), patron.getId());

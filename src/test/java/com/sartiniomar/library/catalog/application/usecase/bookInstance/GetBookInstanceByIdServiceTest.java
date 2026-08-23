@@ -29,7 +29,7 @@ class GetBookInstanceByIdServiceTest {
   @Test
   void shouldGetBookInstanceById() {
     BookInstance existing = BookInstance.circulating(UUID.randomUUID());
-    existing.setOnHold(true);
+    existing.setOnLoan(true);
 
     when(repository.findById(existing.getId())).thenReturn(Optional.of(existing));
 
@@ -38,7 +38,7 @@ class GetBookInstanceByIdServiceTest {
     assertEquals(existing.getId(), result.getId());
     assertEquals(BookType.CIRCULATING, result.getType());
     assertEquals(existing.getBookId(), result.getBookId());
-    assertTrue(result.isOnHold());
+    assertTrue(result.isOnLoan());
 
     verify(repository, times(1)).findById(existing.getId());
   }

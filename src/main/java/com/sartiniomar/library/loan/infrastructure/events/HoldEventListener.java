@@ -1,6 +1,6 @@
 package com.sartiniomar.library.loan.infrastructure.events;
 
-import com.sartiniomar.library.loan.domain.loan.BookPlacedOnHoldEvent;
+import com.sartiniomar.library.loan.domain.loan.ReserveBookEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 public class HoldEventListener {
 
   @EventListener
-  public void handle(BookPlacedOnHoldEvent event) {
+  public void handle(ReserveBookEvent event) {
     System.out.println("📚 Book placed on hold: " + event.getBookId());
   }
 

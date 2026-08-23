@@ -11,7 +11,7 @@ public class BookInstanceTest {
     BookInstance book = BookInstance.circulating(UUID.fromString("123e4567-e89b-12d3-a456-426614174000"));
 
     assertEquals("123e4567-e89b-12d3-a456-426614174000", book.getBookId().toString());
-    assertFalse(book.isOnHold());
+    assertFalse(book.isOnLoan());
     assertEquals(BookType.CIRCULATING, book.getType());
   }
 
@@ -20,7 +20,7 @@ public class BookInstanceTest {
     BookInstance book = BookInstance.restricted(UUID.fromString("123e4567-e89b-12d3-a456-426614174000"));
 
     assertEquals("123e4567-e89b-12d3-a456-426614174000", book.getBookId().toString());
-    assertFalse(book.isOnHold());
+    assertFalse(book.isOnLoan());
     assertEquals(BookType.RESTRICTED, book.getType());
   }
 
@@ -28,9 +28,9 @@ public class BookInstanceTest {
   void should_not_allow_to_place_hold_when_already_on_hold() {
     BookInstance book = BookInstance.circulating(UUID.randomUUID());
 
-    book.markOnHold();
+    book.markOnLoan();
 
-    assertThrows(BookAlreadyOnHoldException.class, book::markOnHold);
+    assertThrows(BookAlreadyOnLoanException.class, book::markOnLoan);
   }
 
   @Test
@@ -43,7 +43,7 @@ public class BookInstanceTest {
 
     assertEquals(updatedBookId , bookInstance.getBookId());
     assertEquals(BookType.CIRCULATING, bookInstance.getType());
-    assertFalse(bookInstance.isOnHold());
+    assertFalse(bookInstance.isOnLoan());
   }
 
   @Test
@@ -55,7 +55,7 @@ public class BookInstanceTest {
 
     assertEquals(bookId , bookInstance.getBookId());
     assertEquals(BookType.RESTRICTED, bookInstance.getType());
-    assertFalse(bookInstance.isOnHold());
+    assertFalse(bookInstance.isOnLoan());
   }
 
   @Test
@@ -67,7 +67,7 @@ public class BookInstanceTest {
 
     assertEquals(bookId , bookInstance.getBookId());
     assertEquals(BookType.CIRCULATING, bookInstance.getType());
-    assertTrue(bookInstance.isOnHold());
+    assertTrue(bookInstance.isOnLoan());
   }
 
   @Test
@@ -80,7 +80,7 @@ public class BookInstanceTest {
 
     assertEquals(updatedBookId , bookInstance.getBookId());
     assertEquals(BookType.RESTRICTED, bookInstance.getType());
-    assertFalse(bookInstance.isOnHold());
+    assertFalse(bookInstance.isOnLoan());
   }
 
   @Test
@@ -92,7 +92,7 @@ public class BookInstanceTest {
 
     assertEquals(bookId , bookInstance.getBookId());
     assertEquals(BookType.CIRCULATING, bookInstance.getType());
-    assertFalse(bookInstance.isOnHold());
+    assertFalse(bookInstance.isOnLoan());
   }
 
   @Test
@@ -104,6 +104,6 @@ public class BookInstanceTest {
 
     assertEquals(bookId , bookInstance.getBookId());
     assertEquals(BookType.RESTRICTED, bookInstance.getType());
-    assertTrue(bookInstance.isOnHold());
+    assertTrue(bookInstance.isOnLoan());
   }
 }

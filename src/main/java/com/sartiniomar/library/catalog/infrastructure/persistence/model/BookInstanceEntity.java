@@ -21,7 +21,7 @@ public class BookInstanceEntity {
   private UUID bookId;
   @Enumerated(EnumType.STRING)
   private BookType type;
-  private Boolean onHold;
+  private Boolean onLoan;
   @Version
   private Long version;
 }
