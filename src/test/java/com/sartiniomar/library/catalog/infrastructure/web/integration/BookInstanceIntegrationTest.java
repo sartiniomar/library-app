@@ -42,12 +42,12 @@ public class BookInstanceIntegrationTest extends BookInstanceHttpHelper {
     BookInstance bookInstance = bookInstanceRepository.findById(response.id()).orElseThrow();
 
     assertThat(bookInstance)
-        .extracting("bookId", "type", "onHold")
+        .extracting("bookId", "type", "onLoan")
         .containsExactly(book.getId(), BookType.CIRCULATING, false);
 
     assertEquals(book.getId(), response.bookId());
     assertEquals(BookType.CIRCULATING, response.type());
-    assertEquals(false, response.onHold());
+    assertEquals(false, response.onLoan());
 
     assertEquals(initialCount + 1, JdbcTestUtils.countRowsInTable(jdbcTemplate, "book_instance"));
   }
@@ -73,12 +73,12 @@ public class BookInstanceIntegrationTest extends BookInstanceHttpHelper {
     BookInstance bookInstance = bookInstanceRepository.findById(response.id()).orElseThrow();
 
     assertThat(bookInstance)
-        .extracting("bookId", "type", "onHold")
+        .extracting("bookId", "type", "onLoan")
         .containsExactly(book.getId(), BookType.RESTRICTED, false);
 
     assertEquals(book.getId(), response.bookId());
     assertEquals(BookType.RESTRICTED, response.type());
-    assertEquals(false, response.onHold());
+    assertEquals(false, response.onLoan());
 
     assertEquals(initialCount + 1, JdbcTestUtils.countRowsInTable(jdbcTemplate, "book_instance"));
   }
@@ -103,13 +103,13 @@ public class BookInstanceIntegrationTest extends BookInstanceHttpHelper {
     BookInstance bookInstanceBBDD = bookInstanceRepository.findById(response.id()).orElseThrow();
 
     assertThat(bookInstanceBBDD)
-        .extracting("bookId", "type", "onHold")
+        .extracting("bookId", "type", "onLoan")
         .containsExactly(bookInstance.getBookId(), BookType.RESTRICTED, true);
 
     assertEquals(bookInstance.getId(), response.id());
     assertEquals(bookInstance.getBookId(), response.bookId());
     assertEquals(BookType.RESTRICTED, response.type());
-    assertEquals(true, response.onHold());
+    assertEquals(true, response.onLoan());
   }
 
   @Test
@@ -131,7 +131,7 @@ public class BookInstanceIntegrationTest extends BookInstanceHttpHelper {
     assertEquals(bookInstance.getId(), response.id());
     assertEquals(bookInstance.getBookId(), response.bookId());
     assertEquals(bookInstance.getType(), response.type());
-    assertEquals(bookInstance.isOnHold(), response.onHold());
+    assertEquals(bookInstance.isOnLoan(), response.onLoan());
   }
 
   @Test
@@ -156,11 +156,11 @@ public class BookInstanceIntegrationTest extends BookInstanceHttpHelper {
     assertEquals(bookInstance1.getId(), response.getFirst().id());
     assertEquals(bookInstance1.getBookId(), response.getFirst().bookId());
     assertEquals(bookInstance1.getType(), response.getFirst().type());
-    assertEquals(bookInstance1.isOnHold(), response.getFirst().onHold());
+    assertEquals(bookInstance1.isOnLoan(), response.getFirst().onLoan());
     assertEquals(bookInstance2.getId(), response.get(1).id());
     assertEquals(bookInstance2.getBookId(), response.get(1).bookId());
     assertEquals(bookInstance2.getType(), response.get(1).type());
-    assertEquals(bookInstance2.isOnHold(), response.get(1).onHold());
+    assertEquals(bookInstance2.isOnLoan(), response.get(1).onLoan());
   }
 
   @Test

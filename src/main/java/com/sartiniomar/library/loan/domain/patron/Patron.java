@@ -14,19 +14,6 @@ public class Patron {
     this.type = type;
   }
 
-  private Patron(PatronType type) {
-    this.id = UUID.randomUUID();
-    this.type = type;
-  }
-
-  public static Patron regular() {
-    return new Patron(PatronType.REGULAR);
-  }
-
-  public static Patron researcher() {
-    return new Patron(PatronType.RESEARCHER);
-  }
-
   public UUID getId() {
     return this.id;
   }

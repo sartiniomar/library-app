@@ -53,7 +53,7 @@ class JpaBookInstanceRepositoryTest {
     BookInstance found = repository.findById(saved.getId()).orElseThrow();
     assertAll(
         () -> assertEquals(BookType.CIRCULATING, found.getType()),
-        () -> assertFalse(found.isOnHold()),
+        () -> assertFalse(found.isOnLoan()),
         () -> assertEquals(saved.getBookId(), found.getBookId())
     );
   }
@@ -67,7 +67,7 @@ class JpaBookInstanceRepositoryTest {
 
     BookInstance toUpdate = repository.findById(saved.getId()).orElseThrow();
     toUpdate.setType(BookType.RESTRICTED);
-    toUpdate.setOnHold(true);
+    toUpdate.setOnLoan(true);
 
     repository.save(toUpdate);
 
@@ -77,7 +77,7 @@ class JpaBookInstanceRepositoryTest {
     BookInstance updated = repository.findById(saved.getId()).orElseThrow();
     assertAll(
         () -> assertEquals(BookType.RESTRICTED, updated.getType()),
-        () -> assertTrue(updated.isOnHold())
+        () -> assertTrue(updated.isOnLoan())
     );
   }
 

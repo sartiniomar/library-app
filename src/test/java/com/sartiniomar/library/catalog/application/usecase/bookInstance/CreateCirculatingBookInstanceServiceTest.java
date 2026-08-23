@@ -44,7 +44,7 @@ class CreateCirculatingBookInstanceServiceTest {
     assertNotNull(result.getId());
     assertEquals(book.getId(), result.getBookId());
     assertEquals(BookType.CIRCULATING, result.getType());
-    assertFalse(result.isOnHold());
+    assertFalse(result.isOnLoan());
 
     verify(bookRepository, times(1)).findById(book.getId());
     verify(repository, times(1)).save(any());
