@@ -1,6 +1,7 @@
 package com.sartiniomar.library.loan.infrastructure.persistence;
 
 import com.sartiniomar.library.loan.domain.loan.Loan;
+import com.sartiniomar.library.loan.domain.loan.LoanStatus;
 import com.sartiniomar.library.loan.infrastructure.persistence.jpa.adapter.LoanAdapterRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +24,7 @@ public class JpaHoldRepositoryTest {
     UUID bookInstanceId = java.util.UUID.randomUUID();
     UUID patronId = java.util.UUID.randomUUID();
 
-    Loan hold = new Loan(patronId, bookInstanceId);
+    Loan hold = Loan.createReserve(patronId, bookInstanceId);
 
     repository.save(hold);
 
@@ -38,8 +39,8 @@ public class JpaHoldRepositoryTest {
   void shouldCountHoldsByPatronId() {
     UUID patronId = java.util.UUID.randomUUID();
 
-    Loan hold1 = new Loan(patronId, java.util.UUID.randomUUID());
-    Loan hold2 = new Loan(patronId, java.util.UUID.randomUUID());
+    Loan hold1 = Loan.createReserve(patronId, java.util.UUID.randomUUID());
+    Loan hold2 = Loan.createReserve(patronId, java.util.UUID.randomUUID());
 
     repository.save(hold1);
     repository.save(hold2);

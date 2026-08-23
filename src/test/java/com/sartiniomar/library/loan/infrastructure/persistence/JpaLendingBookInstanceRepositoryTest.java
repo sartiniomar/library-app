@@ -32,7 +32,7 @@ public class JpaLendingBookInstanceRepositoryTest {
     entity.setId(id);
     entity.setBookId(bookId);
     entity.setType(com.sartiniomar.library.catalog.domain.bookInstance.BookType.CIRCULATING);
-    entity.setOnHold(false);
+    entity.setOnLoan(false);
 
     bookInstanceDataRepository.save(entity);
 
@@ -42,7 +42,7 @@ public class JpaLendingBookInstanceRepositoryTest {
     assertEquals(id, result.get().getId());
     assertEquals(bookId, result.get().getBookId());
     assertEquals(BookType.CIRCULATING, result.get().getType());
-    assertFalse(result.get().isOnHold());
+    assertFalse(result.get().isOnLoan());
   }
 
 }

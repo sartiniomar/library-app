@@ -1,5 +1,7 @@
 package com.sartiniomar.library.catalog.domain.bookInstance;
 
+import com.sartiniomar.library.catalog.domain.bookInstance.BookAlreadyOnLoanException;
+
 import java.util.UUID;
 
 public class BookInstance {
@@ -7,23 +9,23 @@ public class BookInstance {
   private final UUID id;
   private UUID bookId;
   private BookType type;
-  private Boolean onHold;
+  private Boolean onLoan;
 
-  public BookInstance(UUID id, UUID bookId, BookType type, Boolean onHold) {
+  public BookInstance(UUID id, UUID bookId, BookType type, Boolean onLoan) {
     if (bookId == null) {
       throw new IllegalArgumentException("Book ID cannot be empty");
     }
     if (type == null) {
       throw new IllegalArgumentException("Book type cannot be empty");
     }
-    if (onHold == null) {
-      throw new IllegalArgumentException("On hold status cannot be empty");
+    if (onLoan == null) {
+      throw new IllegalArgumentException("On loan status cannot be empty");
     }
 
     this.id = id;
     this.bookId = bookId;
     this.type = type;
-    this.onHold = onHold;
+    this.onLoan = onLoan;
   }
 
   public static BookInstance circulating(UUID bookId) {
@@ -34,10 +36,10 @@ public class BookInstance {
     return new BookInstance(UUID.randomUUID(), bookId, BookType.RESTRICTED, false);
   }
 
-  public void update(UUID bookId, BookType type, Boolean onHold) {
+  public void update(UUID bookId, BookType type, Boolean onLoan) {
     if (bookId != null) this.bookId = bookId;
     if (type != null) this.type = type;
-    if (onHold != null) this.onHold = onHold;
+    if (onLoan != null) this.onLoan = onLoan;
   }
 
   public UUID getId() {
@@ -56,8 +58,8 @@ public class BookInstance {
     return type == BookType.RESTRICTED;
   }
 
-  public boolean isOnHold() {
-    return onHold;
+  public boolean isOnLoan() {
+    return onLoan;
   }
 
   public void setBookId(UUID bookId) {
@@ -68,14 +70,14 @@ public class BookInstance {
     this.type = type;
   }
 
-  public void setOnHold(boolean onHold) {
-    this.onHold = onHold;
+  public void setOnLoan(boolean onLoan) {
+    this.onLoan = onLoan;
   }
 
-  public void markOnHold() {
-    if (this.onHold) {
-      throw new BookAlreadyOnHoldException("Book is already on hold");
+  public void markOnLoan() {
+    if (this.onLoan) {
+      throw new BookAlreadyOnLoanException("Book is already on loan");
     }
-    this.onHold = true;
+    this.onLoan = true;
   }
 }

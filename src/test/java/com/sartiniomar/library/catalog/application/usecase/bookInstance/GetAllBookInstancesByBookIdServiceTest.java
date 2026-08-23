@@ -35,7 +35,7 @@ class GetAllBookInstancesByBookIdServiceTest {
 
     BookInstance existing0 = BookInstance.circulating(bookId);
     BookInstance existing1 = BookInstance.restricted(bookId);
-    existing1.setOnHold(true);
+    existing1.setOnLoan(true);
 
     when(bookRepository.findById(bookId)).thenReturn(java.util.Optional.of(book));
 
@@ -50,8 +50,8 @@ class GetAllBookInstancesByBookIdServiceTest {
     assertEquals(bookId, result.get(1).getBookId());
     assertEquals(BookType.CIRCULATING, result.get(0).getType());
     assertEquals(BookType.RESTRICTED, result.get(1).getType());
-    assertFalse(result.get(0).isOnHold());
-    assertTrue(result.get(1).isOnHold());
+    assertFalse(result.get(0).isOnLoan());
+    assertTrue(result.get(1).isOnLoan());
 
     verify(bookInstanceRepository, times(1)).findAllByBookId(bookId);
   }

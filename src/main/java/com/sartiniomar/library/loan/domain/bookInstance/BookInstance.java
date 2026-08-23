@@ -1,6 +1,5 @@
 package com.sartiniomar.library.loan.domain.bookInstance;
 
-import com.sartiniomar.library.loan.domain.patron.Patron;
 import java.util.UUID;
 
 public class BookInstance {
@@ -8,24 +7,13 @@ public class BookInstance {
   private final UUID id;
   private final UUID bookId;
   private final BookType type;
-  private final boolean onHold;
+  private final boolean onLoan;
 
-  protected BookInstance(UUID bookId, BookType type, boolean onHold) {
-    this.id = UUID.randomUUID();
-    this.bookId = bookId;
-    this.type = type;
-    this.onHold = onHold;
-  }
-
-  public BookInstance(UUID id, UUID bookId, BookType type, boolean onHold) {
+  public BookInstance(UUID id, UUID bookId, BookType type, boolean onLoan) {
     this.id = id;
     this.bookId = bookId;
     this.type = type;
-    this.onHold = onHold;
-  }
-
-  public static BookInstance circulating(UUID bookId) {
-    return new BookInstance(bookId, BookType.CIRCULATING, false);
+    this.onLoan = onLoan;
   }
 
   public UUID getId() {
@@ -44,20 +32,13 @@ public class BookInstance {
     return type == BookType.RESTRICTED;
   }
 
-  public boolean isOnHold() {
-    return onHold;
+  public boolean isOnLoan() {
+    return onLoan;
   }
 
-  public void ensureCanBePlacedOnHoldBy(Patron patron) {
-
-    if (isRestricted() && !patron.isResearcher()) {
-      throw new OnlyResearcherCanRetiredRestrictedBooksException(
-          "Only Researcher Can Hold Restricted Books!"
-      );
-    }
-
-    if (onHold) {
-      throw new BookType.BookAlreadyOnHoldException("Book Already On Hold!");
+  public void ensureCanBeReserved() {
+    if (onLoan) {
+      throw new BookAlreadyOnLoanException("Book Already On Hold!");
     }
   }
 }

@@ -2,6 +2,7 @@ package com.sartiniomar.library.loan.infrastructure.persistence.inMemory.adapter
 
 import com.sartiniomar.library.loan.application.port.out.PatronLoanRepository;
 import com.sartiniomar.library.loan.domain.patron.Patron;
+import com.sartiniomar.library.loan.domain.patron.PatronType;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -13,6 +14,6 @@ public class PatronInMemoryRepository implements PatronLoanRepository {
 
   @Override
   public Optional<Patron> findById(UUID id) {
-    return Optional.ofNullable(storage.getOrDefault(id, Patron.regular()));
+    return Optional.ofNullable(storage.getOrDefault(id, new Patron(UUID.randomUUID(), PatronType.REGULAR)));
   }
 }
