@@ -27,10 +27,6 @@ public class UpdateBookInstanceService implements UpdateBookInstanceUseCase {
       bookInstance.setStatus(cmd.status());
     }
 
-    if (cmd.onHold() != null) {
-      bookInstance.setOnLoan(cmd.onHold());
-    }
-
     return repository.save(bookInstance);
   }
 }

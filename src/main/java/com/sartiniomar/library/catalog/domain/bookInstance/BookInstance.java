@@ -8,9 +8,8 @@ public class BookInstance {
   private UUID bookId;
   private BookType type;
   private BookInstanceStatus status;
-  private Boolean onLoan;
 
-  public BookInstance(UUID id, UUID bookId, BookType type, BookInstanceStatus status, Boolean onLoan) {
+  public BookInstance(UUID id, UUID bookId, BookType type, BookInstanceStatus status) {
     if (bookId == null) {
       throw new IllegalArgumentException("Book ID cannot be empty");
     }
@@ -20,30 +19,25 @@ public class BookInstance {
     if (status == null) {
       throw new IllegalArgumentException("Status cannot by empty");
     }
-    if (onLoan == null) {
-      throw new IllegalArgumentException("On loan status cannot be empty");
-    }
 
     this.id = id;
     this.bookId = bookId;
     this.type = type;
     this.status = status;
-    this.onLoan = onLoan;
   }
 
   public static BookInstance circulating(UUID bookId) {
-    return new BookInstance(UUID.randomUUID(), bookId, BookType.CIRCULATING, BookInstanceStatus.AVAILABLE, false);
+    return new BookInstance(UUID.randomUUID(), bookId, BookType.CIRCULATING, BookInstanceStatus.AVAILABLE);
   }
 
   public static BookInstance restricted(UUID bookId) {
-    return new BookInstance(UUID.randomUUID(), bookId, BookType.RESTRICTED, BookInstanceStatus.AVAILABLE, false);
+    return new BookInstance(UUID.randomUUID(), bookId, BookType.RESTRICTED, BookInstanceStatus.AVAILABLE);
   }
 
-  public void update(UUID bookId, BookType type, BookInstanceStatus status, Boolean onLoan) {
+  public void update(UUID bookId, BookType type, BookInstanceStatus status) {
     if (bookId != null) this.bookId = bookId;
     if (type != null) this.type = type;
     if (status != null) this.status = status;
-    if (onLoan != null) this.onLoan = onLoan;
   }
 
   public UUID getId() {
@@ -66,10 +60,6 @@ public class BookInstance {
     return type == BookType.RESTRICTED;
   }
 
-  public boolean isOnLoan() {
-    return onLoan;
-  }
-
   public void setBookId(UUID bookId) {
     this.bookId = bookId;
   }
@@ -80,16 +70,5 @@ public class BookInstance {
 
   public void setStatus(BookInstanceStatus status) {
     this.status = status;
-  }
-
-  public void setOnLoan(boolean onLoan) {
-    this.onLoan = onLoan;
-  }
-
-  public void markOnLoan() {
-    if (this.onLoan) {
-      throw new BookAlreadyOnLoanException("Book is already on loan");
-    }
-    this.onLoan = true;
   }
 }

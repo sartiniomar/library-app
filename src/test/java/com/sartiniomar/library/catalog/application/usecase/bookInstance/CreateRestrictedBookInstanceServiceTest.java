@@ -15,9 +15,12 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.times;
 
 @ExtendWith(MockitoExtension.class)
 class CreateRestrictedBookInstanceServiceTest {
@@ -46,7 +49,6 @@ class CreateRestrictedBookInstanceServiceTest {
     assertEquals(book.getId(), result.getBookId());
     assertEquals(BookType.RESTRICTED, result.getType());
     assertEquals(BookInstanceStatus.AVAILABLE, result.getStatus());
-    assertFalse(result.isOnLoan());
 
     verify(bookRepository, times(1)).findById(book.getId());
     verify(repository, times(1)).save(any());

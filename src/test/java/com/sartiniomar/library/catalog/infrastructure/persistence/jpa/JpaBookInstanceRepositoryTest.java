@@ -56,8 +56,7 @@ class JpaBookInstanceRepositoryTest {
         () -> assertEquals(saved.getId(), found.getId()),
         () -> assertEquals(saved.getBookId(), found.getBookId()),
         () -> assertEquals(BookType.CIRCULATING, found.getType()),
-        () -> assertEquals(BookInstanceStatus.AVAILABLE, found.getStatus()),
-        () -> assertFalse(found.isOnLoan())
+        () -> assertEquals(BookInstanceStatus.AVAILABLE, found.getStatus())
     );
   }
 
@@ -73,7 +72,6 @@ class JpaBookInstanceRepositoryTest {
     toUpdate.setBookId(newBookId);
     toUpdate.setType(BookType.RESTRICTED);
     toUpdate.setStatus(BookInstanceStatus.UNAVAILABLE);
-    toUpdate.setOnLoan(true);
 
     repository.save(toUpdate);
 
@@ -84,8 +82,7 @@ class JpaBookInstanceRepositoryTest {
     assertAll(
         () -> assertEquals(newBookId, updated.getBookId()),
         () -> assertEquals(BookType.RESTRICTED, updated.getType()),
-        () -> assertEquals(BookInstanceStatus.UNAVAILABLE, updated.getStatus()),
-        () -> assertTrue(updated.isOnLoan())
+        () -> assertEquals(BookInstanceStatus.UNAVAILABLE, updated.getStatus())
     );
   }
 
@@ -93,9 +90,9 @@ class JpaBookInstanceRepositoryTest {
   void givenManyInstances_whenFindAllByBookId_thenReturnsOnlyMatches() {
     UUID bookId = UUID.randomUUID();
     UUID otherBookId = UUID.randomUUID();
-    BookInstance a = repository.save(new BookInstanceTestDataBuilder().build(bookId, BookType.CIRCULATING, BookInstanceStatus.AVAILABLE,false));
-    BookInstance b = repository.save(new BookInstanceTestDataBuilder().build(bookId, BookType.CIRCULATING, BookInstanceStatus.AVAILABLE,false));
-    BookInstance c = repository.save(new BookInstanceTestDataBuilder().build(otherBookId, BookType.CIRCULATING, BookInstanceStatus.AVAILABLE, false));
+    BookInstance a = repository.save(new BookInstanceTestDataBuilder().build(bookId, BookType.CIRCULATING, BookInstanceStatus.AVAILABLE));
+    BookInstance b = repository.save(new BookInstanceTestDataBuilder().build(bookId, BookType.CIRCULATING, BookInstanceStatus.AVAILABLE));
+    BookInstance c = repository.save(new BookInstanceTestDataBuilder().build(otherBookId, BookType.CIRCULATING, BookInstanceStatus.AVAILABLE));
 
     entityManager.flush();
     entityManager.clear();
