@@ -7,12 +7,14 @@ public class BookInstance {
   private final UUID id;
   private final UUID bookId;
   private final BookType type;
+  private final BookInstanceStatus status;
   private final boolean onLoan;
 
-  public BookInstance(UUID id, UUID bookId, BookType type, boolean onLoan) {
+  public BookInstance(UUID id, UUID bookId, BookType type, BookInstanceStatus status, boolean onLoan) {
     this.id = id;
     this.bookId = bookId;
     this.type = type;
+    this.status = status;
     this.onLoan = onLoan;
   }
 
@@ -21,24 +23,28 @@ public class BookInstance {
   }
 
   public UUID getBookId() {
-    return bookId;
+    return this.bookId;
   }
 
   public BookType getType() {
-    return type;
+    return this.type;
+  }
+
+  public BookInstanceStatus getStatus() {
+    return this.status;
   }
 
   public boolean isRestricted() {
-    return type == BookType.RESTRICTED;
+    return this.type == BookType.RESTRICTED;
   }
 
   public boolean isOnLoan() {
-    return onLoan;
+    return this.onLoan;
   }
 
   public void ensureCanBeReserved() {
-    if (onLoan) {
-      throw new BookAlreadyOnLoanException("Book Already On Hold!");
+    if (this.status != BookInstanceStatus.AVAILABLE) {
+      throw new BookInstanceNotAvailableException("Book Already Unavailable!");
     }
   }
 }

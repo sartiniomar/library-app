@@ -1,7 +1,5 @@
 package com.sartiniomar.library.catalog.domain.bookInstance;
 
-import com.sartiniomar.library.catalog.domain.bookInstance.BookAlreadyOnLoanException;
-
 import java.util.UUID;
 
 public class BookInstance {
@@ -9,14 +7,18 @@ public class BookInstance {
   private final UUID id;
   private UUID bookId;
   private BookType type;
+  private BookInstanceStatus status;
   private Boolean onLoan;
 
-  public BookInstance(UUID id, UUID bookId, BookType type, Boolean onLoan) {
+  public BookInstance(UUID id, UUID bookId, BookType type, BookInstanceStatus status, Boolean onLoan) {
     if (bookId == null) {
       throw new IllegalArgumentException("Book ID cannot be empty");
     }
     if (type == null) {
       throw new IllegalArgumentException("Book type cannot be empty");
+    }
+    if (status == null) {
+      throw new IllegalArgumentException("Status cannot by empty");
     }
     if (onLoan == null) {
       throw new IllegalArgumentException("On loan status cannot be empty");
@@ -25,20 +27,22 @@ public class BookInstance {
     this.id = id;
     this.bookId = bookId;
     this.type = type;
+    this.status = status;
     this.onLoan = onLoan;
   }
 
   public static BookInstance circulating(UUID bookId) {
-    return new BookInstance(UUID.randomUUID(), bookId, BookType.CIRCULATING, false);
+    return new BookInstance(UUID.randomUUID(), bookId, BookType.CIRCULATING, BookInstanceStatus.AVAILABLE, false);
   }
 
   public static BookInstance restricted(UUID bookId) {
-    return new BookInstance(UUID.randomUUID(), bookId, BookType.RESTRICTED, false);
+    return new BookInstance(UUID.randomUUID(), bookId, BookType.RESTRICTED, BookInstanceStatus.AVAILABLE, false);
   }
 
-  public void update(UUID bookId, BookType type, Boolean onLoan) {
+  public void update(UUID bookId, BookType type, BookInstanceStatus status, Boolean onLoan) {
     if (bookId != null) this.bookId = bookId;
     if (type != null) this.type = type;
+    if (status != null) this.status = status;
     if (onLoan != null) this.onLoan = onLoan;
   }
 
@@ -52,6 +56,10 @@ public class BookInstance {
 
   public BookType getType() {
     return type;
+  }
+
+  public BookInstanceStatus getStatus() {
+    return status;
   }
 
   public boolean isRestricted() {
@@ -68,6 +76,10 @@ public class BookInstance {
 
   public void setType(BookType type) {
     this.type = type;
+  }
+
+  public void setStatus(BookInstanceStatus status) {
+    this.status = status;
   }
 
   public void setOnLoan(boolean onLoan) {

@@ -5,6 +5,7 @@ import com.sartiniomar.library.catalog.application.port.out.BookInstanceReposito
 import com.sartiniomar.library.catalog.application.port.out.BookRepository;
 import com.sartiniomar.library.catalog.domain.book.Book;
 import com.sartiniomar.library.catalog.domain.bookInstance.BookInstance;
+import com.sartiniomar.library.catalog.domain.bookInstance.BookInstanceStatus;
 import com.sartiniomar.library.catalog.domain.bookInstance.BookType;
 import com.sartiniomar.library.catalog.support.builder.BookTestDataBuilder;
 import org.junit.jupiter.api.Test;
@@ -44,6 +45,7 @@ class CreateRestrictedBookInstanceServiceTest {
     assertNotNull(result.getId());
     assertEquals(book.getId(), result.getBookId());
     assertEquals(BookType.RESTRICTED, result.getType());
+    assertEquals(BookInstanceStatus.AVAILABLE, result.getStatus());
     assertFalse(result.isOnLoan());
 
     verify(bookRepository, times(1)).findById(book.getId());

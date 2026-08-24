@@ -1,6 +1,7 @@
 package com.sartiniomar.library.loan.domain.loan;
 
 import com.sartiniomar.library.loan.domain.bookInstance.BookInstance;
+import com.sartiniomar.library.loan.domain.bookInstance.BookInstanceStatus;
 import com.sartiniomar.library.loan.domain.bookInstance.BookType;
 import com.sartiniomar.library.loan.domain.patron.Patron;
 import com.sartiniomar.library.loan.domain.patron.PatronType;
@@ -15,7 +16,7 @@ public class LoanTest {
   @Test
   void should_create_successfully_reserve() {
     Patron patron = new Patron(UUID.randomUUID(), PatronType.REGULAR);
-    BookInstance book = new BookInstance(UUID.randomUUID(), UUID.randomUUID(), BookType.CIRCULATING, true);
+    BookInstance book = new BookInstance(UUID.randomUUID(), UUID.randomUUID(), BookType.CIRCULATING, BookInstanceStatus.RESERVED,true);
 
     Loan loan = Loan.createReserve(patron.getId(), book.getId());
 
@@ -29,7 +30,7 @@ public class LoanTest {
   @Test
   void should_create_successfully_lent() {
     Patron patron = new Patron(UUID.randomUUID(), PatronType.REGULAR);
-    BookInstance book = new BookInstance(UUID.randomUUID(), UUID.randomUUID(), BookType.CIRCULATING, false);
+    BookInstance book = new BookInstance(UUID.randomUUID(), UUID.randomUUID(), BookType.CIRCULATING, BookInstanceStatus.AVAILABLE,false);
 
     Loan loan = Loan.createLent(patron.getId(), book.getId());
 

@@ -1,4 +1,4 @@
-package com.sartiniomar.library.loan.domain.loan;
+package com.sartiniomar.library.loan.domain.loan.reserve;
 
 import java.util.UUID;
 
