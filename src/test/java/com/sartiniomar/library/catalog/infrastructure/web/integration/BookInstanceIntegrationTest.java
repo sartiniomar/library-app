@@ -3,6 +3,7 @@ package com.sartiniomar.library.catalog.infrastructure.web.integration;
 import com.sartiniomar.library.catalog.application.port.out.BookInstanceRepository;
 import com.sartiniomar.library.catalog.domain.book.Book;
 import com.sartiniomar.library.catalog.domain.bookInstance.BookInstance;
+import com.sartiniomar.library.catalog.domain.bookInstance.BookInstanceStatus;
 import com.sartiniomar.library.catalog.domain.bookInstance.BookType;
 import com.sartiniomar.library.catalog.infrastructure.web.dto.BookInstanceResponse;
 import com.sartiniomar.library.catalog.infrastructure.web.integration.support.factory.BookInstanceTestFactory;
@@ -42,12 +43,12 @@ public class BookInstanceIntegrationTest extends BookInstanceHttpHelper {
     BookInstance bookInstance = bookInstanceRepository.findById(response.id()).orElseThrow();
 
     assertThat(bookInstance)
-        .extracting("bookId", "type", "onLoan")
-        .containsExactly(book.getId(), BookType.CIRCULATING, false);
+        .extracting("bookId", "type", "status")
+        .containsExactly(book.getId(), BookType.CIRCULATING, BookInstanceStatus.AVAILABLE);
 
     assertEquals(book.getId(), response.bookId());
     assertEquals(BookType.CIRCULATING, response.type());
-    assertEquals(false, response.onLoan());
+    assertEquals(BookInstanceStatus.AVAILABLE, response.status());
 
     assertEquals(initialCount + 1, JdbcTestUtils.countRowsInTable(jdbcTemplate, "book_instance"));
   }
@@ -58,7 +59,7 @@ public class BookInstanceIntegrationTest extends BookInstanceHttpHelper {
     ErrorResponse response = createBookInstanceCirculatingNotFound(bookId);
 
     assertEquals("404 NOT_FOUND", response.code());
-    assertEquals("Book not found with id: " + bookId, response.errors().get(0).description());
+    assertEquals("Book not found with id: " + bookId, response.errors().getFirst().description());
   }
 
   @Test
@@ -73,12 +74,12 @@ public class BookInstanceIntegrationTest extends BookInstanceHttpHelper {
     BookInstance bookInstance = bookInstanceRepository.findById(response.id()).orElseThrow();
 
     assertThat(bookInstance)
-        .extracting("bookId", "type", "onLoan")
-        .containsExactly(book.getId(), BookType.RESTRICTED, false);
+        .extracting("bookId", "type", "status")
+        .containsExactly(book.getId(), BookType.RESTRICTED, BookInstanceStatus.AVAILABLE);
 
     assertEquals(book.getId(), response.bookId());
     assertEquals(BookType.RESTRICTED, response.type());
-    assertEquals(false, response.onLoan());
+    assertEquals(BookInstanceStatus.AVAILABLE, response.status());
 
     assertEquals(initialCount + 1, JdbcTestUtils.countRowsInTable(jdbcTemplate, "book_instance"));
   }
@@ -103,13 +104,13 @@ public class BookInstanceIntegrationTest extends BookInstanceHttpHelper {
     BookInstance bookInstanceBBDD = bookInstanceRepository.findById(response.id()).orElseThrow();
 
     assertThat(bookInstanceBBDD)
-        .extracting("bookId", "type", "onLoan")
-        .containsExactly(bookInstance.getBookId(), BookType.RESTRICTED, true);
+        .extracting("bookId", "type", "status")
+        .containsExactly(bookInstance.getBookId(), BookType.RESTRICTED, BookInstanceStatus.RESERVED);
 
     assertEquals(bookInstance.getId(), response.id());
     assertEquals(bookInstance.getBookId(), response.bookId());
     assertEquals(BookType.RESTRICTED, response.type());
-    assertEquals(true, response.onLoan());
+    assertEquals(BookInstanceStatus.RESERVED, response.status());
   }
 
   @Test
@@ -118,7 +119,7 @@ public class BookInstanceIntegrationTest extends BookInstanceHttpHelper {
     ErrorResponse response = updateBookInstanceCirculatingNotFound(id, UUID.randomUUID());
 
     assertEquals("404 NOT_FOUND", response.code());
-    assertEquals("Book Instance not found with id: " + id, response.errors().get(0).description());
+    assertEquals("Book Instance not found with id: " + id, response.errors().getFirst().description());
   }
 
   @Test
@@ -131,7 +132,7 @@ public class BookInstanceIntegrationTest extends BookInstanceHttpHelper {
     assertEquals(bookInstance.getId(), response.id());
     assertEquals(bookInstance.getBookId(), response.bookId());
     assertEquals(bookInstance.getType(), response.type());
-    assertEquals(bookInstance.isOnLoan(), response.onLoan());
+    assertEquals(bookInstance.getStatus(), response.status());
   }
 
   @Test
@@ -140,14 +141,14 @@ public class BookInstanceIntegrationTest extends BookInstanceHttpHelper {
     ErrorResponse response = getBookInstanceByIdNotFound(id);
 
     assertEquals("404 NOT_FOUND", response.code());
-    assertEquals("Book Instance not found with id: " + id, response.errors().get(0).description());
+    assertEquals("Book Instance not found with id: " + id, response.errors().getFirst().description());
   }
 
   @Test
   void shouldGetAllBookInstancesByBookId() throws Exception {
     Book book = bookFactory.createDefault();
-    BookInstance bookInstance1 = bookInstanceFactory.createCirculating(book.getId(), false);
-    BookInstance bookInstance2 = bookInstanceFactory.createRestricted(book.getId(), false);
+    BookInstance bookInstance1 = bookInstanceFactory.createCirculating(book.getId());
+    BookInstance bookInstance2 = bookInstanceFactory.createRestricted(book.getId());
     flushAndClear();
 
     List<BookInstanceResponse> response = getAllBookInstancesByBookId(book.getId());
@@ -156,11 +157,11 @@ public class BookInstanceIntegrationTest extends BookInstanceHttpHelper {
     assertEquals(bookInstance1.getId(), response.getFirst().id());
     assertEquals(bookInstance1.getBookId(), response.getFirst().bookId());
     assertEquals(bookInstance1.getType(), response.getFirst().type());
-    assertEquals(bookInstance1.isOnLoan(), response.getFirst().onLoan());
+    assertEquals(bookInstance1.getStatus(), response.getFirst().status());
     assertEquals(bookInstance2.getId(), response.get(1).id());
     assertEquals(bookInstance2.getBookId(), response.get(1).bookId());
     assertEquals(bookInstance2.getType(), response.get(1).type());
-    assertEquals(bookInstance2.isOnLoan(), response.get(1).onLoan());
+    assertEquals(bookInstance2.getStatus(), response.get(1).status());
   }
 
   @Test
@@ -175,7 +176,7 @@ public class BookInstanceIntegrationTest extends BookInstanceHttpHelper {
   @Test
   void shouldDeleteBookInstance() throws Exception {
     Book book = bookFactory.createDefault();
-    BookInstance bookInstance = bookInstanceFactory.createCirculating(book.getId(), false);
+    BookInstance bookInstance = bookInstanceFactory.createCirculating(book.getId());
     flushAndClear();
 
     int initialCount = JdbcTestUtils.countRowsInTable(jdbcTemplate, "book_instance");

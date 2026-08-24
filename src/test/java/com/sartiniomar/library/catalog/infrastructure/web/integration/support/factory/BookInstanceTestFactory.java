@@ -7,7 +7,6 @@ import com.sartiniomar.library.catalog.domain.bookInstance.BookType;
 import com.sartiniomar.library.catalog.support.builder.BookInstanceTestDataBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
 import java.util.UUID;
 
 @Component
@@ -22,9 +21,9 @@ public class BookInstanceTestFactory {
     );
   }
 
-  public BookInstance createCirculating(UUID bookId, Boolean onHold) {
+  public BookInstance createCirculating(UUID bookId) {
     return bookInstanceRepository.save(
-        new BookInstanceTestDataBuilder().build(bookId, BookType.CIRCULATING, BookInstanceStatus.AVAILABLE, onHold)
+        new BookInstanceTestDataBuilder().build(bookId, BookType.CIRCULATING, BookInstanceStatus.AVAILABLE)
     );
   }
 
@@ -34,9 +33,9 @@ public class BookInstanceTestFactory {
     );
   }
 
-  public BookInstance createRestricted(UUID bookId, Boolean onHold) {
+  public BookInstance createRestricted(UUID bookId) {
     return bookInstanceRepository.save(
-        new BookInstanceTestDataBuilder().build(bookId, BookType.RESTRICTED, BookInstanceStatus.AVAILABLE, onHold)
+        new BookInstanceTestDataBuilder().build(bookId, BookType.RESTRICTED, BookInstanceStatus.AVAILABLE)
     );
   }
 }

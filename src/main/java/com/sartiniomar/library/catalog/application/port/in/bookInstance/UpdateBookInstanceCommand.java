@@ -5,5 +5,5 @@ import com.sartiniomar.library.catalog.domain.bookInstance.BookInstanceStatus;
 
 import java.util.UUID;
 
-public record UpdateBookInstanceCommand(UUID id, BookType type, BookInstanceStatus status, Boolean onHold) {
+public record UpdateBookInstanceCommand(UUID id, BookType type, BookInstanceStatus status) {
 }

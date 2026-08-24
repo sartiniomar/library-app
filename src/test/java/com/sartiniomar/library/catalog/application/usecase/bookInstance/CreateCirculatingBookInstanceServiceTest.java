@@ -15,7 +15,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
@@ -50,7 +49,6 @@ class CreateCirculatingBookInstanceServiceTest {
     assertEquals(book.getId(), result.getBookId());
     assertEquals(BookType.CIRCULATING, result.getType());
     assertEquals(BookInstanceStatus.AVAILABLE, result.getStatus());
-    assertFalse(result.isOnLoan());
 
     verify(bookRepository, times(1)).findById(book.getId());
     verify(repository, times(1)).save(any());

@@ -5,7 +5,6 @@ import com.sartiniomar.library.catalog.domain.bookInstance.BookType;
 
 public record UpdateBookInstanceRequest(
     BookType type,
-    BookInstanceStatus status,
-    Boolean onHold
+    BookInstanceStatus status
 ) {
 }

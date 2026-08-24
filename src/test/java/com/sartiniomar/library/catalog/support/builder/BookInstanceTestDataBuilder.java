@@ -13,7 +13,7 @@ public class BookInstanceTestDataBuilder {
 
   public BookInstance buildRestrictedDefault() {return BookInstance.restricted(bookId);}
 
-  public BookInstance build(UUID bookId, BookType type, BookInstanceStatus status, Boolean onHold) {
-    return new BookInstance(UUID.randomUUID(), bookId, type, status, onHold);
+  public BookInstance build(UUID bookId, BookType type, BookInstanceStatus status) {
+    return new BookInstance(UUID.randomUUID(), bookId, type, status);
   }
 }

@@ -51,7 +51,7 @@ public class BookInstanceController {
 
   @PutMapping("/{id}")
   public ResponseEntity<BookInstanceResponse> update(@PathVariable UUID id, @RequestBody UpdateBookInstanceRequest request) {
-    UpdateBookInstanceCommand command = new UpdateBookInstanceCommand(id, request.type(), request.status(), request.onHold());
+    UpdateBookInstanceCommand command = new UpdateBookInstanceCommand(id, request.type(), request.status());
     return ResponseEntity.ok(bookInstanceMapper.bookInstanceToBookInstanceResponse(updateBookInstanceService.execute(command)));
   }
 

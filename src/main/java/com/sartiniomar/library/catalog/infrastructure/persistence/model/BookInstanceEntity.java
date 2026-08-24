@@ -17,14 +17,18 @@ import java.util.UUID;
 @Getter
 @Setter
 public class BookInstanceEntity {
+
   @Id
   private UUID id;
+
   private UUID bookId;
+
   @Enumerated(EnumType.STRING)
   private BookType type;
+
   @Enumerated(EnumType.STRING)
   private BookInstanceStatus status;
-  private Boolean onLoan;
+
   @Version
   private Long version;
 }
