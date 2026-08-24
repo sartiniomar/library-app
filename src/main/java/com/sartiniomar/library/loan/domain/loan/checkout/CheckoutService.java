@@ -1,4 +1,4 @@
-package com.sartiniomar.library.loan.domain.loan.reserve;
+package com.sartiniomar.library.loan.domain.loan.checkout;
 
 import com.sartiniomar.library.loan.domain.bookInstance.BookInstance;
 import com.sartiniomar.library.loan.domain.loan.DomainPolicy;
@@ -8,13 +8,14 @@ import com.sartiniomar.library.loan.domain.loan.LoanBookEvent;
 import com.sartiniomar.library.loan.domain.patron.Patron;
 import java.util.List;
 
-public class ReserveService {
+public class CheckoutService {
 
-  public DomainResult<Loan> reserve(Patron patron, BookInstance bookInstance) {
+  public DomainResult<Loan> checkout(Patron patron, BookInstance bookInstance) {
     DomainPolicy.ensurePatronCanLoanBook(patron, bookInstance);
-    bookInstance.ensureCanBeReserved();
-    Loan hold = Loan.createReserve(patron.getId(), bookInstance.getId());
+    bookInstance.ensureCanBeCheckout();
+    Loan hold = Loan.createLent(patron.getId(), bookInstance.getId());
     LoanBookEvent event = new LoanBookEvent(patron.getId(), bookInstance.getId(), hold.getStatus().toString());
     return new DomainResult<>(hold, List.of(event));
   }
+
 }
