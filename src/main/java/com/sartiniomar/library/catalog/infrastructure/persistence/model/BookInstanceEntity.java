@@ -1,5 +1,6 @@
 package com.sartiniomar.library.catalog.infrastructure.persistence.model;
 
+import com.sartiniomar.library.catalog.domain.bookInstance.BookInstanceStatus;
 import com.sartiniomar.library.catalog.domain.bookInstance.BookType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -21,6 +22,8 @@ public class BookInstanceEntity {
   private UUID bookId;
   @Enumerated(EnumType.STRING)
   private BookType type;
+  @Enumerated(EnumType.STRING)
+  private BookInstanceStatus status;
   private Boolean onLoan;
   @Version
   private Long version;

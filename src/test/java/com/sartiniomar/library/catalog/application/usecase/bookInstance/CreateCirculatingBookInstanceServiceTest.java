@@ -5,6 +5,7 @@ import com.sartiniomar.library.catalog.application.port.out.BookInstanceReposito
 import com.sartiniomar.library.catalog.application.port.out.BookRepository;
 import com.sartiniomar.library.catalog.domain.book.Book;
 import com.sartiniomar.library.catalog.domain.bookInstance.BookInstance;
+import com.sartiniomar.library.catalog.domain.bookInstance.BookInstanceStatus;
 import com.sartiniomar.library.catalog.domain.bookInstance.BookType;
 import com.sartiniomar.library.catalog.support.builder.BookTestDataBuilder;
 import org.junit.jupiter.api.Test;
@@ -14,9 +15,13 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.times;
 
 @ExtendWith(MockitoExtension.class)
 class CreateCirculatingBookInstanceServiceTest {
@@ -44,6 +49,7 @@ class CreateCirculatingBookInstanceServiceTest {
     assertNotNull(result.getId());
     assertEquals(book.getId(), result.getBookId());
     assertEquals(BookType.CIRCULATING, result.getType());
+    assertEquals(BookInstanceStatus.AVAILABLE, result.getStatus());
     assertFalse(result.isOnLoan());
 
     verify(bookRepository, times(1)).findById(book.getId());

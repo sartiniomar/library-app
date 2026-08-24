@@ -11,6 +11,7 @@ import com.sartiniomar.library.catalog.application.port.in.bookInstance.UpdateBo
 import com.sartiniomar.library.catalog.application.port.in.bookInstance.UpdateBookInstanceUseCase;
 import com.sartiniomar.library.catalog.domain.bookInstance.BookInstance;
 import com.sartiniomar.library.catalog.domain.bookInstance.BookInstanceNotFoundException;
+import com.sartiniomar.library.catalog.domain.bookInstance.BookInstanceStatus;
 import com.sartiniomar.library.catalog.domain.bookInstance.BookType;
 import com.sartiniomar.library.catalog.support.builder.BookInstanceTestDataBuilder;
 import lombok.SneakyThrows;
@@ -22,8 +23,16 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.doThrow;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -62,6 +71,7 @@ public class BookInstanceControllerTest extends LibraryApplicationTests  {
         .andExpect(jsonPath("$.id").exists())
         .andExpect(jsonPath("$.bookId").value(bookInstance.getBookId().toString()))
         .andExpect(jsonPath("$.type").value(BookType.CIRCULATING.toString()))
+        .andExpect(jsonPath("$.status").value(BookInstanceStatus.AVAILABLE.toString()))
         .andExpect(jsonPath("$.onLoan").value(false));
 
     assertEquals(bookInstance.getBookId(), createBookCommandArgumentCaptor.getValue().bookId());
@@ -116,6 +126,7 @@ public class BookInstanceControllerTest extends LibraryApplicationTests  {
         .andExpect(jsonPath("$.id").exists())
         .andExpect(jsonPath("$.bookId").value(bookInstance.getBookId().toString()))
         .andExpect(jsonPath("$.type").value(BookType.RESTRICTED.toString()))
+        .andExpect(jsonPath("$.status").value(BookInstanceStatus.AVAILABLE.toString()))
         .andExpect(jsonPath("$.onLoan").value(false));
 
     assertEquals(bookInstance.getBookId(), createBookCommandArgumentCaptor.getValue().bookId());
@@ -161,7 +172,7 @@ public class BookInstanceControllerTest extends LibraryApplicationTests  {
         ArgumentCaptor.forClass(UpdateBookInstanceCommand.class);
 
     UUID  bookId = UUID.randomUUID();
-    BookInstance bookInstance = new BookInstanceTestDataBuilder().build(bookId, BookType.RESTRICTED, true);
+    BookInstance bookInstance = new BookInstanceTestDataBuilder().build(bookId, BookType.RESTRICTED, BookInstanceStatus.RESERVED, true);
 
     when(updateBookInstanceUseCase.execute(updateBookCommandArgumentCaptor.capture())).thenReturn(bookInstance);
 
@@ -174,10 +185,12 @@ public class BookInstanceControllerTest extends LibraryApplicationTests  {
         .andExpect(jsonPath("$.id").value(bookInstance.getId().toString()))
         .andExpect(jsonPath("$.bookId").value(bookInstance.getBookId().toString()))
         .andExpect(jsonPath("$.type").value(bookInstance.getType().toString()))
+        .andExpect(jsonPath("$.status").value(BookInstanceStatus.RESERVED.toString()))
         .andExpect(jsonPath("$.onLoan").value(bookInstance.isOnLoan()));
 
     assertEquals(bookInstance.getId(), updateBookCommandArgumentCaptor.getValue().id());
     assertEquals(BookType.RESTRICTED, updateBookCommandArgumentCaptor.getValue().type());
+    assertEquals(BookInstanceStatus.RESERVED, updateBookCommandArgumentCaptor.getValue().status());
     assertEquals(true, updateBookCommandArgumentCaptor.getValue().onHold());
 
     verify(updateBookInstanceUseCase, times(1)).execute(updateBookCommandArgumentCaptor.getValue());
@@ -235,6 +248,7 @@ public class BookInstanceControllerTest extends LibraryApplicationTests  {
         .andExpect(jsonPath("$.id").value(bookInstance.getId().toString()))
         .andExpect(jsonPath("$.bookId").value(bookInstance.getBookId().toString()))
         .andExpect(jsonPath("$.type").value(BookType.CIRCULATING.toString()))
+        .andExpect(jsonPath("$.status").value(BookInstanceStatus.AVAILABLE.toString()))
         .andExpect(jsonPath("$.onLoan").value(false));
 
     assertEquals(bookInstance.getId(), uuidArgumentCaptor.getValue());
@@ -288,10 +302,12 @@ public class BookInstanceControllerTest extends LibraryApplicationTests  {
         .andExpect(jsonPath("$[0].id").value(bookInstance1.getId().toString()))
         .andExpect(jsonPath("$[0].bookId").value(bookInstance1.getBookId().toString()))
         .andExpect(jsonPath("$[0].type").value(bookInstance1.getType().toString()))
+        .andExpect(jsonPath("$[0].status").value(BookInstanceStatus.AVAILABLE.toString()))
         .andExpect(jsonPath("$[0].onLoan").value(bookInstance1.isOnLoan()))
         .andExpect(jsonPath("$[1].id").value(bookInstance2.getId().toString()))
         .andExpect(jsonPath("$[1].bookId").value(bookInstance2.getBookId().toString()))
         .andExpect(jsonPath("$[1].type").value(bookInstance2.getType().toString()))
+        .andExpect(jsonPath("$[1].status").value(BookInstanceStatus.AVAILABLE.toString()))
         .andExpect(jsonPath("$[1].onLoan").value(bookInstance2.isOnLoan()));
 
     verify(getAllBookInstancesByBookIdUseCase, times(1)).execute(bookInstance1.getBookId());
