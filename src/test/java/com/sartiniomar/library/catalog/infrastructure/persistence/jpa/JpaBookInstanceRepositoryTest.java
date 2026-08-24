@@ -68,8 +68,6 @@ class JpaBookInstanceRepositoryTest {
     entityManager.clear();
 
     BookInstance toUpdate = repository.findById(saved.getId()).orElseThrow();
-    UUID newBookId = UUID.randomUUID();
-    toUpdate.setBookId(newBookId);
     toUpdate.setType(BookType.RESTRICTED);
     toUpdate.setStatus(BookInstanceStatus.UNAVAILABLE);
 
@@ -80,7 +78,6 @@ class JpaBookInstanceRepositoryTest {
 
     BookInstance updated = repository.findById(saved.getId()).orElseThrow();
     assertAll(
-        () -> assertEquals(newBookId, updated.getBookId()),
         () -> assertEquals(BookType.RESTRICTED, updated.getType()),
         () -> assertEquals(BookInstanceStatus.UNAVAILABLE, updated.getStatus())
     );

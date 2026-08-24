@@ -29,24 +29,11 @@ public class BookInstanceTest {
   }
 
   @Test
-  void should_update_book_id_in_circulating_book_instance() {
-    UUID bookId = UUID.randomUUID();
-    BookInstance bookInstance = BookInstance.circulating(bookId);
-
-    UUID updatedBookId = UUID.randomUUID();
-    bookInstance.update(updatedBookId, null, null);
-
-    assertEquals(updatedBookId , bookInstance.getBookId());
-    assertEquals(BookType.CIRCULATING, bookInstance.getType());
-    assertEquals(BookInstanceStatus.AVAILABLE, bookInstance.getStatus());
-  }
-
-  @Test
   void should_update_book_type_in_circulating_book_instance() {
     UUID bookId = UUID.randomUUID();
     BookInstance bookInstance = BookInstance.circulating(bookId);
 
-    bookInstance.update(null, BookType.RESTRICTED, null);
+    bookInstance.update(BookType.RESTRICTED, null);
 
     assertEquals(bookId , bookInstance.getBookId());
     assertEquals(BookType.RESTRICTED, bookInstance.getType());
@@ -58,7 +45,7 @@ public class BookInstanceTest {
     UUID bookId = UUID.randomUUID();
     BookInstance bookInstance = BookInstance.circulating(bookId);
 
-    bookInstance.update(null, null, BookInstanceStatus.RESERVED);
+    bookInstance.update(null, BookInstanceStatus.RESERVED);
 
     assertEquals(bookId , bookInstance.getBookId());
     assertEquals(BookType.CIRCULATING, bookInstance.getType());
@@ -66,24 +53,11 @@ public class BookInstanceTest {
   }
 
   @Test
-  void should_update_book_id_in_restricted_book_instance() {
-    UUID bookId = UUID.randomUUID();
-    BookInstance bookInstance = BookInstance.restricted(bookId);
-
-    UUID updatedBookId = UUID.randomUUID();
-    bookInstance.update(updatedBookId, null, null);
-
-    assertEquals(updatedBookId , bookInstance.getBookId());
-    assertEquals(BookType.RESTRICTED, bookInstance.getType());
-    assertEquals(BookInstanceStatus.AVAILABLE, bookInstance.getStatus());
-  }
-
-  @Test
   void should_update_book_type_in_restricted_book_instance() {
     UUID bookId = UUID.randomUUID();
     BookInstance bookInstance = BookInstance.restricted(bookId);
 
-    bookInstance.update(null, BookType.CIRCULATING, null);
+    bookInstance.update(BookType.CIRCULATING, null);
 
     assertEquals(bookId , bookInstance.getBookId());
     assertEquals(BookType.CIRCULATING, bookInstance.getType());
@@ -95,7 +69,7 @@ public class BookInstanceTest {
     UUID bookId = UUID.randomUUID();
     BookInstance bookInstance = BookInstance.restricted(bookId);
 
-    bookInstance.update(null, null, BookInstanceStatus.RESERVED);
+    bookInstance.update(null, BookInstanceStatus.RESERVED);
 
     assertEquals(bookId , bookInstance.getBookId());
     assertEquals(BookType.RESTRICTED, bookInstance.getType());
