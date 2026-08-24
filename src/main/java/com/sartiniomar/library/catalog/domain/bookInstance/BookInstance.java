@@ -5,7 +5,7 @@ import java.util.UUID;
 public class BookInstance {
 
   private final UUID id;
-  private UUID bookId;
+  private final UUID bookId;
   private BookType type;
   private BookInstanceStatus status;
 
@@ -34,8 +34,7 @@ public class BookInstance {
     return new BookInstance(UUID.randomUUID(), bookId, BookType.RESTRICTED, BookInstanceStatus.AVAILABLE);
   }
 
-  public void update(UUID bookId, BookType type, BookInstanceStatus status) {
-    if (bookId != null) this.bookId = bookId;
+  public void update(BookType type, BookInstanceStatus status) {
     if (type != null) this.type = type;
     if (status != null) this.status = status;
   }
@@ -58,10 +57,6 @@ public class BookInstance {
 
   public boolean isRestricted() {
     return type == BookType.RESTRICTED;
-  }
-
-  public void setBookId(UUID bookId) {
-    this.bookId = bookId;
   }
 
   public void setType(BookType type) {
