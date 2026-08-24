@@ -3,6 +3,7 @@ package com.sartiniomar.library.catalog.application.usecase.bookInstance;
 import com.sartiniomar.library.catalog.application.port.out.BookInstanceRepository;
 import com.sartiniomar.library.catalog.domain.bookInstance.BookInstance;
 import com.sartiniomar.library.catalog.domain.bookInstance.BookInstanceNotFoundException;
+import com.sartiniomar.library.catalog.domain.bookInstance.BookInstanceStatus;
 import com.sartiniomar.library.catalog.domain.bookInstance.BookType;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -12,7 +13,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Optional;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.times;
@@ -38,6 +41,7 @@ class GetBookInstanceByIdServiceTest {
     assertEquals(existing.getId(), result.getId());
     assertEquals(BookType.CIRCULATING, result.getType());
     assertEquals(existing.getBookId(), result.getBookId());
+    assertEquals(BookInstanceStatus.AVAILABLE, result.getStatus());
     assertTrue(result.isOnLoan());
 
     verify(repository, times(1)).findById(existing.getId());

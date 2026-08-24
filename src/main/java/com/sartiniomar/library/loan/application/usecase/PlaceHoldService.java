@@ -8,7 +8,7 @@ import com.sartiniomar.library.loan.domain.bookInstance.BookInstance;
 import com.sartiniomar.library.loan.application.port.in.PlaceHoldCommand;
 import com.sartiniomar.library.loan.application.port.in.PlaceHoldUseCase;
 import com.sartiniomar.library.loan.domain.bookInstance.BookInstanceNotFoundException;
-import com.sartiniomar.library.loan.domain.loan.ReserveService;
+import com.sartiniomar.library.loan.domain.loan.reserve.ReserveService;
 import com.sartiniomar.library.loan.domain.loan.Loan;
 import com.sartiniomar.library.loan.domain.loan.DomainResult;
 import com.sartiniomar.library.loan.domain.patron.Patron;

@@ -1,6 +1,7 @@
 package com.sartiniomar.library.catalog.support.builder;
 
 import com.sartiniomar.library.catalog.domain.bookInstance.BookInstance;
+import com.sartiniomar.library.catalog.domain.bookInstance.BookInstanceStatus;
 import com.sartiniomar.library.catalog.domain.bookInstance.BookType;
 import java.util.UUID;
 
@@ -12,7 +13,7 @@ public class BookInstanceTestDataBuilder {
 
   public BookInstance buildRestrictedDefault() {return BookInstance.restricted(bookId);}
 
-  public BookInstance build(UUID bookId, BookType type, Boolean onHold) {
-    return new BookInstance(UUID.randomUUID(), bookId, type, onHold);
+  public BookInstance build(UUID bookId, BookType type, BookInstanceStatus status, Boolean onHold) {
+    return new BookInstance(UUID.randomUUID(), bookId, type, status, onHold);
   }
 }

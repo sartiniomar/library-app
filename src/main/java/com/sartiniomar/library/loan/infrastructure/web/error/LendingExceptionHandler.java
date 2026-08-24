@@ -1,6 +1,6 @@
 package com.sartiniomar.library.loan.infrastructure.web.error;
 
-import com.sartiniomar.library.loan.domain.bookInstance.BookAlreadyOnLoanException;
+import com.sartiniomar.library.loan.domain.bookInstance.BookInstanceNotAvailableException;
 import com.sartiniomar.library.loan.domain.bookInstance.BookInstanceNotFoundException;
 import com.sartiniomar.library.commons.infrastructure.web.error.ErrorResponse;
 import com.sartiniomar.library.commons.infrastructure.web.error.Error;
@@ -22,8 +22,8 @@ LendingExceptionHandler {
     return ResponseEntity.status(404).body(new ErrorResponse(HttpStatus.NOT_FOUND.toString(), errors));
   }
 
-  @ExceptionHandler(BookAlreadyOnLoanException.class)
-  public ResponseEntity<ErrorResponse> handleBookAlreadyOnLoanExceptionHandler(BookAlreadyOnLoanException ex) {
+  @ExceptionHandler(BookInstanceNotAvailableException.class)
+  public ResponseEntity<ErrorResponse> handleBookAlreadyOnLoanExceptionHandler(BookInstanceNotAvailableException ex) {
 
     List<Error> errors = List.of(new Error(ex.getMessage()));
 

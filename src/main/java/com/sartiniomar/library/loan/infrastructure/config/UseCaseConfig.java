@@ -6,7 +6,7 @@ import com.sartiniomar.library.loan.application.port.out.DomainEventPublisher;
 import com.sartiniomar.library.loan.application.port.out.LoanRepository;
 import com.sartiniomar.library.loan.application.port.out.PatronLoanRepository;
 import com.sartiniomar.library.loan.application.usecase.PlaceHoldService;
-import com.sartiniomar.library.loan.domain.loan.ReserveService;
+import com.sartiniomar.library.loan.domain.loan.reserve.ReserveService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
