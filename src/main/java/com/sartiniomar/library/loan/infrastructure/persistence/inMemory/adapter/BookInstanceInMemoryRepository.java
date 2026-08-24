@@ -16,6 +16,6 @@ public class BookInstanceInMemoryRepository implements BookInstanceLoanRepositor
   @Override
   public Optional<BookInstance> findById(UUID bookInstanceId) {
     return Optional.ofNullable(catalogStorage.getOrDefault(bookInstanceId,
-        new BookInstance(bookInstanceId, UUID.randomUUID(), BookType.CIRCULATING, BookInstanceStatus.AVAILABLE, false)));
+        new BookInstance(bookInstanceId, UUID.randomUUID(), BookType.CIRCULATING, BookInstanceStatus.AVAILABLE)));
   }
 }
