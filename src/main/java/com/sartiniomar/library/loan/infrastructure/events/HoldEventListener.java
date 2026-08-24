@@ -1,6 +1,6 @@
 package com.sartiniomar.library.loan.infrastructure.events;
 
-import com.sartiniomar.library.loan.domain.loan.ReserveBookEvent;
+import com.sartiniomar.library.loan.domain.loan.reserve.ReserveBookEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 

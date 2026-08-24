@@ -1,5 +1,6 @@
 package com.sartiniomar.library.catalog.infrastructure.persistence.jpa;
 
+import com.sartiniomar.library.catalog.domain.bookInstance.BookInstanceStatus;
 import com.sartiniomar.library.catalog.domain.bookInstance.BookType;
 import com.sartiniomar.library.catalog.infrastructure.mapper.BookInstanceMapper;
 import com.sartiniomar.library.catalog.infrastructure.mapper.BookInstanceMapperImpl;
@@ -27,7 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 class JpaBookInstanceRepositoryTest {
 
   @Autowired
-  private TestEntityManager em;
+  private TestEntityManager entityManager;
 
   @Autowired
   private BookInstanceJpaRepository jpaRepo;
@@ -47,14 +48,16 @@ class JpaBookInstanceRepositoryTest {
     BookInstance saved = repository.save(new BookInstanceTestDataBuilder().buildCirculatingDefault());
     assertNotNull(saved.getId());
 
-    em.flush();
-    em.clear();
+    entityManager.flush();
+    entityManager.clear();
 
     BookInstance found = repository.findById(saved.getId()).orElseThrow();
     assertAll(
+        () -> assertEquals(saved.getId(), found.getId()),
+        () -> assertEquals(saved.getBookId(), found.getBookId()),
         () -> assertEquals(BookType.CIRCULATING, found.getType()),
-        () -> assertFalse(found.isOnLoan()),
-        () -> assertEquals(saved.getBookId(), found.getBookId())
+        () -> assertEquals(BookInstanceStatus.AVAILABLE, found.getStatus()),
+        () -> assertFalse(found.isOnLoan())
     );
   }
 
@@ -62,21 +65,26 @@ class JpaBookInstanceRepositoryTest {
   void givenExistingBook_whenUpdate_thenPersisted() {
     BookInstance saved = repository.save(new BookInstanceTestDataBuilder().buildCirculatingDefault());
 
-    em.flush();
-    em.clear();
+    entityManager.flush();
+    entityManager.clear();
 
     BookInstance toUpdate = repository.findById(saved.getId()).orElseThrow();
+    UUID newBookId = UUID.randomUUID();
+    toUpdate.setBookId(newBookId);
     toUpdate.setType(BookType.RESTRICTED);
+    toUpdate.setStatus(BookInstanceStatus.UNAVAILABLE);
     toUpdate.setOnLoan(true);
 
     repository.save(toUpdate);
 
-    em.flush();
-    em.clear();
+    entityManager.flush();
+    entityManager.clear();
 
     BookInstance updated = repository.findById(saved.getId()).orElseThrow();
     assertAll(
+        () -> assertEquals(newBookId, updated.getBookId()),
         () -> assertEquals(BookType.RESTRICTED, updated.getType()),
+        () -> assertEquals(BookInstanceStatus.UNAVAILABLE, updated.getStatus()),
         () -> assertTrue(updated.isOnLoan())
     );
   }
@@ -84,18 +92,27 @@ class JpaBookInstanceRepositoryTest {
   @Test
   void givenManyInstances_whenFindAllByBookId_thenReturnsOnlyMatches() {
     UUID bookId = UUID.randomUUID();
-    BookInstance a = repository.save(new BookInstanceTestDataBuilder().build(bookId, BookType.CIRCULATING, false));
-    BookInstance b = repository.save(new BookInstanceTestDataBuilder().build(bookId, BookType.CIRCULATING, false));
-    repository.save(new BookInstanceTestDataBuilder().build(UUID.randomUUID(), BookType.CIRCULATING, false));
+    UUID otherBookId = UUID.randomUUID();
+    BookInstance a = repository.save(new BookInstanceTestDataBuilder().build(bookId, BookType.CIRCULATING, BookInstanceStatus.AVAILABLE,false));
+    BookInstance b = repository.save(new BookInstanceTestDataBuilder().build(bookId, BookType.CIRCULATING, BookInstanceStatus.AVAILABLE,false));
+    BookInstance c = repository.save(new BookInstanceTestDataBuilder().build(otherBookId, BookType.CIRCULATING, BookInstanceStatus.AVAILABLE, false));
 
-    em.flush();
-    em.clear();
+    entityManager.flush();
+    entityManager.clear();
 
     List<BookInstance> found = repository.findAllByBookId(bookId);
-    assertEquals(2, found.size());
+
     List<UUID> ids = found.stream().map(BookInstance::getId).toList();
     assertTrue(ids.contains(a.getId()));
     assertTrue(ids.contains(b.getId()));
+    assertFalse(ids.contains(c.getId()));
+    assertEquals(2, found.size());
+    assertEquals(bookId, found.getFirst().getBookId());
+    assertEquals(BookType.CIRCULATING, found.getFirst().getType());
+    assertEquals(BookInstanceStatus.AVAILABLE, found.getFirst().getStatus());
+    assertEquals(bookId, found.get(1).getBookId());
+    assertEquals(BookType.CIRCULATING, found.get(1).getType());
+    assertEquals(BookInstanceStatus.AVAILABLE, found.get(1).getStatus());
   }
 
   @Test
@@ -103,15 +120,15 @@ class JpaBookInstanceRepositoryTest {
     BookInstance saved = repository.save(new BookInstanceTestDataBuilder().buildCirculatingDefault());
     assertNotNull(saved.getId());
 
-    em.flush();
-    em.clear();
+    entityManager.flush();
+    entityManager.clear();
 
     assertTrue(repository.findById(saved.getId()).isPresent());
 
     repository.delete(saved.getId());
 
-    em.flush();
-    em.clear();
+    entityManager.flush();
+    entityManager.clear();
 
     assertFalse(repository.findById(saved.getId()).isPresent());
   }

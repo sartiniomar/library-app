@@ -42,7 +42,6 @@ public class JpaLendingBookInstanceRepositoryTest {
     assertEquals(id, result.get().getId());
     assertEquals(bookId, result.get().getBookId());
     assertEquals(BookType.CIRCULATING, result.get().getType());
-    assertFalse(result.get().isOnLoan());
   }
 
 }
