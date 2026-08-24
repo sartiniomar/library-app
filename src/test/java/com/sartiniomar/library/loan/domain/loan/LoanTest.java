@@ -16,7 +16,7 @@ public class LoanTest {
   @Test
   void should_create_successfully_reserve() {
     Patron patron = new Patron(UUID.randomUUID(), PatronType.REGULAR);
-    BookInstance book = new BookInstance(UUID.randomUUID(), UUID.randomUUID(), BookType.CIRCULATING, BookInstanceStatus.RESERVED,true);
+    BookInstance book = new BookInstance(UUID.randomUUID(), UUID.randomUUID(), BookType.CIRCULATING, BookInstanceStatus.RESERVED);
 
     Loan loan = Loan.createReserve(patron.getId(), book.getId());
 
@@ -30,7 +30,7 @@ public class LoanTest {
   @Test
   void should_create_successfully_lent() {
     Patron patron = new Patron(UUID.randomUUID(), PatronType.REGULAR);
-    BookInstance book = new BookInstance(UUID.randomUUID(), UUID.randomUUID(), BookType.CIRCULATING, BookInstanceStatus.AVAILABLE,false);
+    BookInstance book = new BookInstance(UUID.randomUUID(), UUID.randomUUID(), BookType.CIRCULATING, BookInstanceStatus.AVAILABLE);
 
     Loan loan = Loan.createLent(patron.getId(), book.getId());
 

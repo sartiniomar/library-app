@@ -5,8 +5,7 @@ import com.sartiniomar.library.loan.application.port.out.BookInstanceLoanReposit
 import com.sartiniomar.library.loan.application.port.out.DomainEventPublisher;
 import com.sartiniomar.library.loan.application.port.out.LoanRepository;
 import com.sartiniomar.library.loan.application.port.out.PatronLoanRepository;
-import com.sartiniomar.library.loan.application.usecase.PlaceHoldService;
-import com.sartiniomar.library.loan.domain.loan.reserve.ReserveService;
+import com.sartiniomar.library.loan.application.usecase.ReserveService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -19,9 +18,9 @@ public class UseCaseConfig {
       BookInstanceLoanRepository bookInstanceLoanRepository,
       LoanRepository loanRepository,
       DomainEventPublisher eventPublisher,
-      ReserveService service
+      com.sartiniomar.library.loan.domain.loan.reserve.ReserveService service
   ) {
-    return new PlaceHoldService(
+    return new ReserveService(
         patronLoanRepository,
         bookInstanceLoanRepository,
         loanRepository,
