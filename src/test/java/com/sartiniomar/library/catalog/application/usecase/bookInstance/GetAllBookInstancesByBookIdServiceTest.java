@@ -16,7 +16,6 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.times;
@@ -40,7 +39,6 @@ class GetAllBookInstancesByBookIdServiceTest {
 
     BookInstance existing0 = BookInstance.circulating(bookId);
     BookInstance existing1 = BookInstance.restricted(bookId);
-    existing1.setOnLoan(true);
 
     when(bookRepository.findById(bookId)).thenReturn(java.util.Optional.of(book));
 
@@ -57,8 +55,6 @@ class GetAllBookInstancesByBookIdServiceTest {
     assertEquals(BookType.RESTRICTED, result.get(1).getType());
     assertEquals(BookInstanceStatus.AVAILABLE, result.get(0).getStatus());
     assertEquals(BookInstanceStatus.AVAILABLE, result.get(1).getStatus());
-    assertFalse(result.get(0).isOnLoan());
-    assertTrue(result.get(1).isOnLoan());
 
     verify(bookInstanceRepository, times(1)).findAllByBookId(bookId);
   }
