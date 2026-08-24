@@ -37,7 +37,7 @@ public class ReserveServiceTest {
   void should_reserve_when_all_conditions_are_met() {
     Patron patron = new Patron(UUID.randomUUID(), PatronType.REGULAR);
     BookInstance book = new BookInstance(
-        UUID.randomUUID(), UUID.randomUUID(), BookType.CIRCULATING, BookInstanceStatus.AVAILABLE, false);
+        UUID.randomUUID(), UUID.randomUUID(), BookType.CIRCULATING, BookInstanceStatus.AVAILABLE);
 
     ReserveService service = new ReserveService();
     DomainResult<Loan> result = service.reserve(patron, book);
@@ -59,7 +59,7 @@ public class ReserveServiceTest {
   @Test void should_throw_exception_when_book_is_restricted_and_patron_is_regular() {
     Patron patron = new Patron(UUID.randomUUID(), PatronType.REGULAR);
     BookInstance book = new BookInstance(
-        UUID.randomUUID(), UUID.randomUUID(), BookType.RESTRICTED, BookInstanceStatus.AVAILABLE, false);
+        UUID.randomUUID(), UUID.randomUUID(), BookType.RESTRICTED, BookInstanceStatus.AVAILABLE);
     ReserveService service = new ReserveService();
 
     OnlyResearcherCanLoanRestrictedBooksException ex =
@@ -75,7 +75,7 @@ public class ReserveServiceTest {
   @SneakyThrows
   void should_throw_exception_when_book_is_not_available(BookInstanceStatus state) {
     Patron patron = new Patron(UUID.randomUUID(), PatronType.REGULAR);
-    BookInstance book = new BookInstance(UUID.randomUUID(), UUID.randomUUID(), BookType.CIRCULATING, state, false);
+    BookInstance book = new BookInstance(UUID.randomUUID(), UUID.randomUUID(), BookType.CIRCULATING, state);
     ReserveService service = new ReserveService();
 
     BookInstanceNotAvailableException ex =

@@ -36,7 +36,7 @@ public class CheckoutServiceTest {
   void should_checkout_when_all_conditions_are_met_and_available_book() {
     Patron patron = new Patron(UUID.randomUUID(), PatronType.REGULAR);
     BookInstance book = new BookInstance(
-        UUID.randomUUID(), UUID.randomUUID(), BookType.CIRCULATING, BookInstanceStatus.AVAILABLE, false);
+        UUID.randomUUID(), UUID.randomUUID(), BookType.CIRCULATING, BookInstanceStatus.AVAILABLE);
 
     CheckoutService service = new CheckoutService();
     DomainResult<Loan> result = service.checkout(patron, book);
@@ -59,7 +59,7 @@ public class CheckoutServiceTest {
   void should_checkout_when_all_conditions_are_met_and_reserved_book() {
     Patron patron = new Patron(UUID.randomUUID(), PatronType.REGULAR);
     BookInstance book = new BookInstance(
-        UUID.randomUUID(), UUID.randomUUID(), BookType.CIRCULATING, BookInstanceStatus.RESERVED, false);
+        UUID.randomUUID(), UUID.randomUUID(), BookType.CIRCULATING, BookInstanceStatus.RESERVED);
 
     CheckoutService service = new CheckoutService();
     DomainResult<Loan> result = service.checkout(patron, book);
@@ -81,7 +81,7 @@ public class CheckoutServiceTest {
   @Test void should_throw_exception_when_book_is_restricted_and_patron_is_regular() {
     Patron patron = new Patron(UUID.randomUUID(), PatronType.REGULAR);
     BookInstance book = new BookInstance(
-        UUID.randomUUID(), UUID.randomUUID(), BookType.RESTRICTED, BookInstanceStatus.AVAILABLE, false);
+        UUID.randomUUID(), UUID.randomUUID(), BookType.RESTRICTED, BookInstanceStatus.AVAILABLE);
     CheckoutService service = new CheckoutService();
 
     OnlyResearcherCanLoanRestrictedBooksException ex =
@@ -97,7 +97,7 @@ public class CheckoutServiceTest {
   @SneakyThrows
   void should_throw_exception_when_book_is_not_available(BookInstanceStatus state) {
     Patron patron = new Patron(UUID.randomUUID(), PatronType.REGULAR);
-    BookInstance book = new BookInstance(UUID.randomUUID(), UUID.randomUUID(), BookType.CIRCULATING, state, false);
+    BookInstance book = new BookInstance(UUID.randomUUID(), UUID.randomUUID(), BookType.CIRCULATING, state);
     CheckoutService service = new CheckoutService();
 
     BookInstanceNotAvailableException ex =
