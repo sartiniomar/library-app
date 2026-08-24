@@ -14,7 +14,7 @@ public class BookInstanceTest {
   void should_create_successfully_book_instance() {
     UUID id = UUID.randomUUID();
     UUID bookId = UUID.randomUUID();
-    BookInstance bookInstance = new BookInstance(id, bookId, BookType.CIRCULATING, BookInstanceStatus.AVAILABLE, false);
+    BookInstance bookInstance = new BookInstance(id, bookId, BookType.CIRCULATING, BookInstanceStatus.AVAILABLE);
 
     assertEquals(id, bookInstance.getId());
     assertEquals(bookId, bookInstance.getBookId());
@@ -26,7 +26,7 @@ public class BookInstanceTest {
   void should_throw_exception_when_book_instance_is_unavailable() {
     UUID id = UUID.randomUUID();
     UUID bookId = UUID.randomUUID();
-    BookInstance bookInstance = new BookInstance(id, bookId, BookType.CIRCULATING, BookInstanceStatus.UNAVAILABLE, true);
+    BookInstance bookInstance = new BookInstance(id, bookId, BookType.CIRCULATING, BookInstanceStatus.UNAVAILABLE);
 
     assertThrows(BookInstanceNotAvailableException.class, bookInstance::ensureCanBeReserved);
   }
@@ -35,7 +35,7 @@ public class BookInstanceTest {
   void should_return_true_when_book_instance_is_restricted() {
     UUID id = UUID.randomUUID();
     UUID bookId = UUID.randomUUID();
-    BookInstance book = new BookInstance(id, bookId, BookType.RESTRICTED, BookInstanceStatus.AVAILABLE, false);
+    BookInstance book = new BookInstance(id, bookId, BookType.RESTRICTED, BookInstanceStatus.AVAILABLE);
 
     assertTrue(book.isRestricted());
   }
@@ -44,7 +44,7 @@ public class BookInstanceTest {
   void should_return_false_when_book_instance_is_not_restricted() {
     UUID id = UUID.randomUUID();
     UUID bookId = UUID.randomUUID();
-    BookInstance book = new BookInstance(id, bookId, BookType.CIRCULATING, BookInstanceStatus.AVAILABLE, false);
+    BookInstance book = new BookInstance(id, bookId, BookType.CIRCULATING, BookInstanceStatus.AVAILABLE);
 
     assertFalse(book.isRestricted());
   }

@@ -8,7 +8,6 @@ import com.sartiniomar.library.loan.domain.bookInstance.BookInstance;
 import com.sartiniomar.library.loan.application.port.in.PlaceHoldCommand;
 import com.sartiniomar.library.loan.application.port.in.PlaceHoldUseCase;
 import com.sartiniomar.library.loan.domain.bookInstance.BookInstanceNotFoundException;
-import com.sartiniomar.library.loan.domain.loan.reserve.ReserveService;
 import com.sartiniomar.library.loan.domain.loan.Loan;
 import com.sartiniomar.library.loan.domain.loan.DomainResult;
 import com.sartiniomar.library.loan.domain.patron.Patron;
@@ -16,20 +15,20 @@ import com.sartiniomar.library.loan.domain.patron.PatronNotFoundException;
 import com.sartiniomar.library.loan.domain.loan.LoanLimitExceededException;
 import org.springframework.transaction.annotation.Transactional;
 
-public class PlaceHoldService implements PlaceHoldUseCase {
+public class ReserveService implements PlaceHoldUseCase {
 
   private final PatronLoanRepository patronRepository;
   private final BookInstanceLoanRepository bookInstanceLendingRepository;
   private final LoanRepository holdRepository;
   private final DomainEventPublisher eventPublisher;
-  private final ReserveService domainService;
+  private final com.sartiniomar.library.loan.domain.loan.reserve.ReserveService domainService;
 
-  public PlaceHoldService(
+  public ReserveService(
       PatronLoanRepository patronLoanRepository,
       BookInstanceLoanRepository bookInstanceLoanRepository,
       LoanRepository loanRepository,
       DomainEventPublisher eventPublisher,
-      ReserveService domainService
+      com.sartiniomar.library.loan.domain.loan.reserve.ReserveService domainService
   ) {
     this.patronRepository = patronLoanRepository;
     this.bookInstanceLendingRepository = bookInstanceLoanRepository;
