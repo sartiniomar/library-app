@@ -7,6 +7,5 @@ import java.util.UUID;
 public record BookInstanceResponse(UUID id,
                                    UUID bookId,
                                    BookType type,
-                                   BookInstanceStatus status,
-                                   Boolean onLoan) {
+                                   BookInstanceStatus status) {
 }

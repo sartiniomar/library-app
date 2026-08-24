@@ -71,8 +71,7 @@ public class BookInstanceControllerTest extends LibraryApplicationTests  {
         .andExpect(jsonPath("$.id").exists())
         .andExpect(jsonPath("$.bookId").value(bookInstance.getBookId().toString()))
         .andExpect(jsonPath("$.type").value(BookType.CIRCULATING.toString()))
-        .andExpect(jsonPath("$.status").value(BookInstanceStatus.AVAILABLE.toString()))
-        .andExpect(jsonPath("$.onLoan").value(false));
+        .andExpect(jsonPath("$.status").value(BookInstanceStatus.AVAILABLE.toString()));
 
     assertEquals(bookInstance.getBookId(), createBookCommandArgumentCaptor.getValue().bookId());
 
@@ -126,8 +125,7 @@ public class BookInstanceControllerTest extends LibraryApplicationTests  {
         .andExpect(jsonPath("$.id").exists())
         .andExpect(jsonPath("$.bookId").value(bookInstance.getBookId().toString()))
         .andExpect(jsonPath("$.type").value(BookType.RESTRICTED.toString()))
-        .andExpect(jsonPath("$.status").value(BookInstanceStatus.AVAILABLE.toString()))
-        .andExpect(jsonPath("$.onLoan").value(false));
+        .andExpect(jsonPath("$.status").value(BookInstanceStatus.AVAILABLE.toString()));
 
     assertEquals(bookInstance.getBookId(), createBookCommandArgumentCaptor.getValue().bookId());
 
@@ -172,7 +170,7 @@ public class BookInstanceControllerTest extends LibraryApplicationTests  {
         ArgumentCaptor.forClass(UpdateBookInstanceCommand.class);
 
     UUID  bookId = UUID.randomUUID();
-    BookInstance bookInstance = new BookInstanceTestDataBuilder().build(bookId, BookType.RESTRICTED, BookInstanceStatus.RESERVED, true);
+    BookInstance bookInstance = new BookInstanceTestDataBuilder().build(bookId, BookType.RESTRICTED, BookInstanceStatus.RESERVED);
 
     when(updateBookInstanceUseCase.execute(updateBookCommandArgumentCaptor.capture())).thenReturn(bookInstance);
 
@@ -185,13 +183,11 @@ public class BookInstanceControllerTest extends LibraryApplicationTests  {
         .andExpect(jsonPath("$.id").value(bookInstance.getId().toString()))
         .andExpect(jsonPath("$.bookId").value(bookInstance.getBookId().toString()))
         .andExpect(jsonPath("$.type").value(bookInstance.getType().toString()))
-        .andExpect(jsonPath("$.status").value(BookInstanceStatus.RESERVED.toString()))
-        .andExpect(jsonPath("$.onLoan").value(bookInstance.isOnLoan()));
+        .andExpect(jsonPath("$.status").value(BookInstanceStatus.RESERVED.toString()));
 
     assertEquals(bookInstance.getId(), updateBookCommandArgumentCaptor.getValue().id());
     assertEquals(BookType.RESTRICTED, updateBookCommandArgumentCaptor.getValue().type());
     assertEquals(BookInstanceStatus.RESERVED, updateBookCommandArgumentCaptor.getValue().status());
-    assertEquals(true, updateBookCommandArgumentCaptor.getValue().onHold());
 
     verify(updateBookInstanceUseCase, times(1)).execute(updateBookCommandArgumentCaptor.getValue());
   }
@@ -248,8 +244,7 @@ public class BookInstanceControllerTest extends LibraryApplicationTests  {
         .andExpect(jsonPath("$.id").value(bookInstance.getId().toString()))
         .andExpect(jsonPath("$.bookId").value(bookInstance.getBookId().toString()))
         .andExpect(jsonPath("$.type").value(BookType.CIRCULATING.toString()))
-        .andExpect(jsonPath("$.status").value(BookInstanceStatus.AVAILABLE.toString()))
-        .andExpect(jsonPath("$.onLoan").value(false));
+        .andExpect(jsonPath("$.status").value(BookInstanceStatus.AVAILABLE.toString()));
 
     assertEquals(bookInstance.getId(), uuidArgumentCaptor.getValue());
 
@@ -303,12 +298,10 @@ public class BookInstanceControllerTest extends LibraryApplicationTests  {
         .andExpect(jsonPath("$[0].bookId").value(bookInstance1.getBookId().toString()))
         .andExpect(jsonPath("$[0].type").value(bookInstance1.getType().toString()))
         .andExpect(jsonPath("$[0].status").value(BookInstanceStatus.AVAILABLE.toString()))
-        .andExpect(jsonPath("$[0].onLoan").value(bookInstance1.isOnLoan()))
         .andExpect(jsonPath("$[1].id").value(bookInstance2.getId().toString()))
         .andExpect(jsonPath("$[1].bookId").value(bookInstance2.getBookId().toString()))
         .andExpect(jsonPath("$[1].type").value(bookInstance2.getType().toString()))
-        .andExpect(jsonPath("$[1].status").value(BookInstanceStatus.AVAILABLE.toString()))
-        .andExpect(jsonPath("$[1].onLoan").value(bookInstance2.isOnLoan()));
+        .andExpect(jsonPath("$[1].status").value(BookInstanceStatus.AVAILABLE.toString()));
 
     verify(getAllBookInstancesByBookIdUseCase, times(1)).execute(bookInstance1.getBookId());
   }

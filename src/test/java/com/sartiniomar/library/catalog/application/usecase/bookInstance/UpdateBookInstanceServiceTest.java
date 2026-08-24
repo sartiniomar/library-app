@@ -14,10 +14,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Optional;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.times;
 
 @ExtendWith(MockitoExtension.class)
 class UpdateBookInstanceServiceTest {
@@ -35,14 +37,13 @@ class UpdateBookInstanceServiceTest {
     when(repository.findById(existing.getId())).thenReturn(Optional.of(existing));
     when(repository.save(any())).thenAnswer(i -> i.getArgument(0));
 
-    UpdateBookInstanceCommand command = new UpdateBookInstanceCommand(existing.getId(), BookType.CIRCULATING, BookInstanceStatus.RESERVED, true);
+    UpdateBookInstanceCommand command = new UpdateBookInstanceCommand(existing.getId(), BookType.CIRCULATING, BookInstanceStatus.RESERVED);
 
     BookInstance result = useCase.execute(command);
 
     assertEquals(existing.getId(), result.getId());
     assertEquals(existing.getBookId(), result.getBookId());
     assertEquals(BookType.CIRCULATING, result.getType());
-    assertTrue(result.isOnLoan());
 
     verify(repository, times(1)).findById(existing.getId());
     verify(repository, times(1)).save(any());
@@ -54,7 +55,7 @@ class UpdateBookInstanceServiceTest {
 
     when(repository.findById(id)).thenReturn(Optional.empty());
 
-    UpdateBookInstanceCommand command = new UpdateBookInstanceCommand(id, BookType.CIRCULATING, BookInstanceStatus.RESERVED, true);
+    UpdateBookInstanceCommand command = new UpdateBookInstanceCommand(id, BookType.CIRCULATING, BookInstanceStatus.RESERVED);
 
     assertThrows(BookInstanceNotFoundException.class, () -> useCase.execute(command));
   }
