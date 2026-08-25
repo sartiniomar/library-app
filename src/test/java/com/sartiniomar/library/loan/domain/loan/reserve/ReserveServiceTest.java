@@ -45,12 +45,12 @@ public class ReserveServiceTest {
     assertNotNull(result);
     assertNotNull(result.result());
 
-    Loan hold = result.result();
+    Loan loan = result.result();
 
-    assertNotNull(hold.getId());
-    assertEquals(patron.getId(), hold.getPatronId());
-    assertEquals(book.getId(), hold.getBookInstanceId());
-    //assertEquals(BookInstanceStatus.RESERVED, book.getStatus());
+    assertNotNull(loan.getId());
+    assertEquals(patron.getId(), loan.getPatronId());
+    assertEquals(book.getId(), loan.getBookInstanceId());
+    assertEquals(BookInstanceStatus.RESERVED, book.getStatus());
 
     assertEquals(1, result.events().size());
     assertInstanceOf(LoanBookEvent.class, result.events().getFirst());

@@ -14,6 +14,7 @@ public class CheckoutService {
     DomainPolicy.ensurePatronCanLoanBook(patron, bookInstance);
     bookInstance.ensureCanBeCheckout();
     Loan hold = Loan.createLent(patron.getId(), bookInstance.getId());
+    bookInstance.lent();
     LoanBookEvent event = new LoanBookEvent(patron.getId(), bookInstance.getId(), hold.getStatus().toString());
     return new DomainResult<>(hold, List.of(event));
   }

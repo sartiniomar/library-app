@@ -1,5 +1,6 @@
 package com.sartiniomar.library.loan.domain.bookInstance;
 
+import com.sartiniomar.library.loan.domain.loan.TransitionStatusException;
 import java.util.UUID;
 
 public class BookInstance {
@@ -7,7 +8,7 @@ public class BookInstance {
   private final UUID id;
   private final UUID bookId;
   private final BookType type;
-  private final BookInstanceStatus status;
+  private BookInstanceStatus status;
 
   private final String BOOK_ALREADY_UNAVAILABLE_MESSAGE = "Book Already Unavailable!";
 
@@ -36,6 +37,38 @@ public class BookInstance {
 
   public boolean isRestricted() {
     return this.type == BookType.RESTRICTED;
+  }
+
+  public void reserved() {
+    if (status != BookInstanceStatus.AVAILABLE) {
+      throw new TransitionStatusException(
+          "You cannot change from status " + status.toString() + " to status " + BookInstanceStatus.RESERVED);
+    }
+    this.status = BookInstanceStatus.RESERVED;
+  }
+
+  public void lent() {
+    if (status != BookInstanceStatus.AVAILABLE && status != BookInstanceStatus.RESERVED) {
+      throw new TransitionStatusException(
+          "You cannot change from status " + status.toString() + " to status " + BookInstanceStatus.LENT);
+    }
+    this.status = BookInstanceStatus.LENT;
+  }
+
+  public void available() {
+    if (status == BookInstanceStatus.AVAILABLE) {
+      throw new TransitionStatusException(
+          "You cannot change from status " + status.toString() + " to status " + BookInstanceStatus.AVAILABLE);
+    }
+    this.status = BookInstanceStatus.AVAILABLE;
+  }
+
+  public void unavailable() {
+    if (status == BookInstanceStatus.UNAVAILABLE) {
+      throw new TransitionStatusException(
+          "You cannot change from status " + status.toString() + " to status " + BookInstanceStatus.UNAVAILABLE);
+    }
+    this.status = BookInstanceStatus.UNAVAILABLE;
   }
 
   public void ensureCanBeReserved() {
