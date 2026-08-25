@@ -44,12 +44,12 @@ public class CheckoutServiceTest {
     assertNotNull(result);
     assertNotNull(result.result());
 
-    Loan hold = result.result();
+    Loan loan = result.result();
 
-    assertNotNull(hold.getId());
-    assertEquals(patron.getId(), hold.getPatronId());
-    assertEquals(book.getId(), hold.getBookInstanceId());
-    //assertEquals(BookInstanceStatus.LENT, book.getStatus());
+    assertNotNull(loan.getId());
+    assertEquals(patron.getId(), loan.getPatronId());
+    assertEquals(book.getId(), loan.getBookInstanceId());
+    assertEquals(BookInstanceStatus.LENT, book.getStatus());
 
     assertEquals(1, result.events().size());
     assertInstanceOf(LoanBookEvent.class, result.events().getFirst());
@@ -72,7 +72,7 @@ public class CheckoutServiceTest {
     assertNotNull(hold.getId());
     assertEquals(patron.getId(), hold.getPatronId());
     assertEquals(book.getId(), hold.getBookInstanceId());
-    //assertEquals(BookInstanceStatus.LENT, book.getStatus());
+    assertEquals(BookInstanceStatus.LENT, book.getStatus());
 
     assertEquals(1, result.events().size());
     assertInstanceOf(LoanBookEvent.class, result.events().getFirst());

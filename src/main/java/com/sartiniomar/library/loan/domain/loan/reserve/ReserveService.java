@@ -13,8 +13,9 @@ public class ReserveService {
   public DomainResult<Loan> reserve(Patron patron, BookInstance bookInstance) {
     DomainPolicy.ensurePatronCanLoanBook(patron, bookInstance);
     bookInstance.ensureCanBeReserved();
-    Loan hold = Loan.createReserve(patron.getId(), bookInstance.getId());
-    LoanBookEvent event = new LoanBookEvent(patron.getId(), bookInstance.getId(), hold.getStatus().toString());
-    return new DomainResult<>(hold, List.of(event));
+    Loan reserve = Loan.createReserve(patron.getId(), bookInstance.getId());
+    bookInstance.reserved();
+    LoanBookEvent event = new LoanBookEvent(patron.getId(), bookInstance.getId(), reserve.getStatus().toString());
+    return new DomainResult<>(reserve, List.of(event));
   }
 }
