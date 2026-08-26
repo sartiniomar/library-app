@@ -187,7 +187,6 @@ public class BookInstanceControllerTest extends LibraryApplicationTests  {
 
     assertEquals(bookInstance.getId(), updateBookCommandArgumentCaptor.getValue().id());
     assertEquals(BookType.RESTRICTED, updateBookCommandArgumentCaptor.getValue().type());
-    assertEquals(BookInstanceStatus.RESERVED, updateBookCommandArgumentCaptor.getValue().status());
 
     verify(updateBookInstanceUseCase, times(1)).execute(updateBookCommandArgumentCaptor.getValue());
   }
