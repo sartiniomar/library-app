@@ -1,4 +1,4 @@
-package com.sartiniomar.library.loan.domain.loan.reserve;
+package com.sartiniomar.library.loan.domain.loan.service;
 
 import com.sartiniomar.library.loan.domain.bookInstance.BookInstanceNotAvailableException;
 import com.sartiniomar.library.loan.domain.bookInstance.BookInstance;

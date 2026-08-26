@@ -21,14 +21,14 @@ public class ReserveService implements PlaceHoldUseCase {
   private final BookInstanceLoanRepository bookInstanceLendingRepository;
   private final LoanRepository holdRepository;
   private final DomainEventPublisher eventPublisher;
-  private final com.sartiniomar.library.loan.domain.loan.reserve.ReserveService domainService;
+  private final com.sartiniomar.library.loan.domain.loan.service.ReserveService domainService;
 
   public ReserveService(
       PatronLoanRepository patronLoanRepository,
       BookInstanceLoanRepository bookInstanceLoanRepository,
       LoanRepository loanRepository,
       DomainEventPublisher eventPublisher,
-      com.sartiniomar.library.loan.domain.loan.reserve.ReserveService domainService
+      com.sartiniomar.library.loan.domain.loan.service.ReserveService domainService
   ) {
     this.patronRepository = patronLoanRepository;
     this.bookInstanceLendingRepository = bookInstanceLoanRepository;

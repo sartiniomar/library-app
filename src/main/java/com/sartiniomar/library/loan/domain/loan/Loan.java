@@ -1,5 +1,6 @@
 package com.sartiniomar.library.loan.domain.loan;
 
+import com.sartiniomar.library.loan.domain.bookInstance.BookInstanceNotAvailableException;
 import java.time.Instant;
 import java.util.UUID;
 
@@ -97,5 +98,11 @@ public class Loan {
           "You cannot change from status " + status.toString() + " to status " + LoanStatus.DELAYED);
     }
     this.status = LoanStatus.DELAYED;
+  }
+
+  public void ensureCanBeCancelled() {
+    if (this.status != LoanStatus.RESERVED) {
+      throw new BookInstanceNotAvailableException("The loan is not reserved!");
+    }
   }
 }

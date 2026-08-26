@@ -1,4 +1,4 @@
-package com.sartiniomar.library.loan.domain.loan.checkout;
+package com.sartiniomar.library.loan.domain.loan.service;
 
 import com.sartiniomar.library.loan.domain.bookInstance.BookInstance;
 import com.sartiniomar.library.loan.domain.loan.DomainPolicy;
