@@ -39,14 +39,6 @@ public class BookInstanceTest {
     );
   }
 
-  private static Stream<Arguments> provideDataForGroupUnavailableChangeStatus() {
-    return Stream.of(
-        Arguments.of("RESERVED"),
-        Arguments.of("LENT"),
-        Arguments.of("AVAILABLE")
-    );
-  }
-
   @Test
   void should_create_successfully_book_instance() {
     UUID id = UUID.randomUUID();
@@ -139,21 +131,5 @@ public class BookInstanceTest {
     BookInstance bookInstance = new BookInstance(UUID.randomUUID(), UUID.randomUUID(), BookType.CIRCULATING, BookInstanceStatus.AVAILABLE);
 
     assertThrows(TransitionStatusException.class, bookInstance::available);
-  }
-
-  @ParameterizedTest
-  @MethodSource("provideDataForGroupUnavailableChangeStatus")
-  @SneakyThrows
-  void should_change_to_unavailable_status(BookInstanceStatus status) {
-    BookInstance bookInstance = new BookInstance(UUID.randomUUID(), UUID.randomUUID(), BookType.CIRCULATING, status);
-    bookInstance.unavailable();
-    assertEquals(BookInstanceStatus.UNAVAILABLE, bookInstance.getStatus());
-  }
-
-  @Test
-  void should_throw_exception_when_book_instance_status_is_not_allow_for_unavailable() {
-    BookInstance bookInstance = new BookInstance(UUID.randomUUID(), UUID.randomUUID(), BookType.CIRCULATING, BookInstanceStatus.UNAVAILABLE);
-
-    assertThrows(TransitionStatusException.class, bookInstance::unavailable);
   }
 }

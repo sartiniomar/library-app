@@ -63,14 +63,6 @@ public class BookInstance {
     this.status = BookInstanceStatus.AVAILABLE;
   }
 
-  public void unavailable() {
-    if (status == BookInstanceStatus.UNAVAILABLE) {
-      throw new TransitionStatusException(
-          "You cannot change from status " + status.toString() + " to status " + BookInstanceStatus.UNAVAILABLE);
-    }
-    this.status = BookInstanceStatus.UNAVAILABLE;
-  }
-
   public void ensureCanBeReserved() {
     if (this.status != BookInstanceStatus.AVAILABLE) {
       throw new BookInstanceNotAvailableException(BOOK_ALREADY_UNAVAILABLE_MESSAGE);
