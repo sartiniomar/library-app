@@ -15,13 +15,16 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.UUID;
 import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class CheckoutServiceTest {
 
@@ -50,6 +53,7 @@ public class CheckoutServiceTest {
     assertEquals(patron.getId(), loan.getPatronId());
     assertEquals(book.getId(), loan.getBookInstanceId());
     assertEquals(BookInstanceStatus.LENT, book.getStatus());
+    assertTrue(Duration.between(loan.getLentAt(), Instant.now()).abs().toMillis() < 1000);
 
     assertEquals(1, result.events().size());
     assertInstanceOf(LoanBookEvent.class, result.events().getFirst());
@@ -67,12 +71,13 @@ public class CheckoutServiceTest {
     assertNotNull(result);
     assertNotNull(result.result());
 
-    Loan hold = result.result();
+    Loan loan = result.result();
 
-    assertNotNull(hold.getId());
-    assertEquals(patron.getId(), hold.getPatronId());
-    assertEquals(book.getId(), hold.getBookInstanceId());
+    assertNotNull(loan.getId());
+    assertEquals(patron.getId(), loan.getPatronId());
+    assertEquals(book.getId(), loan.getBookInstanceId());
     assertEquals(BookInstanceStatus.LENT, book.getStatus());
+    assertTrue(Duration.between(loan.getLentAt(), Instant.now()).abs().toMillis() < 1000);
 
     assertEquals(1, result.events().size());
     assertInstanceOf(LoanBookEvent.class, result.events().getFirst());
