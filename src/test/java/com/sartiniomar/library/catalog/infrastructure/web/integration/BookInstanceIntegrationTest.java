@@ -105,12 +105,12 @@ public class BookInstanceIntegrationTest extends BookInstanceHttpHelper {
 
     assertThat(bookInstanceBBDD)
         .extracting("bookId", "type", "status")
-        .containsExactly(bookInstance.getBookId(), BookType.RESTRICTED, BookInstanceStatus.RESERVED);
+        .containsExactly(bookInstance.getBookId(), BookType.RESTRICTED, BookInstanceStatus.AVAILABLE);
 
     assertEquals(bookInstance.getId(), response.id());
     assertEquals(bookInstance.getBookId(), response.bookId());
     assertEquals(BookType.RESTRICTED, response.type());
-    assertEquals(BookInstanceStatus.RESERVED, response.status());
+    assertEquals(BookInstanceStatus.AVAILABLE, response.status());
   }
 
   @Test
