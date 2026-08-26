@@ -1,6 +1,6 @@
 package com.sartiniomar.library.loan.infrastructure.config;
 
-import com.sartiniomar.library.loan.domain.loan.reserve.ReserveService;
+import com.sartiniomar.library.loan.domain.loan.service.ReserveService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
