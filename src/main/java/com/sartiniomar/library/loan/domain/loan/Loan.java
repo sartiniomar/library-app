@@ -105,4 +105,10 @@ public class Loan {
       throw new BookInstanceNotAvailableException("The loan is not reserved!");
     }
   }
+
+  public void ensureCanBeReturned() {
+    if (this.status != LoanStatus.LENT && this.status != LoanStatus.DELAYED) {
+      throw new BookInstanceNotAvailableException("The loan is not lent or delayed!");
+    }
+  }
 }

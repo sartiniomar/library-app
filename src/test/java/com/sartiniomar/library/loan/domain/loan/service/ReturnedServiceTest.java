@@ -24,30 +24,29 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public class CancelledServiceTest {
+public class ReturnedServiceTest {
 
-  private static Stream<Arguments> provideDataForLoanStateAreNotAvailableForCancelled() {
+  private static Stream<Arguments> provideDataForLoanStateAreNotAvailableForReturned() {
     return Stream.of(
+        Arguments.of("RESERVED"),
         Arguments.of("CANCELLED"),
-        Arguments.of("LENT"),
         Arguments.of("RETURNED"),
-        Arguments.of("DELAYED"),
         Arguments.of("RETURNED_WITH_DELAY")
     );
   }
 
   @Test
-  void should_cancelled_when_all_conditions_are_met() {
+  void should_returned_when_all_conditions_are_met_for_lent() {
     UUID bookId = UUID.randomUUID();
     UUID bookInstanceId = UUID.randomUUID();
     UUID patronId = UUID.randomUUID();
     Patron patron = new Patron(patronId, PatronType.REGULAR);
     BookInstance bookInstance = new BookInstance(
         bookInstanceId, bookId, BookType.CIRCULATING, BookInstanceStatus.RESERVED);
-    Loan loan = new Loan(patronId, bookInstanceId, LoanStatus.RESERVED, Instant.now(), null, null, null);
+    Loan loan = new Loan(patronId, bookInstanceId, LoanStatus.LENT, Instant.now(), null, null, null);
 
-    CancelledService service = new CancelledService();
-    DomainResult<Loan> result = service.cancelled(loan, patron, bookInstance);
+    ReturnedService service = new ReturnedService();
+    DomainResult<Loan> result = service.returned(loan, patron, bookInstance);
 
     assertNotNull(result);
     assertNotNull(result.result());
@@ -58,26 +57,54 @@ public class CancelledServiceTest {
     assertEquals(patron.getId(), loanResult.getPatronId());
     assertEquals(bookInstance.getId(), loanResult.getBookInstanceId());
     assertEquals(BookInstanceStatus.AVAILABLE, bookInstance.getStatus());
-    assertEquals(LoanStatus.CANCELLED, loanResult.getStatus());
+    assertEquals(LoanStatus.RETURNED, loanResult.getStatus());
+
+    assertEquals(1, result.events().size());
+    assertInstanceOf(LoanBookEvent.class, result.events().getFirst());
+  }
+
+  @Test
+  void should_returned_when_all_conditions_are_met_for_delayed() {
+    UUID bookId = UUID.randomUUID();
+    UUID bookInstanceId = UUID.randomUUID();
+    UUID patronId = UUID.randomUUID();
+    Patron patron = new Patron(patronId, PatronType.REGULAR);
+    BookInstance bookInstance = new BookInstance(
+        bookInstanceId, bookId, BookType.CIRCULATING, BookInstanceStatus.RESERVED);
+    Loan loan = new Loan(patronId, bookInstanceId, LoanStatus.DELAYED, Instant.now(), null, null, null);
+
+    ReturnedService service = new ReturnedService();
+    DomainResult<Loan> result = service.returned(loan, patron, bookInstance);
+
+    assertNotNull(result);
+    assertNotNull(result.result());
+
+    Loan loanResult = result.result();
+
+    assertNotNull(loanResult.getId());
+    assertEquals(patron.getId(), loanResult.getPatronId());
+    assertEquals(bookInstance.getId(), loanResult.getBookInstanceId());
+    assertEquals(BookInstanceStatus.AVAILABLE, bookInstance.getStatus());
+    assertEquals(LoanStatus.RETURNED_WITH_DELAY, loanResult.getStatus());
 
     assertEquals(1, result.events().size());
     assertInstanceOf(LoanBookEvent.class, result.events().getFirst());
   }
 
   @ParameterizedTest
-  @MethodSource("provideDataForLoanStateAreNotAvailableForCancelled")
+  @MethodSource("provideDataForLoanStateAreNotAvailableForReturned")
   @SneakyThrows
-  void should_throw_exception_when_loan_is_not_available_cancelled(LoanStatus status) {
+  void should_throw_exception_when_loan_is_not_available_returned(LoanStatus status) {
     Patron patron = new Patron(UUID.randomUUID(), PatronType.REGULAR);
     BookInstance bookInstance = new BookInstance(
         UUID.randomUUID(), UUID.randomUUID(), BookType.CIRCULATING, BookInstanceStatus.RESERVED);
     Loan loan = new Loan(UUID.randomUUID(), UUID.randomUUID(), status, Instant.now(), null, null, null);
-    CancelledService service = new CancelledService();
+    ReturnedService service = new ReturnedService();
 
     BookInstanceNotAvailableException ex =
         assertThrows(BookInstanceNotAvailableException.class,
-            () -> service.cancelled(loan, patron, bookInstance)
+            () -> service.returned(loan, patron, bookInstance)
         );
-    assertEquals("The loan is not reserved!", ex.getMessage());
+    assertEquals("The loan is not lent or delayed!", ex.getMessage());
   }
 }
