@@ -35,9 +35,8 @@ public class BookInstance {
     return new BookInstance(UUID.randomUUID(), bookId, BookType.RESTRICTED, BookInstanceStatus.AVAILABLE);
   }
 
-  public void update(BookType type, BookInstanceStatus status) {
+  public void update(BookType type) {
     if (type != null) this.type = type;
-    if (status != null) this.status = status;
   }
 
   public UUID getId() {
