@@ -1,5 +1,6 @@
 package com.sartiniomar.library.loan.domain.loan;
 
+import com.sartiniomar.library.loan.domain.bookInstance.BookInstanceNotAvailableException;
 import java.time.Instant;
 import java.util.UUID;
 
@@ -8,7 +9,7 @@ public class Loan {
   private final UUID id;
   private final UUID patronId;
   private final UUID bookInstanceId;
-  private final LoanStatus status;
+  private LoanStatus status;
   private final Instant reservedAt;
   private final Instant lentAt;
   private final Instant dueAt;
@@ -63,5 +64,45 @@ public class Loan {
 
   public Instant getReturnedAt() {
     return returnedAt;
+  }
+
+  public void cancelled() {
+    if (status != LoanStatus.RESERVED) {
+      throw new TransitionStatusException(
+          "You cannot change from status " + status.toString() + " to status " + LoanStatus.CANCELLED);
+    }
+    this.status = LoanStatus.CANCELLED;
+  }
+
+  public void lent() {
+    if (status != LoanStatus.RESERVED) {
+      throw new TransitionStatusException(
+          "You cannot change from status " + status.toString() + " to status " + LoanStatus.LENT);
+    }
+    this.status = LoanStatus.LENT;
+  }
+
+  public void returned() {
+    if (this.status == LoanStatus.LENT) {
+      this.status = LoanStatus.RETURNED;
+    } else if (this.status == LoanStatus.DELAYED) {
+      this.status = LoanStatus.RETURNED_WITH_DELAY;
+    } else {
+      throw new TransitionStatusException("You cannot change status");
+    }
+  }
+
+  public void delayed() {
+    if (status != LoanStatus.LENT) {
+      throw new TransitionStatusException(
+          "You cannot change from status " + status.toString() + " to status " + LoanStatus.DELAYED);
+    }
+    this.status = LoanStatus.DELAYED;
+  }
+
+  public void ensureCanBeCancelled() {
+    if (this.status != LoanStatus.RESERVED) {
+      throw new BookInstanceNotAvailableException("The loan is not reserved!");
+    }
   }
 }
