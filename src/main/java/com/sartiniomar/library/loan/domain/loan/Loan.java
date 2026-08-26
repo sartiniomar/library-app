@@ -11,9 +11,9 @@ public class Loan {
   private final UUID bookInstanceId;
   private LoanStatus status;
   private final Instant reservedAt;
-  private final Instant lentAt;
+  private Instant lentAt;
   private final Instant dueAt;
-  private final Instant returnedAt;
+  private Instant returnedAt;
 
   public Loan(UUID patronId, UUID bookInstanceId, LoanStatus status, Instant reservedAt, Instant lentAt, Instant dueAt, Instant returnedAt) {
     this.id = UUID.randomUUID();
@@ -80,6 +80,7 @@ public class Loan {
           "You cannot change from status " + status.toString() + " to status " + LoanStatus.LENT);
     }
     this.status = LoanStatus.LENT;
+    this.lentAt = Instant.now();
   }
 
   public void returned() {
@@ -90,6 +91,7 @@ public class Loan {
     } else {
       throw new TransitionStatusException("You cannot change status");
     }
+    this.returnedAt = Instant.now();
   }
 
   public void delayed() {

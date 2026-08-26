@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.UUID;
 import java.util.stream.Stream;
@@ -17,6 +18,7 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class LoanTest {
 
@@ -60,6 +62,7 @@ public class LoanTest {
     assertEquals(patron.getId(), loan.getPatronId());
     assertEquals(book.getId(), loan.getBookInstanceId());
     assertEquals(LoanStatus.RESERVED, loan.getStatus());
+    assertTrue(Duration.between(loan.getReservedAt(), Instant.now()).abs().toMillis() < 1000);
     assertNotNull(loan.getReservedAt());
   }
 
@@ -74,6 +77,7 @@ public class LoanTest {
     assertEquals(patron.getId(), loan.getPatronId());
     assertEquals(book.getId(), loan.getBookInstanceId());
     assertEquals(LoanStatus.LENT, loan.getStatus());
+    assertTrue(Duration.between(loan.getLentAt(), Instant.now()).abs().toMillis() < 1000);
     assertNotNull(loan.getLentAt());
   }
 
@@ -98,6 +102,7 @@ public class LoanTest {
     Loan loan = Loan.createReserve(UUID.randomUUID(), UUID.randomUUID());
     loan.lent();
     assertEquals(LoanStatus.LENT, loan.getStatus());
+    assertTrue(Duration.between(loan.getLentAt(), Instant.now()).abs().toMillis() < 1000);
   }
 
   @ParameterizedTest
@@ -114,6 +119,7 @@ public class LoanTest {
     Loan loan = new Loan(UUID.randomUUID(), UUID.randomUUID(), LoanStatus.LENT, Instant.now(), null, null, null);
     loan.returned();
     assertEquals(LoanStatus.RETURNED, loan.getStatus());
+    assertTrue(Duration.between(loan.getReturnedAt(), Instant.now()).abs().toMillis() < 1000);
   }
 
   @Test
@@ -121,6 +127,7 @@ public class LoanTest {
     Loan loan = new Loan(UUID.randomUUID(), UUID.randomUUID(), LoanStatus.DELAYED, Instant.now(), null, null, null);
     loan.returned();
     assertEquals(LoanStatus.RETURNED_WITH_DELAY, loan.getStatus());
+    assertTrue(Duration.between(loan.getReturnedAt(), Instant.now()).abs().toMillis() < 1000);
   }
 
   @ParameterizedTest
