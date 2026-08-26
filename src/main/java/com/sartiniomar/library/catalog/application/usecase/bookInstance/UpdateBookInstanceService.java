@@ -23,10 +23,6 @@ public class UpdateBookInstanceService implements UpdateBookInstanceUseCase {
       bookInstance.setType(cmd.type());
     }
 
-    if (cmd.status() != null) {
-      bookInstance.setStatus(cmd.status());
-    }
-
     return repository.save(bookInstance);
   }
 }

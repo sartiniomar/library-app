@@ -4,7 +4,6 @@ import com.sartiniomar.library.catalog.application.port.in.bookInstance.UpdateBo
 import com.sartiniomar.library.catalog.application.port.out.BookInstanceRepository;
 import com.sartiniomar.library.catalog.domain.bookInstance.BookInstance;
 import com.sartiniomar.library.catalog.domain.bookInstance.BookInstanceNotFoundException;
-import com.sartiniomar.library.catalog.domain.bookInstance.BookInstanceStatus;
 import com.sartiniomar.library.catalog.domain.bookInstance.BookType;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -37,7 +36,7 @@ class UpdateBookInstanceServiceTest {
     when(repository.findById(existing.getId())).thenReturn(Optional.of(existing));
     when(repository.save(any())).thenAnswer(i -> i.getArgument(0));
 
-    UpdateBookInstanceCommand command = new UpdateBookInstanceCommand(existing.getId(), BookType.CIRCULATING, BookInstanceStatus.RESERVED);
+    UpdateBookInstanceCommand command = new UpdateBookInstanceCommand(existing.getId(), BookType.CIRCULATING);
 
     BookInstance result = useCase.execute(command);
 
@@ -55,7 +54,7 @@ class UpdateBookInstanceServiceTest {
 
     when(repository.findById(id)).thenReturn(Optional.empty());
 
-    UpdateBookInstanceCommand command = new UpdateBookInstanceCommand(id, BookType.CIRCULATING, BookInstanceStatus.RESERVED);
+    UpdateBookInstanceCommand command = new UpdateBookInstanceCommand(id, BookType.CIRCULATING);
 
     assertThrows(BookInstanceNotFoundException.class, () -> useCase.execute(command));
   }
