@@ -18,7 +18,7 @@ public class UseCaseConfig {
       BookInstanceLoanRepository bookInstanceLoanRepository,
       LoanRepository loanRepository,
       DomainEventPublisher eventPublisher,
-      com.sartiniomar.library.loan.domain.loan.reserve.ReserveService service
+      com.sartiniomar.library.loan.domain.loan.service.ReserveService service
   ) {
     return new ReserveService(
         patronLoanRepository,

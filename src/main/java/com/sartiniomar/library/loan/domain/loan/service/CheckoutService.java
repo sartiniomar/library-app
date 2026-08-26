@@ -1,4 +1,4 @@
-package com.sartiniomar.library.loan.domain.loan.checkout;
+package com.sartiniomar.library.loan.domain.loan.service;
 
 import com.sartiniomar.library.loan.domain.bookInstance.BookInstance;
 import com.sartiniomar.library.loan.domain.loan.DomainPolicy;
@@ -14,6 +14,7 @@ public class CheckoutService {
     DomainPolicy.ensurePatronCanLoanBook(patron, bookInstance);
     bookInstance.ensureCanBeCheckout();
     Loan hold = Loan.createLent(patron.getId(), bookInstance.getId());
+    bookInstance.lent();
     LoanBookEvent event = new LoanBookEvent(patron.getId(), bookInstance.getId(), hold.getStatus().toString());
     return new DomainResult<>(hold, List.of(event));
   }
