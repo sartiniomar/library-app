@@ -1,5 +1,6 @@
 package com.sartiniomar.library.catalog.domain.bookInstance;
 
+import com.sartiniomar.library.loan.domain.loan.TransitionStatusException;
 import java.util.UUID;
 
 public class BookInstance {
@@ -65,5 +66,13 @@ public class BookInstance {
 
   public void setStatus(BookInstanceStatus status) {
     this.status = status;
+  }
+
+  public void unavailable() {
+    if (status == BookInstanceStatus.UNAVAILABLE) {
+      throw new TransitionStatusException(
+          "You cannot change from status " + status + " to status " + BookInstanceStatus.UNAVAILABLE);
+    }
+    this.status = BookInstanceStatus.UNAVAILABLE;
   }
 }

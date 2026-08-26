@@ -1,12 +1,27 @@
 package com.sartiniomar.library.catalog.domain.bookInstance;
 
+import com.sartiniomar.library.loan.domain.loan.TransitionStatusException;
+import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class BookInstanceTest {
+
+  private static Stream<Arguments> provideDataForGroupUnavailableChangeStatus() {
+    return Stream.of(
+        Arguments.of("RESERVED"),
+        Arguments.of("LENT"),
+        Arguments.of("AVAILABLE")
+    );
+  }
 
   @Test
   void should_create_successfully_circulating_book_instance() {
@@ -74,5 +89,21 @@ public class BookInstanceTest {
     assertEquals(bookId , bookInstance.getBookId());
     assertEquals(BookType.RESTRICTED, bookInstance.getType());
     assertEquals(BookInstanceStatus.RESERVED, bookInstance.getStatus());
+  }
+
+  @ParameterizedTest
+  @MethodSource("provideDataForGroupUnavailableChangeStatus")
+  @SneakyThrows
+  void should_change_to_unavailable_status(BookInstanceStatus status) {
+    BookInstance bookInstance = new BookInstance(UUID.randomUUID(), UUID.randomUUID(), BookType.CIRCULATING, status);
+    bookInstance.unavailable();
+    assertEquals(BookInstanceStatus.UNAVAILABLE, bookInstance.getStatus());
+  }
+
+  @Test
+  void should_throw_exception_when_book_instance_status_is_not_allow_for_unavailable() {
+    BookInstance bookInstance = new BookInstance(UUID.randomUUID(), UUID.randomUUID(), BookType.CIRCULATING, BookInstanceStatus.UNAVAILABLE);
+
+    assertThrows(TransitionStatusException.class, bookInstance::unavailable);
   }
 }
