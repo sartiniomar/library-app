@@ -16,5 +16,4 @@ public class ReturnedService {
     LoanBookEvent event = new LoanBookEvent(patron.getId(), bookInstance.getId(), loan.getStatus().toString());
     return new DomainResult<>(loan, List.of(event));
   }
-
 }
