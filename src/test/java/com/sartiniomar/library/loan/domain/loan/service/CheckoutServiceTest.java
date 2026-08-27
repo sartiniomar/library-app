@@ -15,18 +15,22 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
+import java.time.ZoneOffset;
 import java.util.UUID;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class CheckoutServiceTest {
+
+  private static final Integer REGULAR_PATRON_LEND_LIMIT_DAYS = 7;
+  private static final Integer RESEARCHER_PATRON_LEND_LIMIT_DAYS = 14;
 
   private static Stream<Arguments> provideDataForBookInstancesStateAreNotAvailable() {
     return Stream.of(
@@ -37,11 +41,14 @@ public class CheckoutServiceTest {
 
   @Test
   void should_checkout_when_all_conditions_are_met_and_available_book() {
+    Instant now = Instant.parse("2026-08-27T19:00:00Z");
+    Clock clock = Clock.fixed(now, ZoneOffset.UTC);
+
     Patron patron = new Patron(UUID.randomUUID(), PatronType.REGULAR);
     BookInstance book = new BookInstance(
         UUID.randomUUID(), UUID.randomUUID(), BookType.CIRCULATING, BookInstanceStatus.AVAILABLE);
 
-    CheckoutService service = new CheckoutService();
+    CheckoutService service = new CheckoutService(clock);
     DomainResult<Loan> result = service.checkout(patron, book);
 
     assertNotNull(result);
@@ -53,7 +60,8 @@ public class CheckoutServiceTest {
     assertEquals(patron.getId(), loan.getPatronId());
     assertEquals(book.getId(), loan.getBookInstanceId());
     assertEquals(BookInstanceStatus.LENT, book.getStatus());
-    assertTrue(Duration.between(loan.getLentAt(), Instant.now()).abs().toMillis() < 1000);
+    assertEquals(now, loan.getLentAt());
+    assertEquals(now.plus(Duration.ofDays(REGULAR_PATRON_LEND_LIMIT_DAYS)), loan.getDueAt());
 
     assertEquals(1, result.events().size());
     assertInstanceOf(LoanBookEvent.class, result.events().getFirst());
@@ -61,11 +69,15 @@ public class CheckoutServiceTest {
 
   @Test
   void should_checkout_when_all_conditions_are_met_and_reserved_book() {
-    Patron patron = new Patron(UUID.randomUUID(), PatronType.REGULAR);
+    Instant now = Instant.parse("2026-08-27T19:00:00Z");
+    Clock clock = Clock.fixed(now, ZoneOffset.UTC);
+
+    Patron patron = new Patron(UUID.randomUUID(), PatronType.RESEARCHER);
+
     BookInstance book = new BookInstance(
         UUID.randomUUID(), UUID.randomUUID(), BookType.CIRCULATING, BookInstanceStatus.RESERVED);
 
-    CheckoutService service = new CheckoutService();
+    CheckoutService service = new CheckoutService(clock);
     DomainResult<Loan> result = service.checkout(patron, book);
 
     assertNotNull(result);
@@ -77,7 +89,8 @@ public class CheckoutServiceTest {
     assertEquals(patron.getId(), loan.getPatronId());
     assertEquals(book.getId(), loan.getBookInstanceId());
     assertEquals(BookInstanceStatus.LENT, book.getStatus());
-    assertTrue(Duration.between(loan.getLentAt(), Instant.now()).abs().toMillis() < 1000);
+    assertEquals(now, loan.getLentAt());
+    assertEquals(now.plus(Duration.ofDays(RESEARCHER_PATRON_LEND_LIMIT_DAYS)), loan.getDueAt());
 
     assertEquals(1, result.events().size());
     assertInstanceOf(LoanBookEvent.class, result.events().getFirst());
@@ -87,7 +100,7 @@ public class CheckoutServiceTest {
     Patron patron = new Patron(UUID.randomUUID(), PatronType.REGULAR);
     BookInstance book = new BookInstance(
         UUID.randomUUID(), UUID.randomUUID(), BookType.RESTRICTED, BookInstanceStatus.AVAILABLE);
-    CheckoutService service = new CheckoutService();
+    CheckoutService service = new CheckoutService(Clock.systemDefaultZone());
 
     OnlyResearcherCanLoanRestrictedBooksException ex =
         assertThrows(OnlyResearcherCanLoanRestrictedBooksException.class,
@@ -103,7 +116,7 @@ public class CheckoutServiceTest {
   void should_throw_exception_when_book_is_not_available(BookInstanceStatus state) {
     Patron patron = new Patron(UUID.randomUUID(), PatronType.REGULAR);
     BookInstance book = new BookInstance(UUID.randomUUID(), UUID.randomUUID(), BookType.CIRCULATING, state);
-    CheckoutService service = new CheckoutService();
+    CheckoutService service = new CheckoutService(Clock.systemDefaultZone());
 
     BookInstanceNotAvailableException ex =
         assertThrows(BookInstanceNotAvailableException.class,
