@@ -1,12 +1,12 @@
 package com.sartiniomar.library.loan.infrastructure.persistence;
 
 import com.sartiniomar.library.loan.domain.loan.Loan;
-import com.sartiniomar.library.loan.domain.loan.LoanStatus;
 import com.sartiniomar.library.loan.infrastructure.persistence.jpa.adapter.LoanAdapterRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
+import java.time.Clock;
 import java.util.Optional;
 import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @DataJpaTest
 @Import(LoanAdapterRepository.class)
-public class JpaHoldRepositoryTest {
+public class JpaLoanRepositoryTest {
 
   @Autowired
   private LoanAdapterRepository repository;
@@ -24,7 +24,7 @@ public class JpaHoldRepositoryTest {
     UUID bookInstanceId = java.util.UUID.randomUUID();
     UUID patronId = java.util.UUID.randomUUID();
 
-    Loan hold = Loan.createReserve(patronId, bookInstanceId);
+    Loan hold = Loan.createReserve(patronId, bookInstanceId, Clock.systemDefaultZone());
 
     repository.save(hold);
 
@@ -39,8 +39,8 @@ public class JpaHoldRepositoryTest {
   void shouldCountHoldsByPatronId() {
     UUID patronId = java.util.UUID.randomUUID();
 
-    Loan hold1 = Loan.createReserve(patronId, java.util.UUID.randomUUID());
-    Loan hold2 = Loan.createReserve(patronId, java.util.UUID.randomUUID());
+    Loan hold1 = Loan.createReserve(patronId, java.util.UUID.randomUUID(), Clock.systemDefaultZone());
+    Loan hold2 = Loan.createReserve(patronId, java.util.UUID.randomUUID(), Clock.systemDefaultZone());
 
     repository.save(hold1);
     repository.save(hold2);
