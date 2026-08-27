@@ -40,25 +40,25 @@ public class BookInstance {
   }
 
   public void reserved() {
-    if (status != BookInstanceStatus.AVAILABLE) {
+    if (this.status != BookInstanceStatus.AVAILABLE) {
       throw new TransitionStatusException(
-          "You cannot change from status " + status.toString() + " to status " + BookInstanceStatus.RESERVED);
+          "You cannot change from status " + this.status + " to status " + BookInstanceStatus.RESERVED);
     }
     this.status = BookInstanceStatus.RESERVED;
   }
 
   public void lent() {
-    if (status != BookInstanceStatus.AVAILABLE && status != BookInstanceStatus.RESERVED) {
+    if (this.status != BookInstanceStatus.AVAILABLE && this.status != BookInstanceStatus.RESERVED) {
       throw new TransitionStatusException(
-          "You cannot change from status " + status.toString() + " to status " + BookInstanceStatus.LENT);
+          "You cannot change from status " + this.status + " to status " + BookInstanceStatus.LENT);
     }
     this.status = BookInstanceStatus.LENT;
   }
 
   public void available() {
-    if (status == BookInstanceStatus.AVAILABLE) {
+    if (this.status == BookInstanceStatus.AVAILABLE) {
       throw new TransitionStatusException(
-          "You cannot change from status " + status.toString() + " to status " + BookInstanceStatus.AVAILABLE);
+          "You cannot change from status " + this.status + " to status " + BookInstanceStatus.AVAILABLE);
     }
     this.status = BookInstanceStatus.AVAILABLE;
   }

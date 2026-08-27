@@ -19,7 +19,15 @@ public class Loan {
 
   private static final Integer RESERVED_LIMIT_DAYS = 3;
 
-  public Loan(UUID patronId, UUID bookInstanceId, LoanStatus status, Instant reservedAt, Instant lentAt, Instant dueAt, Instant returnedAt) {
+  public Loan(
+      UUID patronId,
+      UUID bookInstanceId,
+      LoanStatus status,
+      Instant reservedAt,
+      Instant lentAt,
+      Instant dueAt,
+      Instant returnedAt
+  ) {
     this.id = UUID.randomUUID();
     this.patronId = patronId;
     this.bookInstanceId = bookInstanceId;
@@ -87,17 +95,17 @@ public class Loan {
   }
 
   public void cancelled() {
-    if (status != LoanStatus.RESERVED) {
+    if (this.status != LoanStatus.RESERVED) {
       throw new TransitionStatusException(
-          "You cannot change from status " + status.toString() + " to status " + LoanStatus.CANCELLED);
+          "You cannot change from status " + this.status + " to status " + LoanStatus.CANCELLED);
     }
     this.status = LoanStatus.CANCELLED;
   }
 
   public void lent() {
-    if (status != LoanStatus.RESERVED) {
+    if (this.status != LoanStatus.RESERVED) {
       throw new TransitionStatusException(
-          "You cannot change from status " + status.toString() + " to status " + LoanStatus.LENT);
+          "You cannot change from status " + this.status.toString() + " to status " + LoanStatus.LENT);
     }
     this.status = LoanStatus.LENT;
     this.lentAt = Instant.now();
@@ -115,9 +123,9 @@ public class Loan {
   }
 
   public void delayed() {
-    if (status != LoanStatus.LENT) {
+    if (this.status != LoanStatus.LENT) {
       throw new TransitionStatusException(
-          "You cannot change from status " + status.toString() + " to status " + LoanStatus.DELAYED);
+          "You cannot change from status " + this.status + " to status " + LoanStatus.DELAYED);
     }
     this.status = LoanStatus.DELAYED;
   }
