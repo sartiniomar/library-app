@@ -15,12 +15,13 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
+import java.time.ZoneOffset;
 import java.util.UUID;
 import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -40,11 +41,15 @@ public class ReserveServiceTest {
 
   @Test
   void should_reserve_when_all_conditions_are_met() {
+    Instant now = Instant.parse("2026-08-27T19:00:00Z");
+    Clock clock = Clock.fixed(now, ZoneOffset.UTC);
+
     Patron patron = new Patron(UUID.randomUUID(), PatronType.REGULAR);
+
     BookInstance book = new BookInstance(
         UUID.randomUUID(), UUID.randomUUID(), BookType.CIRCULATING, BookInstanceStatus.AVAILABLE);
 
-    ReserveService service = new ReserveService();
+    ReserveService service = new ReserveService(clock);
     DomainResult<Loan> result = service.reserve(patron, book);
 
     assertNotNull(result);
@@ -56,8 +61,8 @@ public class ReserveServiceTest {
     assertEquals(patron.getId(), loan.getPatronId());
     assertEquals(book.getId(), loan.getBookInstanceId());
     assertEquals(BookInstanceStatus.RESERVED, book.getStatus());
-    assertTrue(Duration.between(loan.getReservedAt(), Instant.now()).abs().toMillis() < 1000);
-    assertTrue(Duration.between(loan.getDueAt(), Instant.now().plus(Duration.ofDays(RESERVED_LIMIT_DAYS))).abs().toMillis() < 1000);
+    assertEquals(now, loan.getReservedAt());
+    assertEquals(now.plus(Duration.ofDays(RESERVED_LIMIT_DAYS)), loan.getDueAt());
 
     assertEquals(1, result.events().size());
     assertInstanceOf(LoanBookEvent.class, result.events().getFirst());
@@ -67,7 +72,7 @@ public class ReserveServiceTest {
     Patron patron = new Patron(UUID.randomUUID(), PatronType.REGULAR);
     BookInstance book = new BookInstance(
         UUID.randomUUID(), UUID.randomUUID(), BookType.RESTRICTED, BookInstanceStatus.AVAILABLE);
-    ReserveService service = new ReserveService();
+    ReserveService service = new ReserveService(Clock.systemDefaultZone());
 
     OnlyResearcherCanLoanRestrictedBooksException ex =
         assertThrows(OnlyResearcherCanLoanRestrictedBooksException.class,
@@ -83,7 +88,7 @@ public class ReserveServiceTest {
   void should_throw_exception_when_book_is_not_available(BookInstanceStatus state) {
     Patron patron = new Patron(UUID.randomUUID(), PatronType.REGULAR);
     BookInstance book = new BookInstance(UUID.randomUUID(), UUID.randomUUID(), BookType.CIRCULATING, state);
-    ReserveService service = new ReserveService();
+    ReserveService service = new ReserveService(Clock.systemDefaultZone());
 
     BookInstanceNotAvailableException ex =
         assertThrows(BookInstanceNotAvailableException.class,

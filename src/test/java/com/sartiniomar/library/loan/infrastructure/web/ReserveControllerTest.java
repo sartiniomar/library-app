@@ -5,7 +5,6 @@ import com.sartiniomar.library.loan.application.port.in.PlaceHoldCommand;
 import com.sartiniomar.library.loan.application.port.in.PlaceHoldUseCase;
 import com.sartiniomar.library.loan.domain.loan.Loan;
 import com.sartiniomar.library.catalog.infrastructure.mapper.BookInstanceMapper;
-import com.sartiniomar.library.loan.domain.loan.LoanStatus;
 import com.sartiniomar.library.loan.domain.patron.PatronType;
 import com.sartiniomar.library.loan.infrastructure.mapper.PatronLoanMapper;
 import com.sartiniomar.library.catalog.infrastructure.persistence.jpa.repository.BookInstanceJpaRepository;
@@ -17,6 +16,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import java.time.Clock;
 import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -26,7 +26,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-public class HoldControllerTest extends LibraryApplicationTests {
+public class ReserveControllerTest extends LibraryApplicationTests {
 
   @MockBean
   PlaceHoldUseCase useCase;
@@ -53,7 +53,7 @@ public class HoldControllerTest extends LibraryApplicationTests {
 
     PlaceHoldRequest request = new PlaceHoldRequest(bookInstance.getId(), patron.getId());
 
-    Loan hold = Loan.createReserve(patron.getId(), bookInstance.getId());
+    Loan hold = Loan.createReserve(patron.getId(), bookInstance.getId(), Clock.systemDefaultZone());
 
     when(useCase.execute(any()))
         .thenReturn(hold);

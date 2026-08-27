@@ -10,8 +10,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
+import java.time.ZoneOffset;
 import java.util.UUID;
 import java.util.stream.Stream;
 
@@ -23,6 +25,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class LoanTest {
 
   private static final Integer RESERVED_LIMIT_DAYS = 3;
+  private static final Integer REGULAR_PATRON_LEND_LIMIT_DAYS = 7;
+  private static final Integer RESEARCHER_PATRON_LEND_LIMIT_DAYS = 14;
 
   private static Stream<Arguments> provideDataForGroupCancelledAndLentChangeStatusError() {
     return Stream.of(
@@ -55,38 +59,67 @@ public class LoanTest {
 
   @Test
   void should_create_successfully_reserve() {
+    Instant now = Instant.parse("2026-08-27T19:00:00Z");
+    Clock clock = Clock.fixed(now, ZoneOffset.UTC);
+
     Patron patron = new Patron(UUID.randomUUID(), PatronType.REGULAR);
+
     BookInstance book = new BookInstance(UUID.randomUUID(), UUID.randomUUID(), BookType.CIRCULATING, BookInstanceStatus.RESERVED);
 
-    Loan loan = Loan.createReserve(patron.getId(), book.getId());
+    Loan loan = Loan.createReserve(patron.getId(), book.getId(), clock);
 
     assertNotNull(loan.getId());
     assertEquals(patron.getId(), loan.getPatronId());
     assertEquals(book.getId(), loan.getBookInstanceId());
     assertEquals(LoanStatus.RESERVED, loan.getStatus());
-    assertTrue(Duration.between(loan.getReservedAt(), Instant.now()).abs().toMillis() < 1000);
-    assertTrue(Duration.between(loan.getDueAt(), Instant.now().plus(Duration.ofDays(RESERVED_LIMIT_DAYS))).abs().toMillis() < 1000);
+    assertEquals(now, loan.getReservedAt());
+    assertEquals(now.plus(Duration.ofDays(RESERVED_LIMIT_DAYS)), loan.getDueAt());
     assertNotNull(loan.getReservedAt());
   }
 
   @Test
-  void should_create_successfully_lent() {
+  void should_create_successfully_lent_for_Regular_Patron() {
+    Instant now = Instant.parse("2026-08-27T19:00:00Z");
+    Clock clock = Clock.fixed(now, ZoneOffset.UTC);
+
     Patron patron = new Patron(UUID.randomUUID(), PatronType.REGULAR);
+
     BookInstance book = new BookInstance(UUID.randomUUID(), UUID.randomUUID(), BookType.CIRCULATING, BookInstanceStatus.AVAILABLE);
 
-    Loan loan = Loan.createLent(patron.getId(), book.getId());
+    Loan loan = Loan.createLent(patron.getId(), book.getId(), clock, REGULAR_PATRON_LEND_LIMIT_DAYS);
 
     assertNotNull(loan.getId());
     assertEquals(patron.getId(), loan.getPatronId());
     assertEquals(book.getId(), loan.getBookInstanceId());
     assertEquals(LoanStatus.LENT, loan.getStatus());
-    assertTrue(Duration.between(loan.getLentAt(), Instant.now()).abs().toMillis() < 1000);
+    assertEquals(now, loan.getLentAt());
+    assertEquals(now.plus(Duration.ofDays(REGULAR_PATRON_LEND_LIMIT_DAYS)), loan.getDueAt());
+    assertNotNull(loan.getLentAt());
+  }
+
+  @Test
+  void should_create_successfully_lent_for_Researcher_Patron() {
+    Instant now = Instant.parse("2026-08-27T19:00:00Z");
+    Clock clock = Clock.fixed(now, ZoneOffset.UTC);
+
+    Patron patron = new Patron(UUID.randomUUID(), PatronType.RESEARCHER);
+
+    BookInstance book = new BookInstance(UUID.randomUUID(), UUID.randomUUID(), BookType.CIRCULATING, BookInstanceStatus.AVAILABLE);
+
+    Loan loan = Loan.createLent(patron.getId(), book.getId(), clock, RESEARCHER_PATRON_LEND_LIMIT_DAYS);
+
+    assertNotNull(loan.getId());
+    assertEquals(patron.getId(), loan.getPatronId());
+    assertEquals(book.getId(), loan.getBookInstanceId());
+    assertEquals(LoanStatus.LENT, loan.getStatus());
+    assertEquals(now, loan.getLentAt());
+    assertEquals(now.plus(Duration.ofDays(RESEARCHER_PATRON_LEND_LIMIT_DAYS)), loan.getDueAt());
     assertNotNull(loan.getLentAt());
   }
 
   @Test
   void should_change_reserved_to_cancelled_status() {
-    Loan loan = Loan.createReserve(UUID.randomUUID(), UUID.randomUUID());
+    Loan loan = Loan.createReserve(UUID.randomUUID(), UUID.randomUUID(), Clock.systemDefaultZone());
     loan.cancelled();
     assertEquals(LoanStatus.CANCELLED, loan.getStatus());
   }
@@ -102,7 +135,7 @@ public class LoanTest {
 
   @Test
   void should_change_reserved_to_lent_status() {
-    Loan loan = Loan.createReserve(UUID.randomUUID(), UUID.randomUUID());
+    Loan loan = Loan.createReserve(UUID.randomUUID(), UUID.randomUUID(), Clock.systemDefaultZone());
     loan.lent();
     assertEquals(LoanStatus.LENT, loan.getStatus());
     assertTrue(Duration.between(loan.getLentAt(), Instant.now()).abs().toMillis() < 1000);

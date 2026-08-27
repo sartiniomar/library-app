@@ -1,6 +1,7 @@
 package com.sartiniomar.library.loan.domain.loan;
 
 import com.sartiniomar.library.loan.domain.bookInstance.BookInstanceNotAvailableException;
+import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.UUID;
@@ -29,13 +30,28 @@ public class Loan {
     this.returnedAt = returnedAt;
   }
 
-  public static Loan createReserve(UUID patronId, UUID bookInstanceId) {
-    return new Loan(patronId, bookInstanceId, LoanStatus.RESERVED, Instant.now(),
-        null, Instant.now().plus(Duration.ofDays(RESERVED_LIMIT_DAYS)), null);
+  public static Loan createReserve(UUID patronId, UUID bookInstanceId, Clock clock) {
+    Instant now = Instant.now(clock);
+    return new Loan(
+        patronId,
+        bookInstanceId,
+        LoanStatus.RESERVED,
+        now,
+        null,
+        now.plus(Duration.ofDays(RESERVED_LIMIT_DAYS)),
+        null);
   }
 
-  public static Loan createLent(UUID patronId, UUID bookInstanceId) {
-    return new Loan(patronId, bookInstanceId, LoanStatus.LENT, null, Instant.now(), null, null);
+  public static Loan createLent(UUID patronId, UUID bookInstanceId, Clock clock, Integer days) {
+    Instant now = Instant.now(clock);
+    return new Loan(
+        patronId,
+        bookInstanceId,
+        LoanStatus.LENT,
+        null,
+        now,
+        now.plus(Duration.ofDays(days)),
+        null);
   }
 
   public UUID getId() {
