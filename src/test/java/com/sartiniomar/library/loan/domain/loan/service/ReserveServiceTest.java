@@ -28,6 +28,8 @@ import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 
 public class ReserveServiceTest {
 
+  private static final Integer RESERVED_LIMIT_DAYS = 3;
+
   private static Stream<Arguments> provideDataForBookInstancesStateAreNotAvailable() {
     return Stream.of(
         Arguments.of("RESERVED"),
@@ -55,6 +57,7 @@ public class ReserveServiceTest {
     assertEquals(book.getId(), loan.getBookInstanceId());
     assertEquals(BookInstanceStatus.RESERVED, book.getStatus());
     assertTrue(Duration.between(loan.getReservedAt(), Instant.now()).abs().toMillis() < 1000);
+    assertTrue(Duration.between(loan.getDueAt(), Instant.now().plus(Duration.ofDays(RESERVED_LIMIT_DAYS))).abs().toMillis() < 1000);
 
     assertEquals(1, result.events().size());
     assertInstanceOf(LoanBookEvent.class, result.events().getFirst());

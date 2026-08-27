@@ -22,6 +22,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class LoanTest {
 
+  private static final Integer RESERVED_LIMIT_DAYS = 3;
+
   private static Stream<Arguments> provideDataForGroupCancelledAndLentChangeStatusError() {
     return Stream.of(
         Arguments.of("CANCELLED"),
@@ -63,6 +65,7 @@ public class LoanTest {
     assertEquals(book.getId(), loan.getBookInstanceId());
     assertEquals(LoanStatus.RESERVED, loan.getStatus());
     assertTrue(Duration.between(loan.getReservedAt(), Instant.now()).abs().toMillis() < 1000);
+    assertTrue(Duration.between(loan.getDueAt(), Instant.now().plus(Duration.ofDays(RESERVED_LIMIT_DAYS))).abs().toMillis() < 1000);
     assertNotNull(loan.getReservedAt());
   }
 
