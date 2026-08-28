@@ -1,6 +1,7 @@
 package com.sartiniomar.library.loan.infrastructure.persistence.jpa.adapter;
 
 import com.sartiniomar.library.loan.application.port.out.LoanRepository;
+import com.sartiniomar.library.loan.domain.loan.LoanStatus;
 import com.sartiniomar.library.loan.infrastructure.mapper.LoanMapperImpl;
 import com.sartiniomar.library.loan.domain.loan.Loan;
 import com.sartiniomar.library.loan.infrastructure.mapper.LoanMapper;
@@ -8,6 +9,7 @@ import com.sartiniomar.library.loan.infrastructure.persistence.model.LoanEntity;
 import com.sartiniomar.library.loan.infrastructure.persistence.jpa.repository.LoanJpaRepository;
 import org.springframework.context.annotation.Import;
 import org.springframework.stereotype.Repository;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -15,28 +17,28 @@ import java.util.UUID;
 @Import(LoanMapperImpl.class)
 public class LoanAdapterRepository implements LoanRepository {
 
-  private final LoanJpaRepository jpaRepo;
+  private final LoanJpaRepository repository;
 
-  private final LoanMapper loanMapper;
+  private final LoanMapper mapper;
 
-  public LoanAdapterRepository(LoanJpaRepository jpaRepo) {
-    this.jpaRepo = jpaRepo;
-    this.loanMapper = new LoanMapperImpl();
+  public LoanAdapterRepository(LoanJpaRepository repository) {
+    this.repository = repository;
+    this.mapper = new LoanMapperImpl();
   }
 
   @Override
-  public Integer countByPatronId(UUID patronId) {
-    return (int) jpaRepo.countByPatronId(patronId);
+  public int countActiveLoansByPatronId(UUID patronId, List<LoanStatus> statuses) {
+    return repository.countActiveLoansByPatronId(patronId, statuses);
   }
 
   @Override
   public void save(Loan hold) {
-    jpaRepo.save(loanMapper.toEntity(hold));
+    repository.save(mapper.toEntity(hold));
   }
 
   @Override
   public Optional<Loan> findById(UUID id) {
-    Optional<LoanEntity> entityOpt = jpaRepo.findById(id);
-    return entityOpt.map(loanMapper::toDomain);
+    Optional<LoanEntity> entityOpt = repository.findById(id);
+    return entityOpt.map(mapper::toDomain);
   }
 }

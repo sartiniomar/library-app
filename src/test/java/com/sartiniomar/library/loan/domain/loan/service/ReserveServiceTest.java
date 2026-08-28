@@ -49,7 +49,7 @@ public class ReserveServiceTest {
     BookInstance book = new BookInstance(
         UUID.randomUUID(), UUID.randomUUID(), BookType.CIRCULATING, BookInstanceStatus.AVAILABLE);
 
-    ReserveService service = new ReserveService(clock);
+    ReserveServiceDomain service = new ReserveServiceDomain(clock);
     DomainResult<Loan> result = service.reserve(patron, book);
 
     assertNotNull(result);
@@ -72,7 +72,7 @@ public class ReserveServiceTest {
     Patron patron = new Patron(UUID.randomUUID(), PatronType.REGULAR);
     BookInstance book = new BookInstance(
         UUID.randomUUID(), UUID.randomUUID(), BookType.RESTRICTED, BookInstanceStatus.AVAILABLE);
-    ReserveService service = new ReserveService(Clock.systemDefaultZone());
+    ReserveServiceDomain service = new ReserveServiceDomain(Clock.systemDefaultZone());
 
     OnlyResearcherCanLoanRestrictedBooksException ex =
         assertThrows(OnlyResearcherCanLoanRestrictedBooksException.class,
@@ -88,7 +88,7 @@ public class ReserveServiceTest {
   void should_throw_exception_when_book_is_not_available(BookInstanceStatus state) {
     Patron patron = new Patron(UUID.randomUUID(), PatronType.REGULAR);
     BookInstance book = new BookInstance(UUID.randomUUID(), UUID.randomUUID(), BookType.CIRCULATING, state);
-    ReserveService service = new ReserveService(Clock.systemDefaultZone());
+    ReserveServiceDomain service = new ReserveServiceDomain(Clock.systemDefaultZone());
 
     BookInstanceNotAvailableException ex =
         assertThrows(BookInstanceNotAvailableException.class,

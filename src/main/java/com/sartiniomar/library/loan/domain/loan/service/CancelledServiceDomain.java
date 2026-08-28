@@ -7,11 +7,11 @@ import com.sartiniomar.library.loan.domain.loan.LoanBookEvent;
 import com.sartiniomar.library.loan.domain.patron.Patron;
 import java.util.List;
 
-public class ReturnedService {
+public class CancelledServiceDomain {
 
-  public DomainResult<Loan> returned(Loan loan, Patron patron, BookInstance bookInstance) {
-    loan.ensureCanBeReturned();
-    loan.returned();
+  public DomainResult<Loan> cancelled(Loan loan,Patron patron, BookInstance bookInstance) {
+    loan.ensureCanBeCancelled();
+    loan.cancelled();
     bookInstance.available();
     LoanBookEvent event = new LoanBookEvent(patron.getId(), bookInstance.getId(), loan.getStatus().toString());
     return new DomainResult<>(loan, List.of(event));
