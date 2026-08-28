@@ -1,5 +1,6 @@
 package com.sartiniomar.library.loan.infrastructure.persistence;
 
+import com.sartiniomar.library.loan.domain.loan.DomainPolicy;
 import com.sartiniomar.library.loan.domain.loan.Loan;
 import com.sartiniomar.library.loan.infrastructure.persistence.jpa.adapter.LoanAdapterRepository;
 import org.junit.jupiter.api.Test;
@@ -20,7 +21,7 @@ public class JpaLoanRepositoryTest {
   private LoanAdapterRepository repository;
 
   @Test
-  void shouldSaveAndFindHold() {
+  void shouldSaveAndFindLoan() {
     UUID bookInstanceId = java.util.UUID.randomUUID();
     UUID patronId = java.util.UUID.randomUUID();
 
@@ -36,7 +37,7 @@ public class JpaLoanRepositoryTest {
   }
 
   @Test
-  void shouldCountHoldsByPatronId() {
+  void shouldCountLoansByPatronId() {
     UUID patronId = java.util.UUID.randomUUID();
 
     Loan hold1 = Loan.createReserve(patronId, java.util.UUID.randomUUID(), Clock.systemDefaultZone());
@@ -45,7 +46,7 @@ public class JpaLoanRepositoryTest {
     repository.save(hold1);
     repository.save(hold2);
 
-    int count = repository.countByPatronId(patronId);
+    int count = repository.countActiveLoansByPatronId(patronId, DomainPolicy.ACTIVE_STATUSES);
 
     assertEquals(2, count);
   }

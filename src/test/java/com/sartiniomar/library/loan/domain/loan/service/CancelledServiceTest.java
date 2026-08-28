@@ -46,7 +46,7 @@ public class CancelledServiceTest {
         bookInstanceId, bookId, BookType.CIRCULATING, BookInstanceStatus.RESERVED);
     Loan loan = new Loan(patronId, bookInstanceId, LoanStatus.RESERVED, Instant.now(), null, null, null);
 
-    CancelledService service = new CancelledService();
+    CancelledServiceDomain service = new CancelledServiceDomain();
     DomainResult<Loan> result = service.cancelled(loan, patron, bookInstance);
 
     assertNotNull(result);
@@ -72,7 +72,7 @@ public class CancelledServiceTest {
     BookInstance bookInstance = new BookInstance(
         UUID.randomUUID(), UUID.randomUUID(), BookType.CIRCULATING, BookInstanceStatus.RESERVED);
     Loan loan = new Loan(UUID.randomUUID(), UUID.randomUUID(), status, Instant.now(), null, null, null);
-    CancelledService service = new CancelledService();
+    CancelledServiceDomain service = new CancelledServiceDomain();
 
     BookInstanceNotAvailableException ex =
         assertThrows(BookInstanceNotAvailableException.class,

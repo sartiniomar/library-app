@@ -1,6 +1,6 @@
 package com.sartiniomar.library.loan.infrastructure.config;
 
-import com.sartiniomar.library.loan.domain.loan.service.ReserveService;
+import com.sartiniomar.library.loan.domain.loan.service.ReserveServiceDomain;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import java.time.Clock;
@@ -9,7 +9,7 @@ import java.time.Clock;
 public class DomainServiceConfig {
 
   @Bean
-  ReserveService reserveService() {
-    return new ReserveService(Clock.systemDefaultZone());
+  ReserveServiceDomain reserveService() {
+    return new ReserveServiceDomain(Clock.systemDefaultZone());
   }
 }

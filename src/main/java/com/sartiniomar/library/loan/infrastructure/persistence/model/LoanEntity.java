@@ -1,5 +1,6 @@
 package com.sartiniomar.library.loan.infrastructure.persistence.model;
 
+import com.sartiniomar.library.loan.domain.loan.LoanStatus;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
@@ -18,11 +19,14 @@ public class LoanEntity {
 
   private UUID patronId;
 
+  private LoanStatus status;
+
   protected LoanEntity() {}
 
-  public LoanEntity(UUID id, UUID bookInstanceId, UUID patronId) {
+  public LoanEntity(UUID id, UUID bookInstanceId, UUID patronId, LoanStatus status) {
     this.id = id;
     this.bookInstanceId = bookInstanceId;
     this.patronId = patronId;
+    this.status = status;
   }
 }
