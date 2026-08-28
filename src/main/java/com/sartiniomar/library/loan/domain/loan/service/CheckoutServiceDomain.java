@@ -10,14 +10,11 @@ import com.sartiniomar.library.loan.domain.patron.PatronType;
 import java.time.Clock;
 import java.util.List;
 
-public class CheckoutService {
+public class CheckoutServiceDomain {
 
   private final Clock clock;
 
-  private static final Integer REGULAR_PATRON_LEND_LIMIT_DAYS = 7;
-  private static final Integer RESEARCHER_PATRON_LEND_LIMIT_DAYS = 14;
-
-  public CheckoutService(Clock clock) {
+  public CheckoutServiceDomain(Clock clock) {
     this.clock = clock;
   }
 
@@ -31,6 +28,7 @@ public class CheckoutService {
   }
 
   private Integer getLimitDays(PatronType patronType) {
-    return PatronType.REGULAR.equals(patronType) ? REGULAR_PATRON_LEND_LIMIT_DAYS : RESEARCHER_PATRON_LEND_LIMIT_DAYS;
+    return PatronType.REGULAR.equals(patronType) ?
+        DomainPolicy.REGULAR_PATRON_LEND_LIMIT_DAYS : DomainPolicy.RESEARCHER_PATRON_LEND_LIMIT_DAYS;
   }
 }

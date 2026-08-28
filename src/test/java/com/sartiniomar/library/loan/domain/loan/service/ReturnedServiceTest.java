@@ -47,7 +47,7 @@ public class ReturnedServiceTest {
         bookInstanceId, bookId, BookType.CIRCULATING, BookInstanceStatus.RESERVED);
     Loan loan = new Loan(patronId, bookInstanceId, LoanStatus.LENT, Instant.now(), null, null, null);
 
-    ReturnedService service = new ReturnedService();
+    ReturnedServiceDomain service = new ReturnedServiceDomain();
     DomainResult<Loan> result = service.returned(loan, patron, bookInstance);
 
     assertNotNull(result);
@@ -76,7 +76,7 @@ public class ReturnedServiceTest {
         bookInstanceId, bookId, BookType.CIRCULATING, BookInstanceStatus.RESERVED);
     Loan loan = new Loan(patronId, bookInstanceId, LoanStatus.DELAYED, Instant.now(), null, null, null);
 
-    ReturnedService service = new ReturnedService();
+    ReturnedServiceDomain service = new ReturnedServiceDomain();
     DomainResult<Loan> result = service.returned(loan, patron, bookInstance);
 
     assertNotNull(result);
@@ -103,7 +103,7 @@ public class ReturnedServiceTest {
     BookInstance bookInstance = new BookInstance(
         UUID.randomUUID(), UUID.randomUUID(), BookType.CIRCULATING, BookInstanceStatus.RESERVED);
     Loan loan = new Loan(UUID.randomUUID(), UUID.randomUUID(), status, Instant.now(), null, null, null);
-    ReturnedService service = new ReturnedService();
+    ReturnedServiceDomain service = new ReturnedServiceDomain();
 
     BookInstanceNotAvailableException ex =
         assertThrows(BookInstanceNotAvailableException.class,

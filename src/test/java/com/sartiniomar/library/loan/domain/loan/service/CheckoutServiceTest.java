@@ -48,7 +48,7 @@ public class CheckoutServiceTest {
     BookInstance book = new BookInstance(
         UUID.randomUUID(), UUID.randomUUID(), BookType.CIRCULATING, BookInstanceStatus.AVAILABLE);
 
-    CheckoutService service = new CheckoutService(clock);
+    CheckoutServiceDomain service = new CheckoutServiceDomain(clock);
     DomainResult<Loan> result = service.checkout(patron, book);
 
     assertNotNull(result);
@@ -77,7 +77,7 @@ public class CheckoutServiceTest {
     BookInstance book = new BookInstance(
         UUID.randomUUID(), UUID.randomUUID(), BookType.CIRCULATING, BookInstanceStatus.RESERVED);
 
-    CheckoutService service = new CheckoutService(clock);
+    CheckoutServiceDomain service = new CheckoutServiceDomain(clock);
     DomainResult<Loan> result = service.checkout(patron, book);
 
     assertNotNull(result);
@@ -100,7 +100,7 @@ public class CheckoutServiceTest {
     Patron patron = new Patron(UUID.randomUUID(), PatronType.REGULAR);
     BookInstance book = new BookInstance(
         UUID.randomUUID(), UUID.randomUUID(), BookType.RESTRICTED, BookInstanceStatus.AVAILABLE);
-    CheckoutService service = new CheckoutService(Clock.systemDefaultZone());
+    CheckoutServiceDomain service = new CheckoutServiceDomain(Clock.systemDefaultZone());
 
     OnlyResearcherCanLoanRestrictedBooksException ex =
         assertThrows(OnlyResearcherCanLoanRestrictedBooksException.class,
@@ -116,7 +116,7 @@ public class CheckoutServiceTest {
   void should_throw_exception_when_book_is_not_available(BookInstanceStatus state) {
     Patron patron = new Patron(UUID.randomUUID(), PatronType.REGULAR);
     BookInstance book = new BookInstance(UUID.randomUUID(), UUID.randomUUID(), BookType.CIRCULATING, state);
-    CheckoutService service = new CheckoutService(Clock.systemDefaultZone());
+    CheckoutServiceDomain service = new CheckoutServiceDomain(Clock.systemDefaultZone());
 
     BookInstanceNotAvailableException ex =
         assertThrows(BookInstanceNotAvailableException.class,
