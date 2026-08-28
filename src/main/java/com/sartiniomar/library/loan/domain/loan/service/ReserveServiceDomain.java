@@ -9,11 +9,11 @@ import com.sartiniomar.library.loan.domain.patron.Patron;
 import java.time.Clock;
 import java.util.List;
 
-public class ReserveService {
+public class ReserveServiceDomain {
 
   private final Clock clock;
 
-  public ReserveService(Clock clock) {
+  public ReserveServiceDomain(Clock clock) {
     this.clock = clock;
   }
 

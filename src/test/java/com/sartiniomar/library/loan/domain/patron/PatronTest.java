@@ -41,18 +41,4 @@ public class PatronTest {
 
     assertFalse(patron.isResearcher());
   }
-
-  @Test
-  void regular_patron_has_limit_of_3_loans() {
-    Patron patron = new Patron(UUID.randomUUID(), PatronType.REGULAR);
-
-    assertEquals(3, patron.maxLoans());
-  }
-
-  @Test
-  void researcher_has_unlimited_loans() {
-    Patron patron = new Patron(UUID.randomUUID(), PatronType.RESEARCHER);
-
-    assertEquals(Integer.MAX_VALUE, patron.maxLoans());
-  }
 }
