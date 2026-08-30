@@ -1,8 +1,8 @@
 package com.sartiniomar.library.loan.infrastructure.web;
 
 import com.sartiniomar.library.LibraryApplicationTests;
-import com.sartiniomar.library.loan.application.port.in.PlaceHoldCommand;
-import com.sartiniomar.library.loan.application.port.in.PlaceHoldUseCase;
+import com.sartiniomar.library.loan.application.port.in.reserveCommand;
+import com.sartiniomar.library.loan.application.port.in.ReserveUseCase;
 import com.sartiniomar.library.loan.domain.loan.Loan;
 import com.sartiniomar.library.catalog.infrastructure.mapper.BookInstanceMapper;
 import com.sartiniomar.library.loan.domain.patron.PatronType;
@@ -29,7 +29,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class ReserveControllerTest extends LibraryApplicationTests {
 
   @MockBean
-  PlaceHoldUseCase useCase;
+  ReserveUseCase useCase;
 
   @MockBean
   BookInstanceJpaRepository bookInstanceSpringDataRepository;
@@ -67,7 +67,7 @@ public class ReserveControllerTest extends LibraryApplicationTests {
         .andExpect(jsonPath("$.bookInstanceId").value(bookInstance.getId().toString()))
         .andExpect(jsonPath("$.patronId").value(patron.getId().toString()));
 
-    verify(useCase).execute(any(PlaceHoldCommand.class));
+    verify(useCase).execute(any(reserveCommand.class));
   }
 
   @Test

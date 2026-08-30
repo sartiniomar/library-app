@@ -8,6 +8,6 @@ import java.util.UUID;
 
 public interface LoanRepository {
   int countActiveLoansByPatronId(UUID patronId, List<LoanStatus> statuses);
-  void save(Loan hold);
+  Loan save(Loan hold);
   Optional<Loan> findById(UUID id);
 }

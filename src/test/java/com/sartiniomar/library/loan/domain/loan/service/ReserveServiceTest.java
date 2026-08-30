@@ -4,10 +4,8 @@ import com.sartiniomar.library.loan.domain.bookInstance.BookInstanceNotAvailable
 import com.sartiniomar.library.loan.domain.bookInstance.BookInstance;
 import com.sartiniomar.library.loan.domain.bookInstance.BookInstanceStatus;
 import com.sartiniomar.library.loan.domain.bookInstance.BookType;
-import com.sartiniomar.library.loan.domain.loan.DomainResult;
 import com.sartiniomar.library.loan.domain.loan.Loan;
 import com.sartiniomar.library.loan.domain.loan.OnlyResearcherCanLoanRestrictedBooksException;
-import com.sartiniomar.library.loan.domain.loan.LoanBookEvent;
 import com.sartiniomar.library.loan.domain.patron.Patron;
 import com.sartiniomar.library.loan.domain.patron.PatronType;
 import lombok.SneakyThrows;
@@ -25,7 +23,6 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 
 public class ReserveServiceTest {
 
@@ -50,22 +47,16 @@ public class ReserveServiceTest {
         UUID.randomUUID(), UUID.randomUUID(), BookType.CIRCULATING, BookInstanceStatus.AVAILABLE);
 
     ReserveServiceDomain service = new ReserveServiceDomain(clock);
-    DomainResult<Loan> result = service.reserve(patron, book);
+    Loan result = service.reserve(patron, book);
 
     assertNotNull(result);
-    assertNotNull(result.result());
 
-    Loan loan = result.result();
-
-    assertNotNull(loan.getId());
-    assertEquals(patron.getId(), loan.getPatronId());
-    assertEquals(book.getId(), loan.getBookInstanceId());
+    assertNotNull(result.getId());
+    assertEquals(patron.getId(), result.getPatronId());
+    assertEquals(book.getId(), result.getBookInstanceId());
     assertEquals(BookInstanceStatus.RESERVED, book.getStatus());
-    assertEquals(now, loan.getReservedAt());
-    assertEquals(now.plus(Duration.ofDays(RESERVED_LIMIT_DAYS)), loan.getDueAt());
-
-    assertEquals(1, result.events().size());
-    assertInstanceOf(LoanBookEvent.class, result.events().getFirst());
+    assertEquals(now, result.getReservedAt());
+    assertEquals(now.plus(Duration.ofDays(RESERVED_LIMIT_DAYS)), result.getDueAt());
   }
 
   @Test void should_throw_exception_when_book_is_restricted_and_patron_is_regular() {
