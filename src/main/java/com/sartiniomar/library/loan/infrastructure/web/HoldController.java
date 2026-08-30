@@ -1,7 +1,7 @@
 package com.sartiniomar.library.loan.infrastructure.web;
 
-import com.sartiniomar.library.loan.application.port.in.PlaceHoldCommand;
-import com.sartiniomar.library.loan.application.port.in.PlaceHoldUseCase;
+import com.sartiniomar.library.loan.application.port.in.reserveCommand;
+import com.sartiniomar.library.loan.application.port.in.ReserveUseCase;
 import com.sartiniomar.library.loan.infrastructure.mapper.LoanMapper;
 import com.sartiniomar.library.loan.infrastructure.web.dto.HoldResponse;
 import com.sartiniomar.library.loan.infrastructure.web.dto.PlaceHoldRequest;
@@ -18,12 +18,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/holds")
 public class HoldController {
 
-  private final PlaceHoldUseCase useCase;
+  private final ReserveUseCase useCase;
   private final LoanMapper holdMapper;
 
   @PostMapping
   public ResponseEntity<HoldResponse> placeHold(@Valid @RequestBody PlaceHoldRequest request) {
-    PlaceHoldCommand command = holdMapper.placeHoldRequestToPlaceHoldCommand(request);
+    reserveCommand command = holdMapper.placeHoldRequestToPlaceHoldCommand(request);
     return ResponseEntity.ok(holdMapper.holdToHoldResponse(useCase.execute(command)));
   }
 }
