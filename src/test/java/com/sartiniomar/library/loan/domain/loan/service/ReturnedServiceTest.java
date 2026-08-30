@@ -4,9 +4,7 @@ import com.sartiniomar.library.loan.domain.bookInstance.BookInstance;
 import com.sartiniomar.library.loan.domain.bookInstance.BookInstanceNotAvailableException;
 import com.sartiniomar.library.loan.domain.bookInstance.BookInstanceStatus;
 import com.sartiniomar.library.loan.domain.bookInstance.BookType;
-import com.sartiniomar.library.loan.domain.loan.DomainResult;
 import com.sartiniomar.library.loan.domain.loan.Loan;
-import com.sartiniomar.library.loan.domain.loan.LoanBookEvent;
 import com.sartiniomar.library.loan.domain.loan.LoanStatus;
 import com.sartiniomar.library.loan.domain.patron.Patron;
 import com.sartiniomar.library.loan.domain.patron.PatronType;
@@ -47,23 +45,16 @@ public class ReturnedServiceTest {
         bookInstanceId, bookId, BookType.CIRCULATING, BookInstanceStatus.RESERVED);
     Loan loan = new Loan(patronId, bookInstanceId, LoanStatus.LENT, Instant.now(), null, null, null);
 
-    ReturnedServiceDomain service = new ReturnedServiceDomain();
-    DomainResult<Loan> result = service.returned(loan, patron, bookInstance);
+    ReturnServiceDomain service = new ReturnServiceDomain();
+    Loan result = service.returned(loan, patron, bookInstance);
 
     assertNotNull(result);
-    assertNotNull(result.result());
-
-    Loan loanResult = result.result();
-
-    assertNotNull(loanResult.getId());
-    assertEquals(patron.getId(), loanResult.getPatronId());
-    assertEquals(bookInstance.getId(), loanResult.getBookInstanceId());
-    assertEquals(BookInstanceStatus.AVAILABLE, bookInstance.getStatus());
-    assertEquals(LoanStatus.RETURNED, loanResult.getStatus());
+    assertNotNull(result.getId());
+    assertEquals(patron.getId(), result.getPatronId());
+    assertEquals(bookInstance.getId(), result.getBookInstanceId());
+    assertEquals(LoanStatus.RETURNED, result.getStatus());
     assertTrue(Duration.between(loan.getReturnedAt(), Instant.now()).abs().toMillis() < 1000);
-
-    assertEquals(1, result.events().size());
-    assertInstanceOf(LoanBookEvent.class, result.events().getFirst());
+    assertEquals(BookInstanceStatus.AVAILABLE, bookInstance.getStatus());
   }
 
   @Test
@@ -76,23 +67,16 @@ public class ReturnedServiceTest {
         bookInstanceId, bookId, BookType.CIRCULATING, BookInstanceStatus.RESERVED);
     Loan loan = new Loan(patronId, bookInstanceId, LoanStatus.DELAYED, Instant.now(), null, null, null);
 
-    ReturnedServiceDomain service = new ReturnedServiceDomain();
-    DomainResult<Loan> result = service.returned(loan, patron, bookInstance);
+    ReturnServiceDomain service = new ReturnServiceDomain();
+    Loan result = service.returned(loan, patron, bookInstance);
 
     assertNotNull(result);
-    assertNotNull(result.result());
-
-    Loan loanResult = result.result();
-
-    assertNotNull(loanResult.getId());
-    assertEquals(patron.getId(), loanResult.getPatronId());
-    assertEquals(bookInstance.getId(), loanResult.getBookInstanceId());
-    assertEquals(BookInstanceStatus.AVAILABLE, bookInstance.getStatus());
-    assertEquals(LoanStatus.RETURNED_WITH_DELAY, loanResult.getStatus());
+    assertNotNull(result.getId());
+    assertEquals(patron.getId(), result.getPatronId());
+    assertEquals(bookInstance.getId(), result.getBookInstanceId());
+    assertEquals(LoanStatus.RETURNED_WITH_DELAY, result.getStatus());
     assertTrue(Duration.between(loan.getReturnedAt(), Instant.now()).abs().toMillis() < 1000);
-
-    assertEquals(1, result.events().size());
-    assertInstanceOf(LoanBookEvent.class, result.events().getFirst());
+    assertEquals(BookInstanceStatus.AVAILABLE, bookInstance.getStatus());
   }
 
   @ParameterizedTest
@@ -103,7 +87,7 @@ public class ReturnedServiceTest {
     BookInstance bookInstance = new BookInstance(
         UUID.randomUUID(), UUID.randomUUID(), BookType.CIRCULATING, BookInstanceStatus.RESERVED);
     Loan loan = new Loan(UUID.randomUUID(), UUID.randomUUID(), status, Instant.now(), null, null, null);
-    ReturnedServiceDomain service = new ReturnedServiceDomain();
+    ReturnServiceDomain service = new ReturnServiceDomain();
 
     BookInstanceNotAvailableException ex =
         assertThrows(BookInstanceNotAvailableException.class,
