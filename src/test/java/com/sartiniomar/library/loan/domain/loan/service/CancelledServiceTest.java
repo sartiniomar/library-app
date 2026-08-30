@@ -4,9 +4,7 @@ import com.sartiniomar.library.loan.domain.bookInstance.BookInstance;
 import com.sartiniomar.library.loan.domain.bookInstance.BookInstanceNotAvailableException;
 import com.sartiniomar.library.loan.domain.bookInstance.BookInstanceStatus;
 import com.sartiniomar.library.loan.domain.bookInstance.BookType;
-import com.sartiniomar.library.loan.domain.loan.DomainResult;
 import com.sartiniomar.library.loan.domain.loan.Loan;
-import com.sartiniomar.library.loan.domain.loan.LoanBookEvent;
 import com.sartiniomar.library.loan.domain.loan.LoanStatus;
 import com.sartiniomar.library.loan.domain.patron.Patron;
 import com.sartiniomar.library.loan.domain.patron.PatronType;
@@ -21,7 +19,6 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class CancelledServiceTest {
@@ -46,22 +43,15 @@ public class CancelledServiceTest {
         bookInstanceId, bookId, BookType.CIRCULATING, BookInstanceStatus.RESERVED);
     Loan loan = new Loan(patronId, bookInstanceId, LoanStatus.RESERVED, Instant.now(), null, null, null);
 
-    CancelledServiceDomain service = new CancelledServiceDomain();
-    DomainResult<Loan> result = service.cancelled(loan, patron, bookInstance);
+    CancelServiceDomain service = new CancelServiceDomain();
+    Loan result = service.cancel(loan, bookInstance);
 
     assertNotNull(result);
-    assertNotNull(result.result());
-
-    Loan loanResult = result.result();
-
-    assertNotNull(loanResult.getId());
-    assertEquals(patron.getId(), loanResult.getPatronId());
-    assertEquals(bookInstance.getId(), loanResult.getBookInstanceId());
+    assertNotNull(result.getId());
+    assertEquals(patron.getId(), result.getPatronId());
+    assertEquals(bookInstance.getId(), result.getBookInstanceId());
     assertEquals(BookInstanceStatus.AVAILABLE, bookInstance.getStatus());
-    assertEquals(LoanStatus.CANCELLED, loanResult.getStatus());
-
-    assertEquals(1, result.events().size());
-    assertInstanceOf(LoanBookEvent.class, result.events().getFirst());
+    assertEquals(LoanStatus.CANCELLED, result.getStatus());
   }
 
   @ParameterizedTest
@@ -72,11 +62,11 @@ public class CancelledServiceTest {
     BookInstance bookInstance = new BookInstance(
         UUID.randomUUID(), UUID.randomUUID(), BookType.CIRCULATING, BookInstanceStatus.RESERVED);
     Loan loan = new Loan(UUID.randomUUID(), UUID.randomUUID(), status, Instant.now(), null, null, null);
-    CancelledServiceDomain service = new CancelledServiceDomain();
+    CancelServiceDomain service = new CancelServiceDomain();
 
     BookInstanceNotAvailableException ex =
         assertThrows(BookInstanceNotAvailableException.class,
-            () -> service.cancelled(loan, patron, bookInstance)
+            () -> service.cancel(loan, bookInstance)
         );
     assertEquals("The loan is not reserved!", ex.getMessage());
   }
