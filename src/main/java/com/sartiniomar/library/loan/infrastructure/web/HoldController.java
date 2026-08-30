@@ -1,7 +1,7 @@
 package com.sartiniomar.library.loan.infrastructure.web;
 
-import com.sartiniomar.library.loan.application.port.in.reserveCommand;
-import com.sartiniomar.library.loan.application.port.in.ReserveUseCase;
+import com.sartiniomar.library.loan.application.port.in.reserve.ReserveCommand;
+import com.sartiniomar.library.loan.application.port.in.reserve.ReserveUseCase;
 import com.sartiniomar.library.loan.infrastructure.mapper.LoanMapper;
 import com.sartiniomar.library.loan.infrastructure.web.dto.HoldResponse;
 import com.sartiniomar.library.loan.infrastructure.web.dto.PlaceHoldRequest;
@@ -23,7 +23,7 @@ public class HoldController {
 
   @PostMapping
   public ResponseEntity<HoldResponse> placeHold(@Valid @RequestBody PlaceHoldRequest request) {
-    reserveCommand command = holdMapper.placeHoldRequestToPlaceHoldCommand(request);
+    ReserveCommand command = holdMapper.placeHoldRequestToPlaceHoldCommand(request);
     return ResponseEntity.ok(holdMapper.holdToHoldResponse(useCase.execute(command)));
   }
 }
