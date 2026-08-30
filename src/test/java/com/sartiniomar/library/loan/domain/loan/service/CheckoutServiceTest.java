@@ -4,9 +4,7 @@ import com.sartiniomar.library.loan.domain.bookInstance.BookInstance;
 import com.sartiniomar.library.loan.domain.bookInstance.BookInstanceNotAvailableException;
 import com.sartiniomar.library.loan.domain.bookInstance.BookInstanceStatus;
 import com.sartiniomar.library.loan.domain.bookInstance.BookType;
-import com.sartiniomar.library.loan.domain.loan.DomainResult;
 import com.sartiniomar.library.loan.domain.loan.Loan;
-import com.sartiniomar.library.loan.domain.loan.LoanBookEvent;
 import com.sartiniomar.library.loan.domain.loan.OnlyResearcherCanLoanRestrictedBooksException;
 import com.sartiniomar.library.loan.domain.patron.Patron;
 import com.sartiniomar.library.loan.domain.patron.PatronType;
@@ -49,22 +47,15 @@ public class CheckoutServiceTest {
         UUID.randomUUID(), UUID.randomUUID(), BookType.CIRCULATING, BookInstanceStatus.AVAILABLE);
 
     CheckoutServiceDomain service = new CheckoutServiceDomain(clock);
-    DomainResult<Loan> result = service.checkout(patron, book);
+    Loan result = service.checkout(patron, book);
 
     assertNotNull(result);
-    assertNotNull(result.result());
-
-    Loan loan = result.result();
-
-    assertNotNull(loan.getId());
-    assertEquals(patron.getId(), loan.getPatronId());
-    assertEquals(book.getId(), loan.getBookInstanceId());
+    assertNotNull(result.getId());
+    assertEquals(patron.getId(), result.getPatronId());
+    assertEquals(book.getId(), result.getBookInstanceId());
+    assertEquals(now, result.getLentAt());
+    assertEquals(now.plus(Duration.ofDays(REGULAR_PATRON_LEND_LIMIT_DAYS)), result.getDueAt());
     assertEquals(BookInstanceStatus.LENT, book.getStatus());
-    assertEquals(now, loan.getLentAt());
-    assertEquals(now.plus(Duration.ofDays(REGULAR_PATRON_LEND_LIMIT_DAYS)), loan.getDueAt());
-
-    assertEquals(1, result.events().size());
-    assertInstanceOf(LoanBookEvent.class, result.events().getFirst());
   }
 
   @Test
@@ -78,22 +69,15 @@ public class CheckoutServiceTest {
         UUID.randomUUID(), UUID.randomUUID(), BookType.CIRCULATING, BookInstanceStatus.RESERVED);
 
     CheckoutServiceDomain service = new CheckoutServiceDomain(clock);
-    DomainResult<Loan> result = service.checkout(patron, book);
+    Loan result = service.checkout(patron, book);
 
     assertNotNull(result);
-    assertNotNull(result.result());
-
-    Loan loan = result.result();
-
-    assertNotNull(loan.getId());
-    assertEquals(patron.getId(), loan.getPatronId());
-    assertEquals(book.getId(), loan.getBookInstanceId());
+    assertNotNull(result.getId());
+    assertEquals(patron.getId(), result.getPatronId());
+    assertEquals(book.getId(), result.getBookInstanceId());
+    assertEquals(now, result.getLentAt());
+    assertEquals(now.plus(Duration.ofDays(RESEARCHER_PATRON_LEND_LIMIT_DAYS)), result.getDueAt());
     assertEquals(BookInstanceStatus.LENT, book.getStatus());
-    assertEquals(now, loan.getLentAt());
-    assertEquals(now.plus(Duration.ofDays(RESEARCHER_PATRON_LEND_LIMIT_DAYS)), loan.getDueAt());
-
-    assertEquals(1, result.events().size());
-    assertInstanceOf(LoanBookEvent.class, result.events().getFirst());
   }
 
   @Test void should_throw_exception_when_book_is_restricted_and_patron_is_regular() {
