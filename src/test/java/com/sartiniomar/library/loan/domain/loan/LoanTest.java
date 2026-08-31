@@ -135,19 +135,34 @@ public class LoanTest {
 
   @Test
   void should_change_reserved_to_lent_status() {
-    Loan loan = Loan.createReserve(UUID.randomUUID(), UUID.randomUUID(), Clock.systemDefaultZone());
-    loan.lent();
+    Clock clock = Clock.fixed(Instant.now(), ZoneOffset.UTC);
+    Patron patron = new Patron(UUID.randomUUID(), PatronType.REGULAR);
+    Loan loan = Loan.createReserve(UUID.randomUUID(), UUID.randomUUID(), clock);
+    loan.lent(Patron.REGULAR_PATRON_LEND_LIMIT_DAYS, clock);
     assertEquals(LoanStatus.LENT, loan.getStatus());
-    assertTrue(Duration.between(loan.getLentAt(), Instant.now()).abs().toMillis() < 1000);
+    assertTrue(Duration.between(loan.getLentAt(), Instant.now(clock)).abs().toMillis() < 1000);
+    assertTrue(Duration.between(loan.getDueAt(),
+        Instant.now(clock).plus(Duration.ofDays(patron.getLimitDays()))).abs().toMillis() < 1000);
   }
 
   @ParameterizedTest
   @MethodSource("provideDataForGroupCancelledAndLentChangeStatusError")
   @SneakyThrows
   void should_throw_exception_when_loan_status_is_not_allow_for_lent(LoanStatus status) {
-    Loan loan = new Loan(UUID.randomUUID(), UUID.randomUUID(), status, Instant.now(), null, null, null);
+    Loan loan = new Loan(
+        UUID.randomUUID(),
+        UUID.randomUUID(),
+        status,
+        Instant.now(),
+        null,
+        null,
+        null
+    );
 
-    assertThrows(TransitionStatusException.class, loan::lent);
+    assertThrows(
+        TransitionStatusException.class,
+        () -> loan.lent(Patron.REGULAR_PATRON_LEND_LIMIT_DAYS, Clock.systemDefaultZone())
+    );
   }
 
   @Test

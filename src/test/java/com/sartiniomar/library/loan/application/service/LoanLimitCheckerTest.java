@@ -2,6 +2,7 @@ package com.sartiniomar.library.loan.application.service;
 
 import com.sartiniomar.library.loan.application.port.out.LoanRepository;
 import com.sartiniomar.library.loan.domain.loan.DomainPolicy;
+import com.sartiniomar.library.loan.domain.loan.Loan;
 import com.sartiniomar.library.loan.domain.loan.LoanLimitExceededException;
 import com.sartiniomar.library.loan.domain.patron.Patron;
 import com.sartiniomar.library.loan.domain.patron.PatronType;
@@ -38,7 +39,7 @@ public class LoanLimitCheckerTest {
 
     when(loanRepository.countActiveLoansByPatronId(
         patron.getId(),
-        DomainPolicy.ACTIVE_STATUSES
+        Loan.ACTIVE_STATUSES
     )).thenReturn(DomainPolicy.MAX_VALUE_LOANS_REGULAR_PATRON);
 
     LoanLimitExceededException ex = assertThrows(
@@ -50,7 +51,7 @@ public class LoanLimitCheckerTest {
 
     verify(loanRepository).countActiveLoansByPatronId(
         patron.getId(),
-        DomainPolicy.ACTIVE_STATUSES
+        Loan.ACTIVE_STATUSES
     );
   }
 
@@ -63,14 +64,14 @@ public class LoanLimitCheckerTest {
 
     when(loanRepository.countActiveLoansByPatronId(
         patron.getId(),
-        DomainPolicy.ACTIVE_STATUSES
+        Loan.ACTIVE_STATUSES
     )).thenReturn(DomainPolicy.MAX_VALUE_LOANS_REGULAR_PATRON - 1);
 
     assertDoesNotThrow(() -> validationsUtil.check(patron));
 
     verify(loanRepository).countActiveLoansByPatronId(
         patron.getId(),
-        DomainPolicy.ACTIVE_STATUSES
+        Loan.ACTIVE_STATUSES
     );
   }
 

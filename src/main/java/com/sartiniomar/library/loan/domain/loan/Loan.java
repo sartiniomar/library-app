@@ -4,6 +4,7 @@ import com.sartiniomar.library.loan.domain.bookInstance.BookInstanceNotAvailable
 import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
 
 public class Loan {
@@ -14,10 +15,11 @@ public class Loan {
   private LoanStatus status;
   private final Instant reservedAt;
   private Instant lentAt;
-  private final Instant dueAt;
+  private Instant dueAt;
   private Instant returnedAt;
 
   private static final Integer RESERVED_LIMIT_DAYS = 3;
+  public static final List<LoanStatus> ACTIVE_STATUSES = List.of(LoanStatus.RESERVED, LoanStatus.LENT, LoanStatus.DELAYED);
 
   public Loan(
       UUID patronId,
@@ -102,13 +104,15 @@ public class Loan {
     this.status = LoanStatus.CANCELLED;
   }
 
-  public void lent() {
+  public void lent(Integer days, Clock clock) {
     if (this.status != LoanStatus.RESERVED) {
       throw new TransitionStatusException(
           "You cannot change from status " + this.status.toString() + " to status " + LoanStatus.LENT);
     }
+    Instant now = Instant.now(clock);
     this.status = LoanStatus.LENT;
-    this.lentAt = Instant.now();
+    this.lentAt = now;
+    this.dueAt = now.plus(Duration.ofDays(days));
   }
 
   public void returned() {
