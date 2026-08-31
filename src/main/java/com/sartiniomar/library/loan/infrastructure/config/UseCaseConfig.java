@@ -1,10 +1,14 @@
 package com.sartiniomar.library.loan.infrastructure.config;
 
+import com.sartiniomar.library.loan.application.port.in.checkout.CheckoutUseCase;
 import com.sartiniomar.library.loan.application.port.in.reserve.ReserveUseCase;
 import com.sartiniomar.library.loan.application.port.out.BookInstanceLoanRepository;
 import com.sartiniomar.library.loan.application.port.out.LoanRepository;
 import com.sartiniomar.library.loan.application.port.out.PatronLoanRepository;
+import com.sartiniomar.library.loan.application.usecase.CheckoutUseCaseImpl;
 import com.sartiniomar.library.loan.application.usecase.ReserveUseCaseImpl;
+import com.sartiniomar.library.loan.application.service.LoanLimitChecker;
+import com.sartiniomar.library.loan.domain.loan.service.CheckoutServiceDomain;
 import com.sartiniomar.library.loan.domain.loan.service.ReserveServiceDomain;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,13 +21,32 @@ public class UseCaseConfig {
       PatronLoanRepository patronLoanRepository,
       BookInstanceLoanRepository bookInstanceLoanRepository,
       LoanRepository loanRepository,
-      ReserveServiceDomain service
+      ReserveServiceDomain service,
+      LoanLimitChecker validationsUtil
   ) {
     return new ReserveUseCaseImpl(
         patronLoanRepository,
         bookInstanceLoanRepository,
         loanRepository,
-        service
+        service,
+        validationsUtil
+    );
+  }
+
+  @Bean
+  CheckoutUseCase checkoutUseCase(
+      PatronLoanRepository patronLoanRepository,
+      BookInstanceLoanRepository bookInstanceLoanRepository,
+      LoanRepository loanRepository,
+      CheckoutServiceDomain service,
+      LoanLimitChecker validationsUtil
+  ) {
+    return new CheckoutUseCaseImpl(
+        patronLoanRepository,
+        bookInstanceLoanRepository,
+        loanRepository,
+        service,
+        validationsUtil
     );
   }
 }
