@@ -18,7 +18,7 @@ public class DomainPolicy {
   }
 
   public static void ensureCanHaveAnotherLoan(Patron patron, long activeLoans) {
-    if (patron.isRegular() && activeLoans > MAX_VALUE_LOANS_REGULAR_PATRON) {
+    if (patron.isRegular() && activeLoans >= MAX_VALUE_LOANS_REGULAR_PATRON) {
       throw new LoanLimitExceededException("Loan Limit Exceeded.");
     }
   }
