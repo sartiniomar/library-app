@@ -1,9 +1,10 @@
 package com.sartiniomar.library.loan.application.usecase;
 
-import com.sartiniomar.library.loan.application.port.in.reserve.ReserveCommand;
+import com.sartiniomar.library.loan.application.port.in.checkout.CheckoutCommand;
 import com.sartiniomar.library.loan.application.port.out.BookInstanceLoanRepository;
 import com.sartiniomar.library.loan.application.port.out.LoanRepository;
 import com.sartiniomar.library.loan.application.port.out.PatronLoanRepository;
+import com.sartiniomar.library.loan.application.service.LoanLimitChecker;
 import com.sartiniomar.library.loan.domain.bookInstance.BookInstance;
 import com.sartiniomar.library.loan.domain.bookInstance.BookInstanceNotAvailableException;
 import com.sartiniomar.library.loan.domain.bookInstance.BookInstanceNotFoundException;
@@ -12,7 +13,7 @@ import com.sartiniomar.library.loan.domain.bookInstance.BookType;
 import com.sartiniomar.library.loan.domain.loan.DomainPolicy;
 import com.sartiniomar.library.loan.domain.loan.Loan;
 import com.sartiniomar.library.loan.domain.loan.LoanLimitExceededException;
-import com.sartiniomar.library.loan.domain.loan.service.ReserveServiceDomain;
+import com.sartiniomar.library.loan.domain.loan.service.CheckoutServiceDomain;
 import com.sartiniomar.library.loan.domain.patron.Patron;
 import com.sartiniomar.library.loan.domain.patron.PatronNotFoundException;
 import com.sartiniomar.library.loan.domain.patron.PatronType;
@@ -29,12 +30,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.never;
 
 @ExtendWith(MockitoExtension.class)
-public class ReserveServiceTest {
+public class CheckoutUseCaseTest {
 
   @Mock
   private PatronLoanRepository patronRepository;
@@ -46,13 +46,16 @@ public class ReserveServiceTest {
   private LoanRepository loanRepository;
 
   @Mock
-  private ReserveServiceDomain reserveService;
+  private CheckoutServiceDomain domainService;
+
+  @Mock
+  private LoanLimitChecker validationsUtil;
 
   @InjectMocks
-  private ReserveUseCaseImpl useCase;
+  private CheckoutUseCaseImpl useCase;
 
   @Test
-  void shouldExecuteReserveSuccessfully() {
+  void shouldExecuteCheckoutSuccessfully() {
     Clock clock = Clock.systemDefaultZone();
 
     Patron patron = new Patron(
@@ -67,7 +70,7 @@ public class ReserveServiceTest {
         BookInstanceStatus.AVAILABLE
     );
 
-    Loan loan = Loan.createReserve(patron.getId(), bookInstance.getId(), clock);
+    Loan loan = Loan.createLent(patron.getId(), bookInstance.getId(), clock, DomainPolicy.MAX_VALUE_LOANS_REGULAR_PATRON);
 
     when(patronRepository.findById(patron.getId()))
         .thenReturn(Optional.of(patron));
@@ -75,13 +78,13 @@ public class ReserveServiceTest {
     when(bookInstanceRepository.findById(bookInstance.getId()))
         .thenReturn(Optional.of(bookInstance));
 
-    when(reserveService.reserve(patron, bookInstance))
+    when(domainService.checkout(patron, bookInstance))
         .thenReturn(loan);
 
     when(loanRepository.save(loan))
         .thenReturn(loan);
 
-    ReserveCommand command = new ReserveCommand(patron.getId(), bookInstance.getId());
+    CheckoutCommand command = new CheckoutCommand(patron.getId(), bookInstance.getId());
 
     Loan result = useCase.execute(command);
 
@@ -90,7 +93,8 @@ public class ReserveServiceTest {
 
     verify(patronRepository).findById(patron.getId());
     verify(bookInstanceRepository).findById(bookInstance.getId());
-    verify(reserveService).reserve(patron, bookInstance);
+    verify(validationsUtil).check(patron);
+    verify(domainService).checkout(patron, bookInstance);
     verify(loanRepository).save(loan);
   }
 
@@ -104,7 +108,7 @@ public class ReserveServiceTest {
     );
 
     UUID patronId = UUID.randomUUID();
-    ReserveCommand command = new ReserveCommand(patronId, bookInstance.getId());
+    CheckoutCommand command = new CheckoutCommand(patronId, bookInstance.getId());
 
     PatronNotFoundException ex =
         assertThrows(PatronNotFoundException.class,
@@ -125,7 +129,7 @@ public class ReserveServiceTest {
         .thenReturn(Optional.of(patron));
 
     UUID bookInstanceId = UUID.randomUUID();
-    ReserveCommand command = new ReserveCommand(patron.getId(), bookInstanceId);
+    CheckoutCommand command = new CheckoutCommand(patron.getId(), bookInstanceId);
 
     BookInstanceNotFoundException ex =
         assertThrows(BookInstanceNotFoundException.class,
@@ -137,8 +141,6 @@ public class ReserveServiceTest {
 
   @Test
   void should_throw_exception_when_patron_reached_loan_limit() {
-    Clock clock = Clock.systemDefaultZone();
-
     Patron patron = new Patron(
         UUID.randomUUID(),
         PatronType.REGULAR
@@ -157,10 +159,14 @@ public class ReserveServiceTest {
     when(bookInstanceRepository.findById(bookInstance.getId()))
         .thenReturn(Optional.of(bookInstance));
 
-    when(loanRepository.countActiveLoansByPatronId(patron.getId(), DomainPolicy.ACTIVE_STATUSES))
-        .thenReturn(DomainPolicy.MAX_VALUE_LOANS_REGULAR_PATRON + 1);
+    LoanLimitExceededException exception =
+        new LoanLimitExceededException("Loan Limit Exceeded.");
 
-    ReserveCommand command = new ReserveCommand(patron.getId(), bookInstance.getId());
+    doThrow(exception)
+        .when(validationsUtil)
+        .check(patron);
+
+    CheckoutCommand command = new CheckoutCommand(patron.getId(), bookInstance.getId());
 
     LoanLimitExceededException ex =
         assertThrows(LoanLimitExceededException.class,
@@ -168,6 +174,7 @@ public class ReserveServiceTest {
         );
 
     assertEquals("Loan Limit Exceeded.", ex.getMessage());
+    verify(loanRepository, never()).save(any());
   }
 
   @Test
@@ -196,14 +203,13 @@ public class ReserveServiceTest {
     when(bookInstanceRepository.findById(bookInstance.getId()))
         .thenReturn(Optional.of(bookInstance));
 
-    when(reserveService.reserve(patron, bookInstance))
+    when(domainService.checkout(patron, bookInstance))
         .thenReturn(loan);
 
     when(loanRepository.save(loan))
         .thenReturn(loan);
 
-    ReserveCommand command =
-        new ReserveCommand(patron.getId(), bookInstance.getId());
+    CheckoutCommand command = new CheckoutCommand(patron.getId(), bookInstance.getId());
 
     Loan result = useCase.execute(command);
 
@@ -237,11 +243,10 @@ public class ReserveServiceTest {
     BookInstanceNotAvailableException exception =
         new BookInstanceNotAvailableException("Book Already Unavailable!");
 
-    when(reserveService.reserve(patron, bookInstance))
+    when(domainService.checkout(patron, bookInstance))
         .thenThrow(exception);
 
-    ReserveCommand command =
-        new ReserveCommand(patron.getId(), bookInstance.getId());
+    CheckoutCommand command = new CheckoutCommand(patron.getId(), bookInstance.getId());
 
     BookInstanceNotAvailableException ex =
         assertThrows(
@@ -251,7 +256,7 @@ public class ReserveServiceTest {
 
     assertEquals("Book Already Unavailable!", ex.getMessage());
 
-    verify(reserveService).reserve(patron, bookInstance);
+    verify(domainService).checkout(patron, bookInstance);
     verify(loanRepository, never()).save(any(Loan.class));
   }
 }
