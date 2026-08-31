@@ -10,7 +10,6 @@ import com.sartiniomar.library.loan.domain.bookInstance.BookInstanceNotAvailable
 import com.sartiniomar.library.loan.domain.bookInstance.BookInstanceNotFoundException;
 import com.sartiniomar.library.loan.domain.bookInstance.BookInstanceStatus;
 import com.sartiniomar.library.loan.domain.bookInstance.BookType;
-import com.sartiniomar.library.loan.domain.loan.DomainPolicy;
 import com.sartiniomar.library.loan.domain.loan.Loan;
 import com.sartiniomar.library.loan.domain.loan.LoanLimitExceededException;
 import com.sartiniomar.library.loan.domain.loan.service.ReserveServiceDomain;
@@ -219,7 +218,7 @@ public class ReserveUseCaseTest {
     assertNotNull(result);
     assertEquals(loan, result);
 
-    verify(loanRepository, never()).countActiveLoansByPatronId(patron.getId(), DomainPolicy.ACTIVE_STATUSES);
+    verify(loanRepository, never()).countActiveLoansByPatronId(patron.getId(), Loan.ACTIVE_STATUSES);
     verify(loanRepository).save(loan);
   }
 
