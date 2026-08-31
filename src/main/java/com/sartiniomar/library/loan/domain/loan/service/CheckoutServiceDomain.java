@@ -4,7 +4,6 @@ import com.sartiniomar.library.loan.domain.bookInstance.BookInstance;
 import com.sartiniomar.library.loan.domain.loan.DomainPolicy;
 import com.sartiniomar.library.loan.domain.loan.Loan;
 import com.sartiniomar.library.loan.domain.patron.Patron;
-import com.sartiniomar.library.loan.domain.patron.PatronType;
 import java.time.Clock;
 
 public class CheckoutServiceDomain {
@@ -18,13 +17,8 @@ public class CheckoutServiceDomain {
   public Loan checkout(Patron patron, BookInstance bookInstance) {
     DomainPolicy.ensurePatronCanLoanBook(patron, bookInstance);
     bookInstance.ensureCanBeCheckout();
-    Loan loan = Loan.createLent(patron.getId(), bookInstance.getId(), clock, getLimitDays(patron.getType()));
+    Loan loan = Loan.createLent(patron.getId(), bookInstance.getId(), clock, patron.getLimitDays());
     bookInstance.lent();
     return loan;
-  }
-
-  private Integer getLimitDays(PatronType patronType) {
-    return PatronType.REGULAR.equals(patronType) ?
-        DomainPolicy.REGULAR_PATRON_LEND_LIMIT_DAYS : DomainPolicy.RESEARCHER_PATRON_LEND_LIMIT_DAYS;
   }
 }

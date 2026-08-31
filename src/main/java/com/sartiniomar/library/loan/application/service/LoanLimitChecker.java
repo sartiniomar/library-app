@@ -2,6 +2,7 @@ package com.sartiniomar.library.loan.application.service;
 
 import com.sartiniomar.library.loan.application.port.out.LoanRepository;
 import com.sartiniomar.library.loan.domain.loan.DomainPolicy;
+import com.sartiniomar.library.loan.domain.loan.Loan;
 import com.sartiniomar.library.loan.domain.patron.Patron;
 
 public class LoanLimitChecker {
@@ -14,7 +15,7 @@ public class LoanLimitChecker {
 
   public void check(Patron patron) {
     if (patron.isRegular()) {
-      int activeLoans = loanRepository.countActiveLoansByPatronId(patron.getId(), DomainPolicy.ACTIVE_STATUSES);
+      int activeLoans = loanRepository.countActiveLoansByPatronId(patron.getId(), Loan.ACTIVE_STATUSES);
       DomainPolicy.ensureCanHaveAnotherLoan(patron, activeLoans);
     }
   }
