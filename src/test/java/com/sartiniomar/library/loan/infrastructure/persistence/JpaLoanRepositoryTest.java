@@ -46,7 +46,7 @@ public class JpaLoanRepositoryTest {
     repository.save(hold1);
     repository.save(hold2);
 
-    int count = repository.countActiveLoansByPatronId(patronId, DomainPolicy.ACTIVE_STATUSES);
+    int count = repository.countActiveLoansByPatronId(patronId, Loan.ACTIVE_STATUSES);
 
     assertEquals(2, count);
   }

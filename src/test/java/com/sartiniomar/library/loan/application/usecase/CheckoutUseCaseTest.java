@@ -30,8 +30,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.doThrow;
 
 @ExtendWith(MockitoExtension.class)
 public class CheckoutUseCaseTest {
@@ -216,7 +218,7 @@ public class CheckoutUseCaseTest {
     assertNotNull(result);
     assertEquals(loan, result);
 
-    verify(loanRepository, never()).countActiveLoansByPatronId(patron.getId(), DomainPolicy.ACTIVE_STATUSES);
+    verify(loanRepository, never()).countActiveLoansByPatronId(patron.getId(), Loan.ACTIVE_STATUSES);
     verify(loanRepository).save(loan);
   }
 

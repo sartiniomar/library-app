@@ -22,16 +22,13 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public class CheckoutServiceTest {
-
-  private static final Integer REGULAR_PATRON_LEND_LIMIT_DAYS = 7;
-  private static final Integer RESEARCHER_PATRON_LEND_LIMIT_DAYS = 14;
+public class CheckoutServiceDomainTest {
 
   private static Stream<Arguments> provideDataForBookInstancesStateAreNotAvailable() {
     return Stream.of(
+        Arguments.of("RESERVED"),
         Arguments.of("LENT"),
         Arguments.of("UNAVAILABLE")
     );
@@ -54,29 +51,7 @@ public class CheckoutServiceTest {
     assertEquals(patron.getId(), result.getPatronId());
     assertEquals(book.getId(), result.getBookInstanceId());
     assertEquals(now, result.getLentAt());
-    assertEquals(now.plus(Duration.ofDays(REGULAR_PATRON_LEND_LIMIT_DAYS)), result.getDueAt());
-    assertEquals(BookInstanceStatus.LENT, book.getStatus());
-  }
-
-  @Test
-  void should_checkout_when_all_conditions_are_met_and_reserved_book() {
-    Instant now = Instant.parse("2026-08-27T19:00:00Z");
-    Clock clock = Clock.fixed(now, ZoneOffset.UTC);
-
-    Patron patron = new Patron(UUID.randomUUID(), PatronType.RESEARCHER);
-
-    BookInstance book = new BookInstance(
-        UUID.randomUUID(), UUID.randomUUID(), BookType.CIRCULATING, BookInstanceStatus.RESERVED);
-
-    CheckoutServiceDomain service = new CheckoutServiceDomain(clock);
-    Loan result = service.checkout(patron, book);
-
-    assertNotNull(result);
-    assertNotNull(result.getId());
-    assertEquals(patron.getId(), result.getPatronId());
-    assertEquals(book.getId(), result.getBookInstanceId());
-    assertEquals(now, result.getLentAt());
-    assertEquals(now.plus(Duration.ofDays(RESEARCHER_PATRON_LEND_LIMIT_DAYS)), result.getDueAt());
+    assertEquals(now.plus(Duration.ofDays(Patron.REGULAR_PATRON_LEND_LIMIT_DAYS)), result.getDueAt());
     assertEquals(BookInstanceStatus.LENT, book.getStatus());
   }
 

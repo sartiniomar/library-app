@@ -70,7 +70,7 @@ public class BookInstance {
   }
 
   public void ensureCanBeCheckout() {
-    if (this.status != BookInstanceStatus.AVAILABLE && this.status != BookInstanceStatus.RESERVED) {
+    if (this.status != BookInstanceStatus.AVAILABLE) {
       throw new BookInstanceNotAvailableException(BOOK_ALREADY_UNAVAILABLE_MESSAGE);
     }
   }
