@@ -9,6 +9,7 @@ import com.sartiniomar.library.loan.domain.bookInstance.BookInstanceNotFoundExce
 import com.sartiniomar.library.loan.domain.loan.Loan;
 import com.sartiniomar.library.loan.domain.loan.LoanNotFoundException;
 import com.sartiniomar.library.loan.domain.loan.service.CancelServiceDomain;
+import org.springframework.transaction.annotation.Transactional;
 
 public class CancelUseCaseImpl implements CancelUseCase {
 
@@ -23,6 +24,7 @@ public class CancelUseCaseImpl implements CancelUseCase {
   }
 
   @Override
+  @Transactional
   public Loan execute(CancelCommand command) {
     Loan loan = loanRepository.findById(command.loanId())
         .orElseThrow(() -> new LoanNotFoundException(command.loanId().toString()));
