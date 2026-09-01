@@ -1,7 +1,7 @@
 package com.sartiniomar.library.loan.application.usecase;
 
-import com.sartiniomar.library.loan.application.port.in.cancel.CancelCommand;
-import com.sartiniomar.library.loan.application.port.in.cancel.CancelUseCase;
+import com.sartiniomar.library.loan.application.port.in.LoanIdCommand;
+import com.sartiniomar.library.loan.application.port.in.CancelUseCase;
 import com.sartiniomar.library.loan.application.port.out.BookInstanceLoanRepository;
 import com.sartiniomar.library.loan.application.port.out.LoanRepository;
 import com.sartiniomar.library.loan.domain.bookInstance.BookInstance;
@@ -25,7 +25,7 @@ public class CancelUseCaseImpl implements CancelUseCase {
 
   @Override
   @Transactional
-  public Loan execute(CancelCommand command) {
+  public Loan execute(LoanIdCommand command) {
     Loan loan = loanRepository.findById(command.loanId())
         .orElseThrow(() -> new LoanNotFoundException(command.loanId().toString()));
 

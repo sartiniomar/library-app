@@ -1,6 +1,6 @@
 package com.sartiniomar.library.loan.application.usecase;
 
-import com.sartiniomar.library.loan.application.port.in.checkout.CheckoutReserveCommand;
+import com.sartiniomar.library.loan.application.port.in.LoanIdCommand;
 import com.sartiniomar.library.loan.application.port.out.BookInstanceLoanRepository;
 import com.sartiniomar.library.loan.application.port.out.LoanRepository;
 import com.sartiniomar.library.loan.application.port.out.PatronLoanRepository;
@@ -91,7 +91,7 @@ public class CheckoutReserveUseCaseTest {
     when(loanRepository.save(loan))
         .thenReturn(loan);
 
-    CheckoutReserveCommand command = new CheckoutReserveCommand(loan.getId());
+    LoanIdCommand command = new LoanIdCommand(loan.getId());
 
     Loan result = useCase.execute(command);
 
@@ -108,7 +108,7 @@ public class CheckoutReserveUseCaseTest {
   @Test
   void should_throw_exception_when_loan_not_exist() {
     UUID loanId = UUID.randomUUID();
-    CheckoutReserveCommand command = new CheckoutReserveCommand(loanId);
+    LoanIdCommand command = new LoanIdCommand(loanId);
 
     LoanNotFoundException ex =
         assertThrows(LoanNotFoundException.class,
@@ -135,7 +135,7 @@ public class CheckoutReserveUseCaseTest {
     when(loanRepository.findById(loan.getId()))
         .thenReturn(Optional.of(loan));
 
-    CheckoutReserveCommand command = new CheckoutReserveCommand(loan.getId());
+    LoanIdCommand command = new LoanIdCommand(loan.getId());
 
     PatronNotFoundException ex =
         assertThrows(PatronNotFoundException.class,
@@ -170,7 +170,7 @@ public class CheckoutReserveUseCaseTest {
     when(patronRepository.findById(patron.getId()))
         .thenReturn(Optional.of(patron));
 
-    CheckoutReserveCommand command = new CheckoutReserveCommand(loan.getId());
+    LoanIdCommand command = new LoanIdCommand(loan.getId());
 
     BookInstanceNotFoundException ex =
         assertThrows(BookInstanceNotFoundException.class,
@@ -219,7 +219,7 @@ public class CheckoutReserveUseCaseTest {
     when(domainService.checkoutReserve(loan, patron, bookInstance))
         .thenThrow(exception);
 
-    CheckoutReserveCommand command = new CheckoutReserveCommand(loan.getId());
+    LoanIdCommand command = new LoanIdCommand(loan.getId());
 
     TransitionStatusException ex =
         assertThrows(

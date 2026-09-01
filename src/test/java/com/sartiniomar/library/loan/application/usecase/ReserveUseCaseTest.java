@@ -1,6 +1,6 @@
 package com.sartiniomar.library.loan.application.usecase;
 
-import com.sartiniomar.library.loan.application.port.in.reserve.ReserveCommand;
+import com.sartiniomar.library.loan.application.port.in.LoanCommand;
 import com.sartiniomar.library.loan.application.port.out.BookInstanceLoanRepository;
 import com.sartiniomar.library.loan.application.port.out.LoanRepository;
 import com.sartiniomar.library.loan.application.port.out.PatronLoanRepository;
@@ -85,7 +85,7 @@ public class ReserveUseCaseTest {
     when(loanRepository.save(loan))
         .thenReturn(loan);
 
-    ReserveCommand command = new ReserveCommand(patron.getId(), bookInstance.getId());
+    LoanCommand command = new LoanCommand(patron.getId(), bookInstance.getId());
 
     Loan result = useCase.execute(command);
 
@@ -109,7 +109,7 @@ public class ReserveUseCaseTest {
     );
 
     UUID patronId = UUID.randomUUID();
-    ReserveCommand command = new ReserveCommand(patronId, bookInstance.getId());
+    LoanCommand command = new LoanCommand(patronId, bookInstance.getId());
 
     PatronNotFoundException ex =
         assertThrows(PatronNotFoundException.class,
@@ -130,7 +130,7 @@ public class ReserveUseCaseTest {
         .thenReturn(Optional.of(patron));
 
     UUID bookInstanceId = UUID.randomUUID();
-    ReserveCommand command = new ReserveCommand(patron.getId(), bookInstanceId);
+    LoanCommand command = new LoanCommand(patron.getId(), bookInstanceId);
 
     BookInstanceNotFoundException ex =
         assertThrows(BookInstanceNotFoundException.class,
@@ -167,7 +167,7 @@ public class ReserveUseCaseTest {
         .when(validationsUtil)
         .check(patron);
 
-    ReserveCommand command = new ReserveCommand(patron.getId(), bookInstance.getId());
+    LoanCommand command = new LoanCommand(patron.getId(), bookInstance.getId());
 
     LoanLimitExceededException ex =
         assertThrows(LoanLimitExceededException.class,
@@ -210,8 +210,7 @@ public class ReserveUseCaseTest {
     when(loanRepository.save(loan))
         .thenReturn(loan);
 
-    ReserveCommand command =
-        new ReserveCommand(patron.getId(), bookInstance.getId());
+    LoanCommand command = new LoanCommand(patron.getId(), bookInstance.getId());
 
     Loan result = useCase.execute(command);
 
@@ -248,8 +247,7 @@ public class ReserveUseCaseTest {
     when(reserveService.reserve(patron, bookInstance))
         .thenThrow(exception);
 
-    ReserveCommand command =
-        new ReserveCommand(patron.getId(), bookInstance.getId());
+    LoanCommand command = new LoanCommand(patron.getId(), bookInstance.getId());
 
     BookInstanceNotAvailableException ex =
         assertThrows(

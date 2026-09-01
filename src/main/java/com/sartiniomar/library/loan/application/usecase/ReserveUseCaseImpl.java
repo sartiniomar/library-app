@@ -1,12 +1,12 @@
 package com.sartiniomar.library.loan.application.usecase;
 
-import com.sartiniomar.library.loan.application.port.in.reserve.ReserveCommand;
+import com.sartiniomar.library.loan.application.port.in.LoanCommand;
 import com.sartiniomar.library.loan.application.port.out.BookInstanceLoanRepository;
 import com.sartiniomar.library.loan.application.port.out.LoanRepository;
 import com.sartiniomar.library.loan.application.port.out.PatronLoanRepository;
 import com.sartiniomar.library.loan.application.service.LoanLimitChecker;
 import com.sartiniomar.library.loan.domain.bookInstance.BookInstance;
-import com.sartiniomar.library.loan.application.port.in.reserve.ReserveUseCase;
+import com.sartiniomar.library.loan.application.port.in.ReserveUseCase;
 import com.sartiniomar.library.loan.domain.bookInstance.BookInstanceNotFoundException;
 import com.sartiniomar.library.loan.domain.loan.Loan;
 import com.sartiniomar.library.loan.domain.loan.service.ReserveServiceDomain;
@@ -37,7 +37,7 @@ public class ReserveUseCaseImpl implements ReserveUseCase {
 
   @Override
   @Transactional
-  public Loan execute(ReserveCommand command) {
+  public Loan execute(LoanCommand command) {
     Patron patron = patronRepository.findById(command.patronId())
         .orElseThrow(() -> new PatronNotFoundException(command.patronId().toString()));
 
