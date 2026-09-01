@@ -10,7 +10,7 @@ import com.sartiniomar.library.loan.domain.bookInstance.BookType;
 import com.sartiniomar.library.loan.domain.loan.Loan;
 import com.sartiniomar.library.loan.domain.loan.LoanNotFoundException;
 import com.sartiniomar.library.loan.domain.loan.TransitionStatusException;
-import com.sartiniomar.library.loan.domain.loan.service.CancelServiceDomain;
+import com.sartiniomar.library.loan.domain.loan.service.ReturnServiceDomain;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -21,15 +21,15 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.never;
 
 @ExtendWith(MockitoExtension.class)
-public class CancelUseCaseTest {
+public class ReturnUseCaseTest {
 
   @Mock
   private BookInstanceLoanRepository bookInstanceRepository;
@@ -38,23 +38,23 @@ public class CancelUseCaseTest {
   private LoanRepository loanRepository;
 
   @Mock
-  private CancelServiceDomain serviceDomain;
+  private ReturnServiceDomain serviceDomain;
 
   @InjectMocks
-  private CancelUseCaseImpl useCase;
+  private ReturnUseCaseImpl useCase;
 
   @Test
-  void shouldExecuteCancelSuccessfully() {
+  void shouldExecuteReturnSuccessfully() {
     Clock clock = Clock.systemDefaultZone();
 
     BookInstance bookInstance = new BookInstance(
         UUID.randomUUID(),
         UUID.randomUUID(),
         BookType.CIRCULATING,
-        BookInstanceStatus.AVAILABLE
+        BookInstanceStatus.LENT
     );
 
-    Loan loan = Loan.createReserve(UUID.randomUUID(), bookInstance.getId(), clock);
+    Loan loan = Loan.createLent(UUID.randomUUID(), bookInstance.getId(), clock, 7);
 
     when(loanRepository.findById(loan.getId()))
         .thenReturn(Optional.of(loan));
@@ -62,7 +62,7 @@ public class CancelUseCaseTest {
     when(bookInstanceRepository.findById(bookInstance.getId()))
         .thenReturn(Optional.of(bookInstance));
 
-    when(serviceDomain.cancel(loan, bookInstance))
+    when(serviceDomain.returned(loan, bookInstance))
         .thenReturn(loan);
 
     when(loanRepository.save(loan))
@@ -77,7 +77,7 @@ public class CancelUseCaseTest {
 
     verify(loanRepository).findById(loan.getId());
     verify(bookInstanceRepository).findById(bookInstance.getId());
-    verify(serviceDomain).cancel(loan, bookInstance);
+    verify(serviceDomain).returned(loan, bookInstance);
     verify(loanRepository).save(loan);
   }
 
@@ -135,7 +135,7 @@ public class CancelUseCaseTest {
     TransitionStatusException exception =
         new TransitionStatusException("Transition Status Error");
 
-    when(serviceDomain.cancel(loan, bookInstance))
+    when(serviceDomain.returned(loan, bookInstance))
         .thenThrow(exception);
 
     LoanIdCommand command = new LoanIdCommand(loan.getId());
@@ -148,7 +148,7 @@ public class CancelUseCaseTest {
 
     assertEquals("Transition Status Error", ex.getMessage());
 
-    verify(serviceDomain).cancel(loan, bookInstance);
+    verify(serviceDomain).returned(loan, bookInstance);
     verify(loanRepository, never()).save(any(Loan.class));
   }
 }

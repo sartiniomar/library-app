@@ -1,7 +1,7 @@
 package com.sartiniomar.library.loan.infrastructure.config;
 
-import com.sartiniomar.library.loan.application.port.in.checkout.CheckoutUseCase;
-import com.sartiniomar.library.loan.application.port.in.reserve.ReserveUseCase;
+import com.sartiniomar.library.loan.application.port.in.CheckoutUseCase;
+import com.sartiniomar.library.loan.application.port.in.ReserveUseCase;
 import com.sartiniomar.library.loan.application.port.out.BookInstanceLoanRepository;
 import com.sartiniomar.library.loan.application.port.out.LoanRepository;
 import com.sartiniomar.library.loan.application.port.out.PatronLoanRepository;
