@@ -46,7 +46,7 @@ public class ReturnedServiceDomainTest {
     Loan loan = new Loan(patronId, bookInstanceId, LoanStatus.LENT, Instant.now(), null, null, null);
 
     ReturnServiceDomain service = new ReturnServiceDomain();
-    Loan result = service.returned(loan, patron, bookInstance);
+    Loan result = service.returned(loan, bookInstance);
 
     assertNotNull(result);
     assertNotNull(result.getId());
@@ -68,7 +68,7 @@ public class ReturnedServiceDomainTest {
     Loan loan = new Loan(patronId, bookInstanceId, LoanStatus.DELAYED, Instant.now(), null, null, null);
 
     ReturnServiceDomain service = new ReturnServiceDomain();
-    Loan result = service.returned(loan, patron, bookInstance);
+    Loan result = service.returned(loan, bookInstance);
 
     assertNotNull(result);
     assertNotNull(result.getId());
@@ -91,7 +91,7 @@ public class ReturnedServiceDomainTest {
 
     BookInstanceNotAvailableException ex =
         assertThrows(BookInstanceNotAvailableException.class,
-            () -> service.returned(loan, patron, bookInstance)
+            () -> service.returned(loan, bookInstance)
         );
     assertEquals("The loan is not lent or delayed!", ex.getMessage());
   }

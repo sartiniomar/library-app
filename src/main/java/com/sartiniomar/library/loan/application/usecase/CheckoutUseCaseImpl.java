@@ -1,7 +1,7 @@
 package com.sartiniomar.library.loan.application.usecase;
 
-import com.sartiniomar.library.loan.application.port.in.checkout.CheckoutCommand;
-import com.sartiniomar.library.loan.application.port.in.checkout.CheckoutUseCase;
+import com.sartiniomar.library.loan.application.port.in.LoanCommand;
+import com.sartiniomar.library.loan.application.port.in.CheckoutUseCase;
 import com.sartiniomar.library.loan.application.port.out.BookInstanceLoanRepository;
 import com.sartiniomar.library.loan.application.port.out.LoanRepository;
 import com.sartiniomar.library.loan.application.port.out.PatronLoanRepository;
@@ -32,7 +32,7 @@ public class CheckoutUseCaseImpl implements CheckoutUseCase {
 
   @Override
   @Transactional
-  public Loan execute(CheckoutCommand command) {
+  public Loan execute(LoanCommand command) {
     Patron patron = patronRepository.findById(command.patronId())
         .orElseThrow(() -> new PatronNotFoundException(command.patronId().toString()));
 

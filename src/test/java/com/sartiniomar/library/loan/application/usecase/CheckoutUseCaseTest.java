@@ -1,6 +1,6 @@
 package com.sartiniomar.library.loan.application.usecase;
 
-import com.sartiniomar.library.loan.application.port.in.checkout.CheckoutCommand;
+import com.sartiniomar.library.loan.application.port.in.LoanCommand;
 import com.sartiniomar.library.loan.application.port.out.BookInstanceLoanRepository;
 import com.sartiniomar.library.loan.application.port.out.LoanRepository;
 import com.sartiniomar.library.loan.application.port.out.PatronLoanRepository;
@@ -86,7 +86,7 @@ public class CheckoutUseCaseTest {
     when(loanRepository.save(loan))
         .thenReturn(loan);
 
-    CheckoutCommand command = new CheckoutCommand(patron.getId(), bookInstance.getId());
+    LoanCommand command = new LoanCommand(patron.getId(), bookInstance.getId());
 
     Loan result = useCase.execute(command);
 
@@ -110,7 +110,7 @@ public class CheckoutUseCaseTest {
     );
 
     UUID patronId = UUID.randomUUID();
-    CheckoutCommand command = new CheckoutCommand(patronId, bookInstance.getId());
+    LoanCommand command = new LoanCommand(patronId, bookInstance.getId());
 
     PatronNotFoundException ex =
         assertThrows(PatronNotFoundException.class,
@@ -131,7 +131,7 @@ public class CheckoutUseCaseTest {
         .thenReturn(Optional.of(patron));
 
     UUID bookInstanceId = UUID.randomUUID();
-    CheckoutCommand command = new CheckoutCommand(patron.getId(), bookInstanceId);
+    LoanCommand command = new LoanCommand(patron.getId(), bookInstanceId);
 
     BookInstanceNotFoundException ex =
         assertThrows(BookInstanceNotFoundException.class,
@@ -168,7 +168,7 @@ public class CheckoutUseCaseTest {
         .when(validationsUtil)
         .check(patron);
 
-    CheckoutCommand command = new CheckoutCommand(patron.getId(), bookInstance.getId());
+    LoanCommand command = new LoanCommand(patron.getId(), bookInstance.getId());
 
     LoanLimitExceededException ex =
         assertThrows(LoanLimitExceededException.class,
@@ -211,7 +211,7 @@ public class CheckoutUseCaseTest {
     when(loanRepository.save(loan))
         .thenReturn(loan);
 
-    CheckoutCommand command = new CheckoutCommand(patron.getId(), bookInstance.getId());
+    LoanCommand command = new LoanCommand(patron.getId(), bookInstance.getId());
 
     Loan result = useCase.execute(command);
 
@@ -248,7 +248,7 @@ public class CheckoutUseCaseTest {
     when(domainService.checkout(patron, bookInstance))
         .thenThrow(exception);
 
-    CheckoutCommand command = new CheckoutCommand(patron.getId(), bookInstance.getId());
+    LoanCommand command = new LoanCommand(patron.getId(), bookInstance.getId());
 
     BookInstanceNotAvailableException ex =
         assertThrows(

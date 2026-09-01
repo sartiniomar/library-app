@@ -3,6 +3,7 @@ package com.sartiniomar.library.loan.infrastructure.config;
 import com.sartiniomar.library.loan.domain.loan.service.CheckoutReserveServiceDomain;
 import com.sartiniomar.library.loan.domain.loan.service.CheckoutServiceDomain;
 import com.sartiniomar.library.loan.domain.loan.service.ReserveServiceDomain;
+import com.sartiniomar.library.loan.domain.loan.service.ReturnServiceDomain;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import java.time.Clock;
@@ -23,5 +24,10 @@ public class DomainServiceConfig {
   @Bean
   CheckoutReserveServiceDomain checkoutReserveServiceDomain() {
     return new CheckoutReserveServiceDomain(Clock.systemDefaultZone());
+  }
+
+  @Bean
+  ReturnServiceDomain returnServiceDomain() {
+    return new ReturnServiceDomain();
   }
 }
