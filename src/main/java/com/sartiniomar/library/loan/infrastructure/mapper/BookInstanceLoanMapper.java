@@ -3,6 +3,7 @@ package com.sartiniomar.library.loan.infrastructure.mapper;
 import com.sartiniomar.library.loan.domain.bookInstance.BookInstance;
 import com.sartiniomar.library.catalog.infrastructure.persistence.model.BookInstanceEntity;
 import org.mapstruct.Mapper;
+import org.mapstruct.MappingTarget;
 
 @Mapper(componentModel = "spring")
 public interface BookInstanceLoanMapper {
@@ -11,4 +12,5 @@ public interface BookInstanceLoanMapper {
 
   BookInstanceEntity toEntity(BookInstance bookInstance);
 
+  void updateBookInstanceEntityFromBookInstance(BookInstance bookInstance, @MappingTarget BookInstanceEntity entity);
 }

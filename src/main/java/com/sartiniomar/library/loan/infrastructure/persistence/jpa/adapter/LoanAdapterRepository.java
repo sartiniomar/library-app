@@ -33,8 +33,8 @@ public class LoanAdapterRepository implements LoanRepository {
   }
 
   @Override
-  public Loan save(Loan hold) {
-    return mapper.toDomain(repository.save(mapper.toEntity(hold)));
+  public Loan save(Loan loan) {
+    return mapper.toDomain(repository.save(mapper.toEntity(loan)));
   }
 
   @Override

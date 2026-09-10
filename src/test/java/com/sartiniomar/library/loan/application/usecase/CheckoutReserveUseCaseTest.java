@@ -30,7 +30,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.never;
 
 @ExtendWith(MockitoExtension.class)
 public class CheckoutReserveUseCaseTest {
@@ -66,7 +68,8 @@ public class CheckoutReserveUseCaseTest {
         BookInstanceStatus.RESERVED
     );
 
-    Loan loan = new Loan(
+    Loan loan = Loan.withId(
+        UUID.randomUUID(),
         patron.getId(),
         bookInstance.getId(),
         LoanStatus.RESERVED,
@@ -122,7 +125,8 @@ public class CheckoutReserveUseCaseTest {
   void should_throw_exception_when_patron_not_exist() {
     UUID patronId = UUID.randomUUID();
 
-    Loan loan = new Loan(
+    Loan loan = Loan.withId(
+        UUID.randomUUID(),
         patronId,
         UUID.randomUUID(),
         LoanStatus.RESERVED,
@@ -154,7 +158,8 @@ public class CheckoutReserveUseCaseTest {
         PatronType.REGULAR
     );
 
-    Loan loan = new Loan(
+    Loan loan = Loan.withId(
+        UUID.randomUUID(),
         patron.getId(),
         bookInstanceId,
         LoanStatus.RESERVED,
@@ -194,7 +199,8 @@ public class CheckoutReserveUseCaseTest {
         BookInstanceStatus.AVAILABLE
     );
 
-    Loan loan = new Loan(
+    Loan loan = Loan.withId(
+        UUID.randomUUID(),
         patron.getId(),
         bookInstance.getId(),
         LoanStatus.RESERVED,
