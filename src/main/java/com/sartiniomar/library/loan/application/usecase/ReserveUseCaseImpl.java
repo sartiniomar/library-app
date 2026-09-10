@@ -49,6 +49,7 @@ public class ReserveUseCaseImpl implements ReserveUseCase {
     Loan result = domainService.reserve(patron, bookInstance);
 
     loanRepository.save(result);
+    bookInstanceRepository.save(bookInstance);
 
     return result;
   }

@@ -13,17 +13,17 @@ import java.util.List;
 @RestControllerAdvice
 public class PatronExceptionHandler {
 
-  @ExceptionHandler(PatronNotFoundException.class)
-  public ResponseEntity<ErrorResponse> handlePatronNotFound(PatronNotFoundException ex) {
-    List<Error> errors = List.of(new Error(ex.getMessage()));
-
-    return ResponseEntity.status(404).body(new ErrorResponse(HttpStatus.NOT_FOUND.toString(), errors));
-  }
-
   @ExceptionHandler(PatronAlreadyExistsException.class)
   public ResponseEntity<ErrorResponse> handlePatronAlreadyExists(PatronAlreadyExistsException ex) {
     List<Error> errors = List.of(new Error(ex.getMessage()));
 
     return ResponseEntity.status(409).body(new ErrorResponse(HttpStatus.CONFLICT.toString(), errors));
+  }
+
+  @ExceptionHandler(PatronNotFoundException.class)
+  public ResponseEntity<ErrorResponse> handlePatronNotFound(PatronNotFoundException ex) {
+    List<Error> errors = List.of(new Error(ex.getMessage()));
+
+    return ResponseEntity.status(404).body(new ErrorResponse(HttpStatus.NOT_FOUND.toString(), errors));
   }
 }

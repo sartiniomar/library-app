@@ -2,6 +2,8 @@ package com.sartiniomar.library.loan.infrastructure.persistence.model;
 
 import com.sartiniomar.library.loan.domain.loan.LoanStatus;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.Data;
@@ -17,6 +19,7 @@ public class LoanEntity {
   private UUID id;
   private UUID patronId;
   private UUID bookInstanceId;
+  @Enumerated(EnumType.STRING)
   private LoanStatus status;
   private Instant reservedAt;
   private Instant lentAt;

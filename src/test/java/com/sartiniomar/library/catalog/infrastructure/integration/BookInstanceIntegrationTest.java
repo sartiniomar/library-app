@@ -1,4 +1,4 @@
-package com.sartiniomar.library.catalog.infrastructure.web.integration;
+package com.sartiniomar.library.catalog.infrastructure.integration;
 
 import com.sartiniomar.library.catalog.application.port.out.BookInstanceRepository;
 import com.sartiniomar.library.catalog.domain.book.Book;
@@ -6,9 +6,9 @@ import com.sartiniomar.library.catalog.domain.bookInstance.BookInstance;
 import com.sartiniomar.library.catalog.domain.bookInstance.BookInstanceStatus;
 import com.sartiniomar.library.catalog.domain.bookInstance.BookType;
 import com.sartiniomar.library.catalog.infrastructure.web.dto.BookInstanceResponse;
-import com.sartiniomar.library.catalog.infrastructure.web.integration.support.factory.BookInstanceTestFactory;
-import com.sartiniomar.library.catalog.infrastructure.web.integration.support.factory.BookTestFactory;
-import com.sartiniomar.library.catalog.infrastructure.web.integration.support.helper.BookInstanceHttpHelper;
+import com.sartiniomar.library.catalog.infrastructure.integration.support.factory.BookInstanceTestFactory;
+import com.sartiniomar.library.catalog.infrastructure.integration.support.factory.BookTestFactory;
+import com.sartiniomar.library.catalog.infrastructure.integration.support.helper.BookInstanceHttpHelper;
 import com.sartiniomar.library.commons.infrastructure.web.error.ErrorResponse;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;

@@ -1,6 +1,5 @@
 package com.sartiniomar.library.loan.domain.loan;
 
-import com.sartiniomar.library.loan.domain.bookInstance.BookInstanceNotAvailableException;
 import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
@@ -19,9 +18,11 @@ public class Loan {
   private Instant returnedAt;
 
   private static final Integer RESERVED_LIMIT_DAYS = 3;
-  public static final List<LoanStatus> ACTIVE_STATUSES = List.of(LoanStatus.RESERVED, LoanStatus.LENT, LoanStatus.DELAYED);
+  public static final List<LoanStatus> ACTIVE_STATUSES =
+      List.of(LoanStatus.RESERVED, LoanStatus.LENT, LoanStatus.DELAYED);
 
-  public Loan(
+  private Loan(
+      UUID id,
       UUID patronId,
       UUID bookInstanceId,
       LoanStatus status,
@@ -30,7 +31,7 @@ public class Loan {
       Instant dueAt,
       Instant returnedAt
   ) {
-    this.id = UUID.randomUUID();
+    this.id = id;
     this.patronId = patronId;
     this.bookInstanceId = bookInstanceId;
     this.status = status;
@@ -43,25 +44,42 @@ public class Loan {
   public static Loan createReserve(UUID patronId, UUID bookInstanceId, Clock clock) {
     Instant now = Instant.now(clock);
     return new Loan(
+        UUID.randomUUID(),
         patronId,
         bookInstanceId,
         LoanStatus.RESERVED,
         now,
         null,
         now.plus(Duration.ofDays(RESERVED_LIMIT_DAYS)),
-        null);
+        null
+    );
   }
 
   public static Loan createLent(UUID patronId, UUID bookInstanceId, Clock clock, Integer days) {
     Instant now = Instant.now(clock);
     return new Loan(
+        UUID.randomUUID(),
         patronId,
         bookInstanceId,
         LoanStatus.LENT,
         null,
         now,
         now.plus(Duration.ofDays(days)),
-        null);
+        null
+    );
+  }
+
+  public static Loan withId(
+      UUID id,
+      UUID patronId,
+      UUID bookInstanceId,
+      LoanStatus status,
+      Instant reservedAt,
+      Instant lentAt,
+      Instant dueAt,
+      Instant returnedAt
+  ) {
+    return new Loan(id, patronId, bookInstanceId, status, reservedAt, lentAt, dueAt, returnedAt);
   }
 
   public UUID getId() {
@@ -136,13 +154,13 @@ public class Loan {
 
   public void ensureCanBeCancelled() {
     if (this.status != LoanStatus.RESERVED) {
-      throw new BookInstanceNotAvailableException("The loan is not reserved!");
+      throw new OperationNotPermittedException("The loan is not reserved for cancelled!");
     }
   }
 
   public void ensureCanBeReturned() {
     if (this.status != LoanStatus.LENT && this.status != LoanStatus.DELAYED) {
-      throw new BookInstanceNotAvailableException("The loan is not lent or delayed!");
+      throw new OperationNotPermittedException("The loan is not lent or delayed for returned!");
     }
   }
 }

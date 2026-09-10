@@ -1,4 +1,4 @@
-package com.sartiniomar.library.catalog.infrastructure.web.integration.support.factory;
+package com.sartiniomar.library.catalog.infrastructure.integration.support.factory;
 
 import com.sartiniomar.library.catalog.application.port.out.BookInstanceRepository;
 import com.sartiniomar.library.catalog.domain.bookInstance.BookInstance;
@@ -13,7 +13,7 @@ import java.util.UUID;
 public class BookInstanceTestFactory {
 
   @Autowired
-      private BookInstanceRepository bookInstanceRepository;
+  private BookInstanceRepository bookInstanceRepository;
 
   public BookInstance createCirculatingDefault() {
     return bookInstanceRepository.save(
@@ -24,12 +24,6 @@ public class BookInstanceTestFactory {
   public BookInstance createCirculating(UUID bookId) {
     return bookInstanceRepository.save(
         new BookInstanceTestDataBuilder().build(bookId, BookType.CIRCULATING, BookInstanceStatus.AVAILABLE)
-    );
-  }
-
-  public BookInstance createRestrictedDefault() {
-    return bookInstanceRepository.save(
-        new BookInstanceTestDataBuilder().buildRestrictedDefault()
     );
   }
 

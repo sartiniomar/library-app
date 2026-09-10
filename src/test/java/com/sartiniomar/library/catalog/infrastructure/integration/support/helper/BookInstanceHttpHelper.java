@@ -1,4 +1,4 @@
-package com.sartiniomar.library.catalog.infrastructure.web.integration.support.helper;
+package com.sartiniomar.library.catalog.infrastructure.integration.support.helper;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.sartiniomar.library.LibraryApplicationTests;
@@ -8,7 +8,10 @@ import org.springframework.http.MediaType;
 import java.util.List;
 import java.util.UUID;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class BookInstanceHttpHelper extends LibraryApplicationTests {

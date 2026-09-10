@@ -128,7 +128,15 @@ public class LoanTest {
   @MethodSource("provideDataForGroupCancelledAndLentChangeStatusError")
   @SneakyThrows
   void should_throw_exception_when_loan_status_is_not_allow_for_cancelled(LoanStatus status) {
-    Loan loan = new Loan(UUID.randomUUID(), UUID.randomUUID(), status, Instant.now(), null, null, null);
+    Loan loan = Loan.withId(
+        UUID.randomUUID(),
+        UUID.randomUUID(),
+        UUID.randomUUID(),
+        status,
+        Instant.now(),
+        null,
+        null,
+        null);
 
     assertThrows(TransitionStatusException.class, loan::cancelled);
   }
@@ -149,7 +157,8 @@ public class LoanTest {
   @MethodSource("provideDataForGroupCancelledAndLentChangeStatusError")
   @SneakyThrows
   void should_throw_exception_when_loan_status_is_not_allow_for_lent(LoanStatus status) {
-    Loan loan = new Loan(
+    Loan loan = Loan.withId(
+        UUID.randomUUID(),
         UUID.randomUUID(),
         UUID.randomUUID(),
         status,
@@ -167,7 +176,15 @@ public class LoanTest {
 
   @Test
   void should_change_lent_to_returned_status() {
-    Loan loan = new Loan(UUID.randomUUID(), UUID.randomUUID(), LoanStatus.LENT, Instant.now(), null, null, null);
+    Loan loan = Loan.withId(
+        UUID.randomUUID(),
+        UUID.randomUUID(),
+        UUID.randomUUID(),
+        LoanStatus.LENT,
+        Instant.now(),
+        null,
+        null,
+        null);
     loan.returned();
     assertEquals(LoanStatus.RETURNED, loan.getStatus());
     assertTrue(Duration.between(loan.getReturnedAt(), Instant.now()).abs().toMillis() < 1000);
@@ -175,7 +192,15 @@ public class LoanTest {
 
   @Test
   void should_change_delayed_to_returned_with_delay_status() {
-    Loan loan = new Loan(UUID.randomUUID(), UUID.randomUUID(), LoanStatus.DELAYED, Instant.now(), null, null, null);
+    Loan loan = Loan.withId(
+        UUID.randomUUID(),
+        UUID.randomUUID(),
+        UUID.randomUUID(),
+        LoanStatus.DELAYED,
+        Instant.now(),
+        null,
+        null,
+        null);
     loan.returned();
     assertEquals(LoanStatus.RETURNED_WITH_DELAY, loan.getStatus());
     assertTrue(Duration.between(loan.getReturnedAt(), Instant.now()).abs().toMillis() < 1000);
@@ -185,14 +210,30 @@ public class LoanTest {
   @MethodSource("provideDataForGroupReturnedChangeStatusError")
   @SneakyThrows
   void should_throw_exception_when_loan_status_is_not_allow_for_returned(LoanStatus status) {
-    Loan loan = new Loan(UUID.randomUUID(), UUID.randomUUID(), status, Instant.now(), null, null, null);
+    Loan loan = Loan.withId(
+        UUID.randomUUID(),
+        UUID.randomUUID(),
+        UUID.randomUUID(),
+        status,
+        Instant.now(),
+        null,
+        null,
+        null);
 
     assertThrows(TransitionStatusException.class, loan::returned);
   }
 
   @Test
   void should_change_lent_to_delayed_status() {
-    Loan loan = new Loan(UUID.randomUUID(), UUID.randomUUID(), LoanStatus.LENT, Instant.now(), null, null, null);
+    Loan loan = Loan.withId(
+        UUID.randomUUID(),
+        UUID.randomUUID(),
+        UUID.randomUUID(),
+        LoanStatus.LENT,
+        Instant.now(),
+        null,
+        null,
+        null);
     loan.delayed();
     assertEquals(LoanStatus.DELAYED, loan.getStatus());
   }
@@ -201,7 +242,15 @@ public class LoanTest {
   @MethodSource("provideDataForGroupDelayedChangeStatusError")
   @SneakyThrows
   void should_throw_exception_when_loan_status_is_not_allow_for_delayed(LoanStatus status) {
-    Loan loan = new Loan(UUID.randomUUID(), UUID.randomUUID(), status, Instant.now(), null, null, null);
+    Loan loan = Loan.withId(
+        UUID.randomUUID(),
+        UUID.randomUUID(),
+        UUID.randomUUID(),
+        status,
+        Instant.now(),
+        null,
+        null,
+        null);
 
     assertThrows(TransitionStatusException.class, loan::delayed);
   }
