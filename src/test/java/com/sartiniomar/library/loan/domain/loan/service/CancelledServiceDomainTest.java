@@ -1,11 +1,11 @@
 package com.sartiniomar.library.loan.domain.loan.service;
 
 import com.sartiniomar.library.loan.domain.bookInstance.BookInstance;
-import com.sartiniomar.library.loan.domain.bookInstance.BookInstanceNotAvailableException;
 import com.sartiniomar.library.loan.domain.bookInstance.BookInstanceStatus;
 import com.sartiniomar.library.loan.domain.bookInstance.BookType;
 import com.sartiniomar.library.loan.domain.loan.Loan;
 import com.sartiniomar.library.loan.domain.loan.LoanStatus;
+import com.sartiniomar.library.loan.domain.loan.OperationNotPermittedException;
 import com.sartiniomar.library.loan.domain.patron.Patron;
 import com.sartiniomar.library.loan.domain.patron.PatronType;
 import lombok.SneakyThrows;
@@ -41,7 +41,15 @@ public class CancelledServiceDomainTest {
     Patron patron = new Patron(patronId, PatronType.REGULAR);
     BookInstance bookInstance = new BookInstance(
         bookInstanceId, bookId, BookType.CIRCULATING, BookInstanceStatus.RESERVED);
-    Loan loan = new Loan(patronId, bookInstanceId, LoanStatus.RESERVED, Instant.now(), null, null, null);
+    Loan loan = Loan.withId(
+        UUID.randomUUID(),
+        patronId,
+        bookInstanceId,
+        LoanStatus.RESERVED,
+        Instant.now(),
+        null,
+        null,
+        null);
 
     CancelServiceDomain service = new CancelServiceDomain();
     Loan result = service.cancel(loan, bookInstance);
@@ -58,16 +66,23 @@ public class CancelledServiceDomainTest {
   @MethodSource("provideDataForLoanStateAreNotAvailableForCancelled")
   @SneakyThrows
   void should_throw_exception_when_loan_is_not_available_cancelled(LoanStatus status) {
-    Patron patron = new Patron(UUID.randomUUID(), PatronType.REGULAR);
     BookInstance bookInstance = new BookInstance(
         UUID.randomUUID(), UUID.randomUUID(), BookType.CIRCULATING, BookInstanceStatus.RESERVED);
-    Loan loan = new Loan(UUID.randomUUID(), UUID.randomUUID(), status, Instant.now(), null, null, null);
+    Loan loan = Loan.withId(
+        UUID.randomUUID(),
+        UUID.randomUUID(),
+        UUID.randomUUID(),
+        status,
+        Instant.now(),
+        null,
+        null,
+        null);
     CancelServiceDomain service = new CancelServiceDomain();
 
-    BookInstanceNotAvailableException ex =
-        assertThrows(BookInstanceNotAvailableException.class,
+    OperationNotPermittedException ex =
+        assertThrows(OperationNotPermittedException.class,
             () -> service.cancel(loan, bookInstance)
         );
-    assertEquals("The loan is not reserved!", ex.getMessage());
+    assertEquals("The loan is not reserved for cancelled!", ex.getMessage());
   }
 }

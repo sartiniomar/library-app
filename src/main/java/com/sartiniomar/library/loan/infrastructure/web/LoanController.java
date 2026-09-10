@@ -45,7 +45,7 @@ public class LoanController {
     return ResponseEntity.status(HttpStatus.CREATED).body(loanMapper.loanToLoanResponse(reserveUseCase.execute(command)));
   }
 
-  @PostMapping("/{loanId}/cancel")
+  @PostMapping("/{loanId}/cancels")
   public ResponseEntity<LoanResponse> cancel(@PathVariable UUID loanId) {
     return ResponseEntity.ok(loanMapper.loanToLoanResponse(cancelUseCase.execute(new LoanIdCommand(loanId))));
   }

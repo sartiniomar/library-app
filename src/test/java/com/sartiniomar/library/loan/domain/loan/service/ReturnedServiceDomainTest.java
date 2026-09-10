@@ -1,11 +1,11 @@
 package com.sartiniomar.library.loan.domain.loan.service;
 
 import com.sartiniomar.library.loan.domain.bookInstance.BookInstance;
-import com.sartiniomar.library.loan.domain.bookInstance.BookInstanceNotAvailableException;
 import com.sartiniomar.library.loan.domain.bookInstance.BookInstanceStatus;
 import com.sartiniomar.library.loan.domain.bookInstance.BookType;
 import com.sartiniomar.library.loan.domain.loan.Loan;
 import com.sartiniomar.library.loan.domain.loan.LoanStatus;
+import com.sartiniomar.library.loan.domain.loan.OperationNotPermittedException;
 import com.sartiniomar.library.loan.domain.patron.Patron;
 import com.sartiniomar.library.loan.domain.patron.PatronType;
 import lombok.SneakyThrows;
@@ -21,7 +21,6 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ReturnedServiceDomainTest {
@@ -43,7 +42,15 @@ public class ReturnedServiceDomainTest {
     Patron patron = new Patron(patronId, PatronType.REGULAR);
     BookInstance bookInstance = new BookInstance(
         bookInstanceId, bookId, BookType.CIRCULATING, BookInstanceStatus.RESERVED);
-    Loan loan = new Loan(patronId, bookInstanceId, LoanStatus.LENT, Instant.now(), null, null, null);
+    Loan loan = Loan.withId(
+        UUID.randomUUID(),
+        patronId,
+        bookInstanceId,
+        LoanStatus.LENT,
+        Instant.now(),
+        null,
+        null,
+        null);
 
     ReturnServiceDomain service = new ReturnServiceDomain();
     Loan result = service.returned(loan, bookInstance);
@@ -65,7 +72,15 @@ public class ReturnedServiceDomainTest {
     Patron patron = new Patron(patronId, PatronType.REGULAR);
     BookInstance bookInstance = new BookInstance(
         bookInstanceId, bookId, BookType.CIRCULATING, BookInstanceStatus.RESERVED);
-    Loan loan = new Loan(patronId, bookInstanceId, LoanStatus.DELAYED, Instant.now(), null, null, null);
+    Loan loan = Loan.withId(
+        UUID.randomUUID(),
+        patronId,
+        bookInstanceId,
+        LoanStatus.DELAYED,
+        Instant.now(),
+        null,
+        null,
+        null);
 
     ReturnServiceDomain service = new ReturnServiceDomain();
     Loan result = service.returned(loan, bookInstance);
@@ -86,13 +101,21 @@ public class ReturnedServiceDomainTest {
     Patron patron = new Patron(UUID.randomUUID(), PatronType.REGULAR);
     BookInstance bookInstance = new BookInstance(
         UUID.randomUUID(), UUID.randomUUID(), BookType.CIRCULATING, BookInstanceStatus.RESERVED);
-    Loan loan = new Loan(UUID.randomUUID(), UUID.randomUUID(), status, Instant.now(), null, null, null);
+    Loan loan = Loan.withId(
+        UUID.randomUUID(),
+        UUID.randomUUID(),
+        UUID.randomUUID(),
+        status,
+        Instant.now(),
+        null,
+        null,
+        null);
     ReturnServiceDomain service = new ReturnServiceDomain();
 
-    BookInstanceNotAvailableException ex =
-        assertThrows(BookInstanceNotAvailableException.class,
+    OperationNotPermittedException ex =
+        assertThrows(OperationNotPermittedException.class,
             () -> service.returned(loan, bookInstance)
         );
-    assertEquals("The loan is not lent or delayed!", ex.getMessage());
+    assertEquals("The loan is not lent or delayed for returned!", ex.getMessage());
   }
 }

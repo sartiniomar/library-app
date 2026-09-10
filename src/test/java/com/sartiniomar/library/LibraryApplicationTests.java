@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.FileCopyUtils;
 import java.io.File;
 import java.io.FileReader;
+import java.util.UUID;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -33,6 +34,8 @@ public class LibraryApplicationTests {
   @Autowired
   protected JdbcTemplate jdbcTemplate;
 
+  protected final UUID DEFAULT_PATRON_ID = UUID.fromString("00000000-1111-2222-3333-444444444444");
+  protected final UUID DEFAULT_BOOK_INSTANCE_ID = UUID.fromString("55555555-6666-7777-8888-999999999999");
 
   @SneakyThrows
   protected String getContentFromFile(String filePath) {

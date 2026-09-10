@@ -1,10 +1,10 @@
-package com.sartiniomar.library.catalog.infrastructure.web.integration;
+package com.sartiniomar.library.catalog.infrastructure.integration;
 
 import com.sartiniomar.library.catalog.application.port.out.BookRepository;
 import com.sartiniomar.library.catalog.domain.book.Book;
 import com.sartiniomar.library.catalog.infrastructure.web.dto.BookResponse;
-import com.sartiniomar.library.catalog.infrastructure.web.integration.support.factory.BookTestFactory;
-import com.sartiniomar.library.catalog.infrastructure.web.integration.support.helper.BookHttpHelper;
+import com.sartiniomar.library.catalog.infrastructure.integration.support.factory.BookTestFactory;
+import com.sartiniomar.library.catalog.infrastructure.integration.support.helper.BookHttpHelper;
 import com.sartiniomar.library.commons.infrastructure.web.error.ErrorResponse;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

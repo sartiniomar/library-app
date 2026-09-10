@@ -35,6 +35,7 @@ public class ReturnUseCaseImpl implements ReturnUseCase {
     Loan result = domainService.returned(loan, bookInstance);
 
     loanRepository.save(result);
+    bookInstanceRepository.save(bookInstance);
 
     return result;
   }

@@ -19,9 +19,7 @@ public class UpdateBookInstanceService implements UpdateBookInstanceUseCase {
     BookInstance bookInstance = repository.findById(cmd.id())
         .orElseThrow(() -> new BookInstanceNotFoundException("Book Instance not found with id: " + cmd.id().toString()));
 
-    if (cmd.type() != null) {
-      bookInstance.setType(cmd.type());
-    }
+    bookInstance.update(cmd.type());
 
     return repository.save(bookInstance);
   }

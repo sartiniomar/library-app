@@ -1,4 +1,4 @@
-package com.sartiniomar.library.catalog.infrastructure.web.integration.support.helper;
+package com.sartiniomar.library.catalog.infrastructure.integration.support.helper;
 
 import com.sartiniomar.library.LibraryApplicationTests;
 import com.sartiniomar.library.catalog.infrastructure.web.dto.BookResponse;

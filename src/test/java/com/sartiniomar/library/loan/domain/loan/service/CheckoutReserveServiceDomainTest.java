@@ -29,7 +29,8 @@ public class CheckoutReserveServiceDomainTest {
     BookInstance book = new BookInstance(
         UUID.randomUUID(), UUID.randomUUID(), BookType.CIRCULATING, BookInstanceStatus.AVAILABLE);
 
-    Loan loan = new Loan(
+    Loan loan = Loan.withId(
+        UUID.randomUUID(),
         patron.getId(),
         book.getId(),
         LoanStatus.RESERVED,

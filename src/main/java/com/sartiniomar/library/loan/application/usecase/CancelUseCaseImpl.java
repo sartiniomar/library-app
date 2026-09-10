@@ -35,6 +35,7 @@ public class CancelUseCaseImpl implements CancelUseCase {
     Loan result = domainService.cancel(loan, bookInstance);
 
     loanRepository.save(result);
+    bookInstanceRepository.save(bookInstance);
 
     return result;
   }

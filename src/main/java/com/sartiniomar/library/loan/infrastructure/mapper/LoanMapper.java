@@ -12,9 +12,24 @@ public interface LoanMapper {
 
   LoanCommand createLoanRequestToLoanCommand(CreateLoanRequest placeHoldRequest);
 
-  LoanResponse loanToLoanResponse(Loan hold);
+  LoanResponse loanToLoanResponse(Loan loan);
 
-  Loan toDomain(LoanEntity entity);
+  LoanEntity toEntity(Loan loan);
 
-  LoanEntity toEntity(Loan hold);
+  default Loan toDomain(LoanEntity entity) {
+    if (entity == null) {
+      return null;
+    }
+
+    return Loan.withId(
+        entity.getId(),
+        entity.getPatronId(),
+        entity.getBookInstanceId(),
+        entity.getStatus(),
+        entity.getReservedAt(),
+        entity.getLentAt(),
+        entity.getDueAt(),
+        entity.getReturnedAt()
+    );
+  }
 }

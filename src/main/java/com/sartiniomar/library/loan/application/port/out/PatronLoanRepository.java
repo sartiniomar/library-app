@@ -6,4 +6,5 @@ import java.util.UUID;
 
 public interface PatronLoanRepository {
   Optional<Patron> findById(UUID patronId);
+  Patron save(Patron patron);
 }
