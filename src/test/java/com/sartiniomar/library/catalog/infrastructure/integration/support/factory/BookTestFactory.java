@@ -1,4 +1,4 @@
-package com.sartiniomar.library.catalog.infrastructure.web.integration.support.factory;
+package com.sartiniomar.library.catalog.infrastructure.integration.support.factory;
 
 import com.sartiniomar.library.catalog.application.port.out.BookRepository;
 import com.sartiniomar.library.catalog.domain.book.Book;

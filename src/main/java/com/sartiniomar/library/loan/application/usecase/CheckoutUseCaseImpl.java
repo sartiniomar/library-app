@@ -44,6 +44,7 @@ public class CheckoutUseCaseImpl implements CheckoutUseCase {
     Loan result = domainService.checkout(patron, bookInstance);
 
     loanRepository.save(result);
+    bookInstanceRepository.save(bookInstance);
 
     return result;
   }

@@ -6,4 +6,5 @@ import java.util.UUID;
 
 public interface BookInstanceLoanRepository {
   Optional<BookInstance> findById(UUID bookInstanceId);
+  BookInstance save(BookInstance bookInstance);
 }

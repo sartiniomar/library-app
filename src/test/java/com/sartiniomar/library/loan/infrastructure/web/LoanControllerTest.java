@@ -54,9 +54,6 @@ public class LoanControllerTest extends LibraryApplicationTests {
   @MockBean
   GetAllLoansByPatronIdUseCase getAllLoansByPatronIdUseCase;
 
-  private final UUID DEFAULT_PATRON_ID = UUID.fromString("00000000-1111-2222-3333-444444444444");
-  private final UUID DEFAULT_BOOK_INSTANCE_ID = UUID.fromString("55555555-6666-7777-8888-999999999999");
-
   @Test
   @SneakyThrows
   void shouldCreateLoanReserveResponse() {
@@ -92,7 +89,7 @@ public class LoanControllerTest extends LibraryApplicationTests {
     loan.cancelled();
     when(cancelUseCase.execute(loanIdCommandArgumentCaptor.capture())).thenReturn(loan);
 
-    mockMvc.perform(post("/loans/{id}/cancel", loan.getId())
+    mockMvc.perform(post("/loans/{id}/cancels", loan.getId())
             .contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.id").value(loan.getId().toString()))
@@ -258,119 +255,4 @@ public class LoanControllerTest extends LibraryApplicationTests {
 
     verify(getAllLoansByPatronIdUseCase, times(1)).execute(loan1.getPatronId());
   }
-
-  // Estos solo tienen sentido en los test de integración, ya que en los test unitarios no se hace la validación de los ids, sino que se mockea el use case y se lanza la excepción directamente.
-  /*@Test
-  @SneakyThrows
-  void shouldReturnNotFoundWhenPatronIdNotFoundInLoanReserveCreation() {
-    when(reserveUseCase.execute(any(LoanCommand.class)))
-        .thenThrow(new BookInstanceNotFoundException("Patron not found with id: " + DEFAULT_PATRON_ID));
-
-    String bodyRequest = getContentFromFile("loan/createLoanRequest.json");
-
-    mockMvc.perform(post("/loans/reserves")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(bodyRequest))
-        .andExpect(status().isNotFound())
-        .andExpect(jsonPath("$.code").value("404 NOT_FOUND"))
-        .andExpect(jsonPath("$.errors[0].description")
-            .value("Patron not found with id: " + DEFAULT_PATRON_ID));
-
-    verify(reserveUseCase).execute(any(LoanCommand.class));
-  }
-
-  @Test
-  @SneakyThrows
-  void shouldReturnNotFoundWhenBookInstanceIdNotFoundInLoanReserveCreation() {
-    when(reserveUseCase.execute(any(LoanCommand.class)))
-        .thenThrow(new BookInstanceNotFoundException("Book instance not found with id: " + DEFAULT_BOOK_INSTANCE_ID));
-
-    String bodyRequest = getContentFromFile("loan/createLoanRequest.json");
-
-    mockMvc.perform(post("/loans/reserves")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(bodyRequest))
-        .andExpect(status().isNotFound())
-        .andExpect(jsonPath("$.code").value("404 NOT_FOUND"))
-        .andExpect(jsonPath("$.errors[0].description")
-            .value("Book instance not found with id: " + DEFAULT_BOOK_INSTANCE_ID));
-
-    verify(reserveUseCase).execute(any(LoanCommand.class));
-  }
-
-  @Test
-  @SneakyThrows
-  void shouldReturnConflictWhenLoanLimitExceededInLoanReserveCreation() {
-    when(reserveUseCase.execute(any(LoanCommand.class)))
-        .thenThrow(new LoanLimitExceededException("Loan Limit Exceeded."));
-
-    String bodyRequest = getContentFromFile("loan/createLoanRequest.json");
-
-    mockMvc.perform(post("/loans/reserves")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(bodyRequest))
-        .andExpect(status().isConflict())
-        .andExpect(jsonPath("$.code").value("409 CONFLICT"))
-        .andExpect(jsonPath("$.errors[0].description")
-            .value("Loan Limit Exceeded."));
-
-    verify(reserveUseCase).execute(any(LoanCommand.class));
-  }
-
-  @Test
-  @SneakyThrows
-  void shouldReturnConflictWhenOnlyResearcherCanLoanRestrictedBooksExceptionIsThrown() {
-    when(reserveUseCase.execute(any(LoanCommand.class)))
-        .thenThrow(new OnlyResearcherCanLoanRestrictedBooksException("Only researcher can loan restricted books."));
-
-    String bodyRequest = getContentFromFile("loan/createLoanRequest.json");
-
-    mockMvc.perform(post("/loans/reserves")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(bodyRequest))
-        .andExpect(status().isConflict())
-        .andExpect(jsonPath("$.code").value("409 CONFLICT"))
-        .andExpect(jsonPath("$.errors[0].description")
-            .value("Only researcher can loan restricted books."));
-
-    verify(reserveUseCase).execute(any(LoanCommand.class));
-  }
-
-  @Test
-  @SneakyThrows
-  void shouldReturnConflictWhenBookInstanceNotAvailableExceptionIsThrown() {
-    when(reserveUseCase.execute(any(LoanCommand.class)))
-        .thenThrow(new BookInstanceNotAvailableException("Book instance not available."));
-
-    String bodyRequest = getContentFromFile("loan/createLoanRequest.json");
-
-    mockMvc.perform(post("/loans/reserves")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(bodyRequest))
-        .andExpect(status().isConflict())
-        .andExpect(jsonPath("$.code").value("409 CONFLICT"))
-        .andExpect(jsonPath("$.errors[0].description")
-            .value("Book instance not available."));
-
-    verify(reserveUseCase).execute(any(LoanCommand.class));
-  }
-
-  @Test
-  @SneakyThrows
-  void shouldReturnConflictWhenTransitionStatusExceptionIsThrown() {
-    when(reserveUseCase.execute(any(LoanCommand.class)))
-        .thenThrow(new TransitionStatusException("Transition status exception."));
-
-    String bodyRequest = getContentFromFile("loan/createLoanRequest.json");
-
-    mockMvc.perform(post("/loans/reserves")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(bodyRequest))
-        .andExpect(status().isConflict())
-        .andExpect(jsonPath("$.code").value("409 CONFLICT"))
-        .andExpect(jsonPath("$.errors[0].description")
-            .value("Transition status exception."));
-
-    verify(reserveUseCase).execute(any(LoanCommand.class));
-  }*/
 }

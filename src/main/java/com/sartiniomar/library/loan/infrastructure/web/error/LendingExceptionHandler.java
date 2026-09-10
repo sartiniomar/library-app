@@ -5,8 +5,11 @@ import com.sartiniomar.library.loan.domain.bookInstance.BookInstanceNotFoundExce
 import com.sartiniomar.library.commons.infrastructure.web.error.ErrorResponse;
 import com.sartiniomar.library.commons.infrastructure.web.error.Error;
 import com.sartiniomar.library.loan.domain.loan.LoanLimitExceededException;
+import com.sartiniomar.library.loan.domain.loan.LoanNotFoundException;
 import com.sartiniomar.library.loan.domain.loan.OnlyResearcherCanLoanRestrictedBooksException;
+import com.sartiniomar.library.loan.domain.loan.OperationNotPermittedException;
 import com.sartiniomar.library.loan.domain.loan.TransitionStatusException;
+import com.sartiniomar.library.loan.domain.patron.PatronNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
@@ -62,6 +65,27 @@ LendingExceptionHandler {
   public ResponseEntity<ErrorResponse> transitionStatusExceptionHandler(
       TransitionStatusException ex) {
 
+    List<Error> errors = List.of(new Error(ex.getMessage()));
+
+    return ResponseEntity.status(409).body(new ErrorResponse(HttpStatus.CONFLICT.toString(), errors));
+  }
+
+  @ExceptionHandler(PatronNotFoundException.class)
+  public ResponseEntity<ErrorResponse> handlePatronNotFound(PatronNotFoundException ex) {
+    List<Error> errors = List.of(new Error(ex.getMessage()));
+
+    return ResponseEntity.status(404).body(new ErrorResponse(HttpStatus.NOT_FOUND.toString(), errors));
+  }
+
+  @ExceptionHandler(LoanNotFoundException.class)
+  public ResponseEntity<ErrorResponse> handleLoanNotFoundException(LoanNotFoundException ex) {
+    List<Error> errors = List.of(new Error(ex.getMessage()));
+
+    return ResponseEntity.status(404).body(new ErrorResponse(HttpStatus.NOT_FOUND.toString(), errors));
+  }
+
+  @ExceptionHandler(OperationNotPermittedException.class)
+  public ResponseEntity<ErrorResponse> handleOperationNotPermittedException(OperationNotPermittedException ex) {
     List<Error> errors = List.of(new Error(ex.getMessage()));
 
     return ResponseEntity.status(409).body(new ErrorResponse(HttpStatus.CONFLICT.toString(), errors));

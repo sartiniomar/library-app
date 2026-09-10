@@ -28,4 +28,9 @@ public class LoanPatronAdapterRepository implements PatronLoanRepository {
     return jpaRepo.findById(patronId)
         .map(mapper::toDomain);
   }
+
+  @Override
+  public Patron save(Patron patron) {
+    return mapper.toDomain(jpaRepo.save(mapper.toEntity(patron)));
+  }
 }
