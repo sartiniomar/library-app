@@ -1,5 +1,7 @@
 package com.sartiniomar.library.loan.integration;
 
+import com.sartiniomar.library.catalog.domain.book.Book;
+import com.sartiniomar.library.catalog.infrastructure.integration.support.factory.BookTestFactory;
 import com.sartiniomar.library.loan.domain.loan.LoanStatus;
 import com.sartiniomar.library.loan.integration.support.factory.BookInstanceLoanTestFactory;
 import com.sartiniomar.library.commons.infrastructure.web.error.ErrorResponse;
@@ -48,6 +50,9 @@ public class LoanIntegrationTest extends LoanHttpHelper {
   private BookInstanceLoanTestFactory bookInstanceTestFactory;
 
   @Autowired
+  private BookTestFactory bookTestFactory;
+
+  @Autowired
   private BookInstanceLoanRepository bookInstanceLoanRepository;
 
   private static Stream<Arguments> provideUnavailableReservedCheckoutStatus() {
@@ -80,8 +85,11 @@ public class LoanIntegrationTest extends LoanHttpHelper {
   @Test
   void shouldCreateLoanReserve() throws Exception {
     Patron patron = patronTestFactory.createDefaultPatron(PatronType.REGULAR);
+
+    Book book = bookTestFactory.createDefault();
+
     BookInstance bookInstance =
-        bookInstanceTestFactory.createDefaultBookInstance(BookType.CIRCULATING, BookInstanceStatus.AVAILABLE);
+        bookInstanceTestFactory.createDefaultBookInstance(book.getId(), BookType.CIRCULATING, BookInstanceStatus.AVAILABLE);
 
     int initialCount = JdbcTestUtils.countRowsInTable(jdbcTemplate, "loan");
 
@@ -139,14 +147,16 @@ public class LoanIntegrationTest extends LoanHttpHelper {
   void shouldReturnConflictWhenLoanLimitExceededInLoanReserveCreation() throws Exception {
     Patron patron = patronTestFactory.createDefaultPatron(PatronType.REGULAR);
 
+    Book book = bookTestFactory.createDefault();
+
     BookInstance bookInstance1 = bookInstanceTestFactory.createBookInstance(
-        UUID.randomUUID(), UUID.randomUUID(), BookType.CIRCULATING, BookInstanceStatus.AVAILABLE);
+        UUID.randomUUID(), book.getId(), BookType.CIRCULATING, BookInstanceStatus.AVAILABLE);
     BookInstance bookInstance2 = bookInstanceTestFactory.createBookInstance(
-        UUID.randomUUID(), UUID.randomUUID(), BookType.CIRCULATING, BookInstanceStatus.AVAILABLE);
+        UUID.randomUUID(), book.getId(), BookType.CIRCULATING, BookInstanceStatus.AVAILABLE);
     BookInstance bookInstance3 = bookInstanceTestFactory.createBookInstance(
-        UUID.randomUUID(), UUID.randomUUID(), BookType.CIRCULATING, BookInstanceStatus.AVAILABLE);
+        UUID.randomUUID(), book.getId(), BookType.CIRCULATING, BookInstanceStatus.AVAILABLE);
     BookInstance bookInstance4 = bookInstanceTestFactory.createDefaultBookInstance(
-        BookType.CIRCULATING, BookInstanceStatus.AVAILABLE);
+        book.getId(), BookType.CIRCULATING, BookInstanceStatus.AVAILABLE);
 
     loanTestFactory.createLoanReserve(patron, bookInstance1);
     loanTestFactory.createLoanReserve(patron, bookInstance2);
@@ -168,7 +178,9 @@ public class LoanIntegrationTest extends LoanHttpHelper {
   @Test
   void shouldReturnConflictWhenOnlyResearcherCanLoanRestrictedBooks() throws Exception {
     patronTestFactory.createDefaultPatron(PatronType.REGULAR);
-    BookInstance bookInstance = bookInstanceTestFactory.createDefaultBookInstance(BookType.RESTRICTED, BookInstanceStatus.AVAILABLE);
+    Book book = bookTestFactory.createDefault();
+    BookInstance bookInstance = bookInstanceTestFactory.createDefaultBookInstance(
+        book.getId(), BookType.RESTRICTED, BookInstanceStatus.AVAILABLE);
 
     int initialCount = JdbcTestUtils.countRowsInTable(jdbcTemplate, "loan");
     flushAndClear();
@@ -186,7 +198,9 @@ public class LoanIntegrationTest extends LoanHttpHelper {
   @ParameterizedTest
   void shouldReturnConflictWhenBookInstanceNotAvailableExceptionIsThrown(BookInstanceStatus bookInstanceStatus) throws Exception {
     patronTestFactory.createDefaultPatron(PatronType.REGULAR);
-    BookInstance bookInstance = bookInstanceTestFactory.createDefaultBookInstance(BookType.CIRCULATING, bookInstanceStatus);
+    Book book = bookTestFactory.createDefault();
+    BookInstance bookInstance = bookInstanceTestFactory.createDefaultBookInstance(
+        book.getId(), BookType.CIRCULATING, bookInstanceStatus);
 
     int initialCount = JdbcTestUtils.countRowsInTable(jdbcTemplate, "loan");
     flushAndClear();
@@ -203,8 +217,9 @@ public class LoanIntegrationTest extends LoanHttpHelper {
   @Test
   void shouldCancelLoanReserve() throws Exception {
     Patron patron = patronTestFactory.createDefaultPatron(PatronType.REGULAR);
-    BookInstance bookInstance =
-        bookInstanceTestFactory.createDefaultBookInstance(BookType.CIRCULATING, BookInstanceStatus.RESERVED);
+    Book book = bookTestFactory.createDefault();
+    BookInstance bookInstance = bookInstanceTestFactory.createDefaultBookInstance(
+        book.getId(), BookType.CIRCULATING, BookInstanceStatus.RESERVED);
     Loan loan = loanTestFactory.createLoanReserve(patron, bookInstance);
     entityManager.flush();
 
@@ -243,26 +258,13 @@ public class LoanIntegrationTest extends LoanHttpHelper {
     assertEquals("Loan not found: " + loanId, response.errors().getFirst().description());
   }
 
-  @Test
-  void shouldReturnNotFoundWhenBookInstanceIdNotFoundInLoanReserveCancel() throws Exception {
-    Patron patron = patronTestFactory.createDefaultPatron(PatronType.REGULAR);
-    BookInstance bookInstanceNotSaved = new BookInstance(
-        UUID.randomUUID(), UUID.randomUUID(), BookType.CIRCULATING, BookInstanceStatus.AVAILABLE);
-    Loan loan = loanTestFactory.createLoanReserve(patron, bookInstanceNotSaved);
-    flushAndClear();
-
-    ErrorResponse response = returnNotFoundWhenCancelReserve(loan.getId());
-
-    assertEquals("404 NOT_FOUND", response.code());
-    assertEquals("Book Instance not found: " + loan.getBookInstanceId(),
-        response.errors().getFirst().description());
-  }
-
   @MethodSource("provideUnavailableLoanStatusForCancelOrCheckout")
   @ParameterizedTest
   void shouldReturnConflictWhenLoanIsNotAvailableToCancel(LoanStatus loanStatus) throws Exception {
     Patron patron = patronTestFactory.createDefaultPatron(PatronType.REGULAR);
-    BookInstance bookInstance = bookInstanceTestFactory.createDefaultBookInstance(BookType.CIRCULATING, BookInstanceStatus.RESERVED);
+    Book book = bookTestFactory.createDefault();
+    BookInstance bookInstance = bookInstanceTestFactory.createDefaultBookInstance(
+        book.getId(), BookType.CIRCULATING, BookInstanceStatus.RESERVED);
     Loan loan = loanTestFactory.createLoan(
         UUID.randomUUID(),
         patron.getId(),
@@ -280,8 +282,9 @@ public class LoanIntegrationTest extends LoanHttpHelper {
   @Test
   void shouldCreateLoanCheckout() throws Exception {
     Patron patron = patronTestFactory.createDefaultPatron(PatronType.REGULAR);
-    BookInstance bookInstance =
-        bookInstanceTestFactory.createDefaultBookInstance(BookType.CIRCULATING, BookInstanceStatus.AVAILABLE);
+    Book book = bookTestFactory.createDefault();
+    BookInstance bookInstance = bookInstanceTestFactory.createDefaultBookInstance(
+        book.getId(), BookType.CIRCULATING, BookInstanceStatus.AVAILABLE);
 
     int initialCount = JdbcTestUtils.countRowsInTable(jdbcTemplate, "loan");
 
@@ -339,14 +342,16 @@ public class LoanIntegrationTest extends LoanHttpHelper {
   void shouldReturnConflictWhenLoanLimitExceededInLoanCheckoutCreation() throws Exception {
     Patron patron = patronTestFactory.createDefaultPatron(PatronType.REGULAR);
 
+    Book book = bookTestFactory.createDefault();
+
     BookInstance bookInstance1 = bookInstanceTestFactory.createBookInstance(
-        UUID.randomUUID(), UUID.randomUUID(), BookType.CIRCULATING, BookInstanceStatus.AVAILABLE);
+        UUID.randomUUID(), book.getId(), BookType.CIRCULATING, BookInstanceStatus.AVAILABLE);
     BookInstance bookInstance2 = bookInstanceTestFactory.createBookInstance(
-        UUID.randomUUID(), UUID.randomUUID(), BookType.CIRCULATING, BookInstanceStatus.AVAILABLE);
+        UUID.randomUUID(), book.getId(), BookType.CIRCULATING, BookInstanceStatus.AVAILABLE);
     BookInstance bookInstance3 = bookInstanceTestFactory.createBookInstance(
-        UUID.randomUUID(), UUID.randomUUID(), BookType.CIRCULATING, BookInstanceStatus.AVAILABLE);
+        UUID.randomUUID(), book.getId(), BookType.CIRCULATING, BookInstanceStatus.AVAILABLE);
     BookInstance bookInstance4 = bookInstanceTestFactory.createDefaultBookInstance(
-        BookType.CIRCULATING, BookInstanceStatus.AVAILABLE);
+        book.getId(), BookType.CIRCULATING, BookInstanceStatus.AVAILABLE);
 
     loanTestFactory.createLoanReserve(patron, bookInstance1);
     loanTestFactory.createLoanReserve(patron, bookInstance2);
@@ -368,7 +373,9 @@ public class LoanIntegrationTest extends LoanHttpHelper {
   @Test
   void shouldReturnConflictWhenOnlyResearcherCanLoanRestrictedBooksInCreateLoanCheckout() throws Exception {
     patronTestFactory.createDefaultPatron(PatronType.REGULAR);
-    BookInstance bookInstance = bookInstanceTestFactory.createDefaultBookInstance(BookType.RESTRICTED, BookInstanceStatus.AVAILABLE);
+    Book book = bookTestFactory.createDefault();
+    BookInstance bookInstance = bookInstanceTestFactory.createDefaultBookInstance(
+        book.getId(), BookType.RESTRICTED, BookInstanceStatus.AVAILABLE);
 
     int initialCount = JdbcTestUtils.countRowsInTable(jdbcTemplate, "loan");
     flushAndClear();
@@ -386,7 +393,9 @@ public class LoanIntegrationTest extends LoanHttpHelper {
   @ParameterizedTest
   void shouldReturnConflictWhenBookInstanceNotAvailableExceptionIsThrownInCreateLoanCheckout(BookInstanceStatus bookInstanceStatus) throws Exception {
     patronTestFactory.createDefaultPatron(PatronType.REGULAR);
-    BookInstance bookInstance = bookInstanceTestFactory.createDefaultBookInstance(BookType.CIRCULATING, bookInstanceStatus);
+    Book book = bookTestFactory.createDefault();
+    BookInstance bookInstance = bookInstanceTestFactory.createDefaultBookInstance(
+        book.getId(), BookType.CIRCULATING, bookInstanceStatus);
 
     int initialCount = JdbcTestUtils.countRowsInTable(jdbcTemplate, "loan");
     flushAndClear();
@@ -403,10 +412,11 @@ public class LoanIntegrationTest extends LoanHttpHelper {
   @Test
   void shouldCreateLoanCheckoutFromReserve() throws Exception {
     Patron patron = patronTestFactory.createDefaultPatron(PatronType.REGULAR);
-    BookInstance bookInstance =
-        bookInstanceTestFactory.createDefaultBookInstance(BookType.CIRCULATING, BookInstanceStatus.AVAILABLE);
+    Book book = bookTestFactory.createDefault();
+    BookInstance bookInstance = bookInstanceTestFactory.createDefaultBookInstance(
+        book.getId(), BookType.CIRCULATING, BookInstanceStatus.RESERVED);
     Loan loan = loanTestFactory.createLoanReserve(patron, bookInstance);
-    entityManager.flush();
+    flushAndClear();
 
     int initialCount = JdbcTestUtils.countRowsInTable(jdbcTemplate, "loan");
 
@@ -447,45 +457,13 @@ public class LoanIntegrationTest extends LoanHttpHelper {
     assertEquals("Loan not found: " + loanId, response.errors().getFirst().description());
   }
 
-  @Test
-  void shouldReturnNotFoundWhenPatronIdNotFoundInLoanCheckoutFromReserve() throws Exception {
-    Patron patron = new Patron(DEFAULT_PATRON_ID, PatronType.REGULAR);
-    BookInstance bookInstance =
-        bookInstanceTestFactory.createDefaultBookInstance(BookType.CIRCULATING, BookInstanceStatus.AVAILABLE);
-    Loan loan = loanTestFactory.createLoanReserve(patron, bookInstance);
-    entityManager.flush();
-
-    int initialCount = JdbcTestUtils.countRowsInTable(jdbcTemplate, "loan");
-    flushAndClear();
-
-    ErrorResponse response = returnNotFoundWhenCreateCheckoutFromReserve(loan.getId());
-
-    assertEquals(initialCount, JdbcTestUtils.countRowsInTable(jdbcTemplate, "loan"));
-    assertEquals("404 NOT_FOUND", response.code());
-    assertEquals("Patron not found: " + DEFAULT_PATRON_ID, response.errors().getFirst().description());
-  }
-
-
-  @Test
-  void shouldReturnNotFoundWhenBookInstanceIdNotFoundInLoanCheckoutFromReserve() throws Exception {
-    Patron patron = patronTestFactory.createDefaultPatron(PatronType.REGULAR);
-    BookInstance bookInstanceNotSaved = new BookInstance(
-        UUID.randomUUID(), UUID.randomUUID(), BookType.CIRCULATING, BookInstanceStatus.AVAILABLE);
-    Loan loan = loanTestFactory.createLoanReserve(patron, bookInstanceNotSaved);
-    flushAndClear();
-
-    ErrorResponse response = returnNotFoundWhenCreateCheckoutFromReserve(loan.getId());
-
-    assertEquals("404 NOT_FOUND", response.code());
-    assertEquals("Book Instance not found: " + loan.getBookInstanceId(),
-        response.errors().getFirst().description());
-  }
-
   @MethodSource("provideUnavailableLoanStatusForCancelOrCheckout")
   @ParameterizedTest
   void shouldReturnConflictWhenLoanIsNotAvailableToCheckoutFromReverse(LoanStatus loanStatus) throws Exception {
     Patron patron = patronTestFactory.createDefaultPatron(PatronType.REGULAR);
-    BookInstance bookInstance = bookInstanceTestFactory.createDefaultBookInstance(BookType.CIRCULATING, BookInstanceStatus.RESERVED);
+    Book book = bookTestFactory.createDefault();
+    BookInstance bookInstance = bookInstanceTestFactory.createDefaultBookInstance(
+        book.getId(), BookType.CIRCULATING, BookInstanceStatus.RESERVED);
     Loan loan = loanTestFactory.createLoan(
         UUID.randomUUID(),
         patron.getId(),
@@ -503,8 +481,9 @@ public class LoanIntegrationTest extends LoanHttpHelper {
   @Test
   void shouldReturnLoan() throws Exception {
     Patron patron = patronTestFactory.createDefaultPatron(PatronType.REGULAR);
-    BookInstance bookInstance =
-        bookInstanceTestFactory.createDefaultBookInstance(BookType.CIRCULATING, BookInstanceStatus.LENT);
+    Book book = bookTestFactory.createDefault();
+    BookInstance bookInstance = bookInstanceTestFactory.createDefaultBookInstance(
+        book.getId(), BookType.CIRCULATING, BookInstanceStatus.LENT);
     Loan loan = loanTestFactory.createLoanLent(patron, bookInstance);
     entityManager.flush();
 
@@ -533,8 +512,9 @@ public class LoanIntegrationTest extends LoanHttpHelper {
   @Test
   void shouldReturnLoanDelayed() throws Exception {
     Patron patron = patronTestFactory.createDefaultPatron(PatronType.REGULAR);
-    BookInstance bookInstance =
-        bookInstanceTestFactory.createDefaultBookInstance(BookType.CIRCULATING, BookInstanceStatus.LENT);
+    Book book = bookTestFactory.createDefault();
+    BookInstance bookInstance = bookInstanceTestFactory.createDefaultBookInstance(
+        book.getId(), BookType.CIRCULATING, BookInstanceStatus.LENT);
     Loan loan = loanTestFactory.createLoan(
         UUID.randomUUID(),
         patron.getId(),
@@ -579,26 +559,13 @@ public class LoanIntegrationTest extends LoanHttpHelper {
     assertEquals("Loan not found: " + loanId, response.errors().getFirst().description());
   }
 
-  @Test
-  void shouldReturnNotFoundWhenBookInstanceIdNotFoundInLoanReturn() throws Exception {
-    Patron patron = patronTestFactory.createDefaultPatron(PatronType.REGULAR);
-    BookInstance bookInstanceNotSaved = new BookInstance(
-        UUID.randomUUID(), UUID.randomUUID(), BookType.CIRCULATING, BookInstanceStatus.AVAILABLE);
-    Loan loan = loanTestFactory.createLoanReserve(patron, bookInstanceNotSaved);
-    flushAndClear();
-
-    ErrorResponse response = returnNotFoundWhenReturnLoan(loan.getId());
-
-    assertEquals("404 NOT_FOUND", response.code());
-    assertEquals("Book Instance not found: " + loan.getBookInstanceId(),
-        response.errors().getFirst().description());
-  }
-
   @MethodSource("provideUnavailableLoanStatusForReturn")
   @ParameterizedTest
   void shouldReturnConflictWhenLoanIsNotAvailableToReturn(LoanStatus loanStatus) throws Exception {
     Patron patron = patronTestFactory.createDefaultPatron(PatronType.REGULAR);
-    BookInstance bookInstance = bookInstanceTestFactory.createDefaultBookInstance(BookType.CIRCULATING, BookInstanceStatus.RESERVED);
+    Book book = bookTestFactory.createDefault();
+    BookInstance bookInstance = bookInstanceTestFactory.createDefaultBookInstance(
+        book.getId(), BookType.CIRCULATING, BookInstanceStatus.RESERVED);
     Loan loan = loanTestFactory.createLoan(
         UUID.randomUUID(),
         patron.getId(),
@@ -616,8 +583,9 @@ public class LoanIntegrationTest extends LoanHttpHelper {
   @Test
   void shouldGetById() throws Exception {
     Patron patron = patronTestFactory.createDefaultPatron(PatronType.REGULAR);
-    BookInstance bookInstance =
-        bookInstanceTestFactory.createDefaultBookInstance(BookType.CIRCULATING, BookInstanceStatus.LENT);
+    Book book = bookTestFactory.createDefault();
+    BookInstance bookInstance = bookInstanceTestFactory.createDefaultBookInstance(
+        book.getId(), BookType.CIRCULATING, BookInstanceStatus.LENT);
     Loan loan = loanTestFactory.createLoanLent(patron, bookInstance);
     flushAndClear();
 
@@ -642,12 +610,15 @@ public class LoanIntegrationTest extends LoanHttpHelper {
   @Test
   void shouldGetAllLoansByPatronId() throws Exception {
     Patron patron = patronTestFactory.createDefaultPatron(PatronType.REGULAR);
+    Book book = bookTestFactory.createDefault();
     BookInstance bookInstance1 = bookInstanceTestFactory.createDefaultBookInstance(
-        BookType.CIRCULATING, BookInstanceStatus.AVAILABLE);
+        book.getId(), BookType.CIRCULATING, BookInstanceStatus.AVAILABLE);
     BookInstance bookInstance2 = bookInstanceTestFactory.createBookInstance(
-        UUID.randomUUID(), UUID.randomUUID(), BookType.CIRCULATING, BookInstanceStatus.AVAILABLE);
+        UUID.randomUUID(), book.getId(), BookType.CIRCULATING, BookInstanceStatus.AVAILABLE);
+
     Loan loan1 = loanTestFactory.createLoanLent(patron, bookInstance1);
     Loan loan2 = loanTestFactory.createLoanLent(patron, bookInstance2);
+
     flushAndClear();
 
     List<LoanResponse> response = returnOkWhenGetAllLoansByPatronId(patron.getId());

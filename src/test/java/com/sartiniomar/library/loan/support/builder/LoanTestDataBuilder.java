@@ -37,14 +37,14 @@ public class LoanTestDataBuilder {
     return Loan.createReserve(
         UUID.fromString("00000000-1111-2222-3333-444444444444"),
         UUID.fromString("55555555-6666-7777-8888-999999999999"),
-        java.time.Clock.systemDefaultZone());
+        java.time.Clock.systemUTC());
   }
 
   public Loan buildDefaultCheckout() {
     return Loan.createLent(
         UUID.fromString("00000000-1111-2222-3333-444444444444"),
         UUID.fromString("55555555-6666-7777-8888-999999999999"),
-        java.time.Clock.systemDefaultZone(),
+        java.time.Clock.systemUTC(),
         7);
   }
 
@@ -52,28 +52,30 @@ public class LoanTestDataBuilder {
     return Loan.createReserve(
         patron.getId(),
         bookInstance.getId(),
-        java.time.Clock.systemDefaultZone());
+        java.time.Clock.systemUTC());
   }
 
   public Loan buildCheckout(Patron patron, BookInstance bookInstance) {
     return Loan.createLent(
         patron.getId(),
         bookInstance.getId(),
-        java.time.Clock.systemDefaultZone(),
+        java.time.Clock.systemUTC(),
         patron.getLimitDays());
   }
 
   public Patron buildDefaultPatron(PatronType patronType) {
     return new Patron(
         UUID.fromString("00000000-1111-2222-3333-444444444444"),
-        patronType
+        patronType,
+        "Patron Name",
+        "patron@email.com"
     );
   }
 
-  public BookInstance buildDefaultBookInstance(BookType bookType, BookInstanceStatus bookInstanceStatus) {
+  public BookInstance buildDefaultBookInstance(UUID bookId, BookType bookType, BookInstanceStatus bookInstanceStatus) {
     return new BookInstance(
         UUID.fromString("55555555-6666-7777-8888-999999999999"),
-        UUID.randomUUID(),
+        bookId,
         bookType,
         bookInstanceStatus
     );

@@ -95,7 +95,8 @@ public class BookInstanceIntegrationTest extends BookInstanceHttpHelper {
 
   @Test
   void shouldUpdateBookInstance() throws Exception {
-    BookInstance bookInstance = bookInstanceFactory.createCirculatingDefault();
+    Book book = bookFactory.createDefault();
+    BookInstance bookInstance = bookInstanceFactory.createCirculating(book.getId());
     flushAndClear();
 
     BookInstanceResponse response = updateBookInstanceCirculating(bookInstance.getId(), bookInstance.getBookId());
@@ -124,7 +125,8 @@ public class BookInstanceIntegrationTest extends BookInstanceHttpHelper {
 
   @Test
   void shouldGetById() throws Exception {
-    BookInstance bookInstance = bookInstanceFactory.createCirculatingDefault();
+    Book book = bookFactory.createDefault();
+    BookInstance bookInstance = bookInstanceFactory.createCirculating(book.getId());
     flushAndClear();
 
     BookInstanceResponse response = getBookInstanceById(bookInstance.getId());

@@ -14,7 +14,7 @@ public class DomainServiceConfig {
 
   @Bean
   ReserveServiceDomain reserveService() {
-    return new ReserveServiceDomain(Clock.systemDefaultZone());
+    return new ReserveServiceDomain(Clock.systemUTC());
   }
 
   @Bean
@@ -24,12 +24,12 @@ public class DomainServiceConfig {
 
   @Bean
   CheckoutServiceDomain checkoutService() {
-    return new CheckoutServiceDomain(Clock.systemDefaultZone());
+    return new CheckoutServiceDomain(Clock.systemUTC());
   }
 
   @Bean
   CheckoutReserveServiceDomain checkoutReserveServiceDomain() {
-    return new CheckoutReserveServiceDomain(Clock.systemDefaultZone());
+    return new CheckoutReserveServiceDomain(Clock.systemUTC());
   }
 
   @Bean

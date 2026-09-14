@@ -24,7 +24,11 @@ public class CheckoutReserveServiceDomainTest {
     Instant now = Instant.parse("2026-08-27T19:00:00Z");
     Clock clock = Clock.fixed(now, ZoneOffset.UTC);
 
-    Patron patron = new Patron(UUID.randomUUID(), PatronType.REGULAR);
+    Patron patron = new Patron(
+        UUID.randomUUID(),
+        PatronType.REGULAR,
+        "Patron Name",
+        "patron@email.com");
 
     BookInstance book = new BookInstance(
         UUID.randomUUID(), UUID.randomUUID(), BookType.CIRCULATING, BookInstanceStatus.AVAILABLE);

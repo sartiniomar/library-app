@@ -22,7 +22,7 @@
                 {
                   "column": {
                     "name": "type",
-                    "type": "integer",
+                    "type": "varchar(30)",
                     "constraints": {
                       "nullable": false
                     }
@@ -118,7 +118,7 @@
                 {
                   "column": {
                     "name": "type",
-                    "type": "integer",
+                    "type": "varchar(30)",
                     "constraints": {
                       "nullable": false
                     }
@@ -127,7 +127,7 @@
                 {
                   "column": {
                     "name": "status",
-                    "type": "integer",
+                    "type": "varchar(30)",
                     "constraints": {
                       "nullable": false
                     }
@@ -178,7 +178,7 @@
                 {
                   "column": {
                     "name": "status",
-                    "type": "integer",
+                    "type": "varchar(30)",
                     "constraints": {
                       "nullable": false
                     }

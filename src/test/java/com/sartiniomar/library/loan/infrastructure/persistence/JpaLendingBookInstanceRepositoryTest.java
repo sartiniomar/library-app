@@ -1,9 +1,10 @@
 package com.sartiniomar.library.loan.infrastructure.persistence;
 
+import com.sartiniomar.library.catalog.infrastructure.persistence.model.BookEntity;
 import com.sartiniomar.library.catalog.infrastructure.persistence.model.BookInstanceEntity;
 import com.sartiniomar.library.catalog.infrastructure.persistence.jpa.repository.BookInstanceJpaRepository;
-import com.sartiniomar.library.catalog.domain.bookInstance.BookInstanceStatus;
-import com.sartiniomar.library.catalog.domain.bookInstance.BookType;
+import com.sartiniomar.library.loan.domain.bookInstance.BookInstanceStatus;
+import com.sartiniomar.library.loan.domain.bookInstance.BookType;
 import com.sartiniomar.library.loan.domain.bookInstance.BookInstance;
 import com.sartiniomar.library.loan.infrastructure.persistence.jpa.adapter.LoanBookInstanceAdapterRepository;
 import org.junit.jupiter.api.Test;
@@ -30,11 +31,15 @@ public class JpaLendingBookInstanceRepositoryTest {
   void shouldSaveAndFindBookInstance() {
     UUID id = UUID.randomUUID();
     UUID bookId = UUID.randomUUID();
+
+    BookEntity book = new BookEntity();
+    book.setId(bookId);
+
     BookInstanceEntity entity = new BookInstanceEntity();
     entity.setId(id);
-    entity.setBookId(bookId);
-    entity.setType(BookType.CIRCULATING);
-    entity.setStatus(BookInstanceStatus.AVAILABLE);
+    entity.setBook(book);
+    entity.setType(com.sartiniomar.library.catalog.domain.bookInstance.BookType.CIRCULATING);
+    entity.setStatus(com.sartiniomar.library.catalog.domain.bookInstance.BookInstanceStatus.AVAILABLE);
 
     bookInstanceDataRepository.save(entity);
 
@@ -43,8 +48,8 @@ public class JpaLendingBookInstanceRepositoryTest {
     assertTrue(result.isPresent());
     assertEquals(id, result.get().getId());
     assertEquals(bookId, result.get().getBookId());
-    assertEquals(BookType.CIRCULATING.toString(), result.get().getType().toString());
-    assertEquals(BookInstanceStatus.AVAILABLE.toString(), result.get().getStatus().toString());
+    assertEquals(BookType.CIRCULATING, result.get().getType());
+    assertEquals(BookInstanceStatus.AVAILABLE, result.get().getStatus());
   }
 
 }

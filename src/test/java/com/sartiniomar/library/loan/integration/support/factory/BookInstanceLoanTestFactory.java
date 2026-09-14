@@ -16,11 +16,12 @@ public class BookInstanceLoanTestFactory {
   private BookInstanceLoanRepository bookInstanceLoanRepository;
 
   public BookInstance createDefaultBookInstance(
+      UUID bookId,
       BookType bookType,
       BookInstanceStatus bookInstanceStatus)
   {
     return bookInstanceLoanRepository.save(
-        new LoanTestDataBuilder().buildDefaultBookInstance(bookType, bookInstanceStatus));
+        new LoanTestDataBuilder().buildDefaultBookInstance(bookId, bookType, bookInstanceStatus));
   }
 
   public BookInstance createBookInstance(

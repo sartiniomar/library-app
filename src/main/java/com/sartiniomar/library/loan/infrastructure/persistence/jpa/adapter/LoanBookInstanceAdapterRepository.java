@@ -1,5 +1,6 @@
 package com.sartiniomar.library.loan.infrastructure.persistence.jpa.adapter;
 
+import com.sartiniomar.library.catalog.infrastructure.persistence.jpa.repository.BookJpaRepository;
 import com.sartiniomar.library.catalog.infrastructure.persistence.model.BookInstanceEntity;
 import com.sartiniomar.library.loan.application.port.out.BookInstanceLoanRepository;
 import com.sartiniomar.library.loan.domain.bookInstance.BookInstance;
@@ -16,29 +17,36 @@ import java.util.UUID;
 @Import(BookInstanceLoanMapperImpl.class)
 public class LoanBookInstanceAdapterRepository implements BookInstanceLoanRepository {
 
-  private final BookInstanceJpaRepository jpaRepo;
-
+  private final BookInstanceJpaRepository bookInstanceJpaRepo;
+  private final BookJpaRepository bookJpaRepo;
   private final BookInstanceLoanMapper mapper;
 
-  public LoanBookInstanceAdapterRepository(BookInstanceJpaRepository jpaRepo, BookInstanceLoanMapper mapper) {
-    this.jpaRepo = jpaRepo;
+  public LoanBookInstanceAdapterRepository(BookInstanceJpaRepository bookInstanceJpaRepo, BookJpaRepository bookJpaRepo, BookInstanceLoanMapper mapper) {
+    this.bookInstanceJpaRepo = bookInstanceJpaRepo;
+    this.bookJpaRepo = bookJpaRepo;
     this.mapper = mapper;
   }
 
   @Override
   public Optional<BookInstance> findById(UUID bookInstanceId) {
-    return jpaRepo.findById(bookInstanceId)
+    return bookInstanceJpaRepo.findById(bookInstanceId)
         .map(mapper::toDomain);
   }
 
   @Override
   @Transactional
   public BookInstance save(BookInstance bookInstance) {
-    BookInstanceEntity entity = jpaRepo.findById(bookInstance.getId()).orElse(null);
-
-    if (entity != null) mapper.updateBookInstanceEntityFromBookInstance(bookInstance, entity);
-    else entity = mapper.toEntity(bookInstance);
-
-    return mapper.toDomain(jpaRepo.saveAndFlush(entity));
+    BookInstanceEntity bookInstanceEntity;
+    Optional<BookInstanceEntity> entityOptional = bookInstanceJpaRepo.findById(bookInstance.getId());
+    if (entityOptional.isPresent()) {
+      bookInstanceEntity = entityOptional.get();
+      mapper.updateBookInstanceEntityFromBookInstance(bookInstance, bookInstanceEntity);
+    } else {
+      bookInstanceEntity = mapper.toEntity(bookInstance);
+      bookInstanceEntity.setBook(
+          bookJpaRepo.getReferenceById(bookInstance.getBookId())
+      );
+    }
+    return mapper.toDomain(bookInstanceJpaRepo.saveAndFlush(bookInstanceEntity));
   }
 }

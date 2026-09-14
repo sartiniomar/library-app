@@ -62,7 +62,11 @@ public class LoanTest {
     Instant now = Instant.parse("2026-08-27T19:00:00Z");
     Clock clock = Clock.fixed(now, ZoneOffset.UTC);
 
-    Patron patron = new Patron(UUID.randomUUID(), PatronType.REGULAR);
+    Patron patron = new Patron(
+        UUID.randomUUID(),
+        PatronType.REGULAR,
+        "Patron Name",
+        "patron@email.com");
 
     BookInstance book = new BookInstance(UUID.randomUUID(), UUID.randomUUID(), BookType.CIRCULATING, BookInstanceStatus.RESERVED);
 
@@ -82,7 +86,11 @@ public class LoanTest {
     Instant now = Instant.parse("2026-08-27T19:00:00Z");
     Clock clock = Clock.fixed(now, ZoneOffset.UTC);
 
-    Patron patron = new Patron(UUID.randomUUID(), PatronType.REGULAR);
+    Patron patron = new Patron(
+        UUID.randomUUID(),
+        PatronType.REGULAR,
+        "Patron Name",
+        "patron@email.com");
 
     BookInstance book = new BookInstance(UUID.randomUUID(), UUID.randomUUID(), BookType.CIRCULATING, BookInstanceStatus.AVAILABLE);
 
@@ -102,7 +110,11 @@ public class LoanTest {
     Instant now = Instant.parse("2026-08-27T19:00:00Z");
     Clock clock = Clock.fixed(now, ZoneOffset.UTC);
 
-    Patron patron = new Patron(UUID.randomUUID(), PatronType.RESEARCHER);
+    Patron patron = new Patron(
+        UUID.randomUUID(),
+        PatronType.RESEARCHER,
+        "Patron Name",
+        "patron@email.com");
 
     BookInstance book = new BookInstance(UUID.randomUUID(), UUID.randomUUID(), BookType.CIRCULATING, BookInstanceStatus.AVAILABLE);
 
@@ -119,7 +131,7 @@ public class LoanTest {
 
   @Test
   void should_change_reserved_to_cancelled_status() {
-    Loan loan = Loan.createReserve(UUID.randomUUID(), UUID.randomUUID(), Clock.systemDefaultZone());
+    Loan loan = Loan.createReserve(UUID.randomUUID(), UUID.randomUUID(), Clock.systemUTC());
     loan.cancelled();
     assertEquals(LoanStatus.CANCELLED, loan.getStatus());
   }
@@ -144,9 +156,16 @@ public class LoanTest {
   @Test
   void should_change_reserved_to_lent_status() {
     Clock clock = Clock.fixed(Instant.now(), ZoneOffset.UTC);
-    Patron patron = new Patron(UUID.randomUUID(), PatronType.REGULAR);
+
+    Patron patron = new Patron(
+        UUID.randomUUID(),
+        PatronType.REGULAR,
+        "Patron Name",
+        "patron@email.com");
+
     Loan loan = Loan.createReserve(UUID.randomUUID(), UUID.randomUUID(), clock);
     loan.lent(Patron.REGULAR_PATRON_LEND_LIMIT_DAYS, clock);
+
     assertEquals(LoanStatus.LENT, loan.getStatus());
     assertTrue(Duration.between(loan.getLentAt(), Instant.now(clock)).abs().toMillis() < 1000);
     assertTrue(Duration.between(loan.getDueAt(),
@@ -170,7 +189,7 @@ public class LoanTest {
 
     assertThrows(
         TransitionStatusException.class,
-        () -> loan.lent(Patron.REGULAR_PATRON_LEND_LIMIT_DAYS, Clock.systemDefaultZone())
+        () -> loan.lent(Patron.REGULAR_PATRON_LEND_LIMIT_DAYS, Clock.systemUTC())
     );
   }
 
