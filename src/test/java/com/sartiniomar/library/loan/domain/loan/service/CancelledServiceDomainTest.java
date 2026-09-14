@@ -38,9 +38,19 @@ public class CancelledServiceDomainTest {
     UUID bookId = UUID.randomUUID();
     UUID bookInstanceId = UUID.randomUUID();
     UUID patronId = UUID.randomUUID();
-    Patron patron = new Patron(patronId, PatronType.REGULAR);
+
+    Patron patron = new Patron(
+        patronId,
+        PatronType.REGULAR,
+        "Patron Name",
+        "patron@email.com");
+
     BookInstance bookInstance = new BookInstance(
-        bookInstanceId, bookId, BookType.CIRCULATING, BookInstanceStatus.RESERVED);
+        bookInstanceId,
+        bookId,
+        BookType.CIRCULATING,
+        BookInstanceStatus.RESERVED);
+
     Loan loan = Loan.withId(
         UUID.randomUUID(),
         patronId,

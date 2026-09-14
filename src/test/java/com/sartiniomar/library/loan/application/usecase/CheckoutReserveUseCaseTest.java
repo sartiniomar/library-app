@@ -58,7 +58,9 @@ public class CheckoutReserveUseCaseTest {
 
     Patron patron = new Patron(
         UUID.randomUUID(),
-        PatronType.REGULAR
+        PatronType.REGULAR,
+        "Patron Name",
+        "patron@email.com"
     );
 
     BookInstance bookInstance = new BookInstance(
@@ -155,7 +157,9 @@ public class CheckoutReserveUseCaseTest {
 
     Patron patron = new Patron(
         UUID.randomUUID(),
-        PatronType.REGULAR
+        PatronType.REGULAR,
+        "Patron Name",
+        "patron@email.com"
     );
 
     Loan loan = Loan.withId(
@@ -189,7 +193,9 @@ public class CheckoutReserveUseCaseTest {
   void should_not_persist_loan_when_domain_service_fails() {
     Patron patron = new Patron(
         UUID.randomUUID(),
-        PatronType.REGULAR
+        PatronType.REGULAR,
+        "Patron Name",
+        "patron@email.com"
     );
 
     BookInstance bookInstance = new BookInstance(

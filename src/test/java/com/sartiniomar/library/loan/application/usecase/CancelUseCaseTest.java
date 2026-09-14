@@ -45,7 +45,7 @@ public class CancelUseCaseTest {
 
   @Test
   void shouldExecuteCancelSuccessfully() {
-    Clock clock = Clock.systemDefaultZone();
+    Clock clock = Clock.systemUTC();
 
     BookInstance bookInstance = new BookInstance(
         UUID.randomUUID(),
@@ -96,7 +96,7 @@ public class CancelUseCaseTest {
 
   @Test
   void should_throw_exception_when_bookInstance_not_exist() {
-    Clock clock = Clock.systemDefaultZone();
+    Clock clock = Clock.systemUTC();
 
     Loan loan = Loan.createReserve(UUID.randomUUID(), UUID.randomUUID(), clock);
 
@@ -115,7 +115,7 @@ public class CancelUseCaseTest {
 
   @Test
   void should_not_persist_loan_when_domain_service_fails() {
-    Clock clock = Clock.systemDefaultZone();
+    Clock clock = Clock.systemUTC();
 
     BookInstance bookInstance = new BookInstance(
         UUID.randomUUID(),

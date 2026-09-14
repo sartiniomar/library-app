@@ -8,17 +8,18 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 import java.util.UUID;
 
-public interface LoanJpaRepository extends JpaRepository<LoanEntity, UUID>  {
+public interface LoanJpaRepository extends JpaRepository<LoanEntity, UUID> {
+
   @Query("""
         SELECT COUNT(l)
         FROM LoanEntity l
-        WHERE l.patronId = :patronId
+        WHERE l.patron.id = :patronId
           AND l.status IN :statuses
-    """)
-  Integer countActiveLoansByPatronId(
+      """)
+  Long countActiveLoansByPatronId(
       @Param("patronId") UUID patronId,
       @Param("statuses") List<LoanStatus> statuses
   );
 
-  List<LoanEntity> findAllByPatronId(UUID patronId);
+  List<LoanEntity> findAllByPatron_Id(UUID patronId);
 }

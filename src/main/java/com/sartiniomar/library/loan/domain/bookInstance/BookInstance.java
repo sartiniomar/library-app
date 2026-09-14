@@ -19,6 +19,14 @@ public class BookInstance {
     this.status = status;
   }
 
+  public static BookInstance circulating(UUID bookId) {
+    return new BookInstance(UUID.randomUUID(), bookId, BookType.CIRCULATING, BookInstanceStatus.AVAILABLE);
+  }
+
+  public static BookInstance restricted(UUID bookId) {
+    return new BookInstance(UUID.randomUUID(), bookId, BookType.RESTRICTED, BookInstanceStatus.AVAILABLE);
+  }
+
   public UUID getId() {
     return this.id;
   }

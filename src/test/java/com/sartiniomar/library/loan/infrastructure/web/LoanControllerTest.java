@@ -135,7 +135,7 @@ public class LoanControllerTest extends LibraryApplicationTests {
     ArgumentCaptor<LoanIdCommand> loanIdCommandArgumentCaptor = ArgumentCaptor.forClass(LoanIdCommand.class);
 
     Loan loan = new LoanTestDataBuilder().buildDefaultReserve();
-    loan.lent(7, Clock.systemDefaultZone());
+    loan.lent(7, Clock.systemUTC());
     when(checkoutReserveUseCase.execute(loanIdCommandArgumentCaptor.capture())).thenReturn(loan);
 
     mockMvc.perform(post("/loans/{id}/checkouts", loan.getId())

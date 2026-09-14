@@ -15,7 +15,7 @@ public class LoanLimitChecker {
 
   public void check(Patron patron) {
     if (patron.isRegular()) {
-      int activeLoans = loanRepository.countActiveLoansByPatronId(patron.getId(), Loan.ACTIVE_STATUSES);
+      long activeLoans = loanRepository.countActiveLoansByPatronId(patron.getId(), Loan.ACTIVE_STATUSES);
       DomainPolicy.ensureCanHaveAnotherLoan(patron, activeLoans);
     }
   }

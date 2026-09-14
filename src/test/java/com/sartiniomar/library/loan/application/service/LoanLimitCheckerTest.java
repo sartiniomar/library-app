@@ -34,13 +34,15 @@ public class LoanLimitCheckerTest {
   void should_throw_exception_when_regular_patron_reached_loan_limit() {
     Patron patron = new Patron(
         UUID.randomUUID(),
-        PatronType.REGULAR
+        PatronType.REGULAR,
+        "Patron Name",
+        "patron@email.com"
     );
 
     when(loanRepository.countActiveLoansByPatronId(
         patron.getId(),
         Loan.ACTIVE_STATUSES
-    )).thenReturn(DomainPolicy.MAX_VALUE_LOANS_REGULAR_PATRON);
+    )).thenReturn(DomainPolicy.MAX_VALUE_LOANS_REGULAR_PATRON.longValue());
 
     LoanLimitExceededException ex = assertThrows(
         LoanLimitExceededException.class,
@@ -59,13 +61,15 @@ public class LoanLimitCheckerTest {
   void should_validate_successfully_when_regular_patron_is_below_loan_limit() {
     Patron patron = new Patron(
         UUID.randomUUID(),
-        PatronType.REGULAR
+        PatronType.REGULAR,
+        "Patron Name",
+        "patron@email.com"
     );
 
     when(loanRepository.countActiveLoansByPatronId(
         patron.getId(),
         Loan.ACTIVE_STATUSES
-    )).thenReturn(DomainPolicy.MAX_VALUE_LOANS_REGULAR_PATRON - 1);
+    )).thenReturn(DomainPolicy.MAX_VALUE_LOANS_REGULAR_PATRON.longValue() - 1);
 
     assertDoesNotThrow(() -> validationsUtil.check(patron));
 
@@ -79,7 +83,9 @@ public class LoanLimitCheckerTest {
   void should_not_check_active_loans_when_patron_is_researcher() {
     Patron patron = new Patron(
         UUID.randomUUID(),
-        PatronType.RESEARCHER
+        PatronType.RESEARCHER,
+        "Patron Name",
+        "patron@email.com"
     );
 
     assertDoesNotThrow(

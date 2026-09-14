@@ -39,9 +39,19 @@ public class ReturnedServiceDomainTest {
     UUID bookId = UUID.randomUUID();
     UUID bookInstanceId = UUID.randomUUID();
     UUID patronId = UUID.randomUUID();
-    Patron patron = new Patron(patronId, PatronType.REGULAR);
+
+    Patron patron = new Patron(
+        patronId,
+        PatronType.REGULAR,
+        "Patron Name",
+        "patron@email.com");
+
     BookInstance bookInstance = new BookInstance(
-        bookInstanceId, bookId, BookType.CIRCULATING, BookInstanceStatus.RESERVED);
+        bookInstanceId,
+        bookId,
+        BookType.CIRCULATING,
+        BookInstanceStatus.RESERVED);
+
     Loan loan = Loan.withId(
         UUID.randomUUID(),
         patronId,
@@ -69,9 +79,19 @@ public class ReturnedServiceDomainTest {
     UUID bookId = UUID.randomUUID();
     UUID bookInstanceId = UUID.randomUUID();
     UUID patronId = UUID.randomUUID();
-    Patron patron = new Patron(patronId, PatronType.REGULAR);
+
+    Patron patron = new Patron(
+        patronId,
+        PatronType.REGULAR,
+        "Patron Name",
+        "patron@email.com");
+
     BookInstance bookInstance = new BookInstance(
-        bookInstanceId, bookId, BookType.CIRCULATING, BookInstanceStatus.RESERVED);
+        bookInstanceId,
+        bookId,
+        BookType.CIRCULATING,
+        BookInstanceStatus.RESERVED);
+
     Loan loan = Loan.withId(
         UUID.randomUUID(),
         patronId,
@@ -98,9 +118,18 @@ public class ReturnedServiceDomainTest {
   @MethodSource("provideDataForLoanStateAreNotAvailableForReturned")
   @SneakyThrows
   void should_throw_exception_when_loan_is_not_available_returned(LoanStatus status) {
-    Patron patron = new Patron(UUID.randomUUID(), PatronType.REGULAR);
+    Patron patron = new Patron(
+        UUID.randomUUID(),
+        PatronType.REGULAR,
+        "Patron Name",
+        "patron@email.com");
+
     BookInstance bookInstance = new BookInstance(
-        UUID.randomUUID(), UUID.randomUUID(), BookType.CIRCULATING, BookInstanceStatus.RESERVED);
+        UUID.randomUUID(),
+        UUID.randomUUID(),
+        BookType.CIRCULATING,
+        BookInstanceStatus.RESERVED);
+
     Loan loan = Loan.withId(
         UUID.randomUUID(),
         UUID.randomUUID(),
@@ -110,6 +139,7 @@ public class ReturnedServiceDomainTest {
         null,
         null,
         null);
+
     ReturnServiceDomain service = new ReturnServiceDomain();
 
     OperationNotPermittedException ex =
