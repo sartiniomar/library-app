@@ -6,6 +6,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Version;
 import lombok.Getter;
@@ -21,7 +23,9 @@ public class BookInstanceEntity {
   @Id
   private UUID id;
 
-  private UUID bookId;
+  @ManyToOne
+  @JoinColumn(name = "book_id", referencedColumnName = "id")
+  private BookEntity book;
 
   @Enumerated(EnumType.STRING)
   private BookType type;

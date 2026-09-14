@@ -1,0 +1,13 @@
+package com.sartiniomar.library.loan.support.builder;
+
+import com.sartiniomar.library.loan.domain.patron.Patron;
+import com.sartiniomar.library.loan.domain.patron.PatronType;
+import java.util.UUID;
+
+public class PatronLoanTestDataBuilder {
+  public Patron buildDefaultRegular() {return Patron.regular("Name", "name@email.com");}
+
+  public Patron buildDefaultResearcher() {return Patron.researcher("Name", "name@email.com");}
+
+  public Patron build(UUID id, PatronType type, String name, String email) {return new Patron(id, type, name, email);}
+}

@@ -12,7 +12,11 @@ public class PatronTest {
   @Test
   void should_create_successfully_regular_patron() {
     UUID id = UUID.randomUUID();
-    Patron patron = new Patron(id, PatronType.REGULAR);
+    Patron patron = new Patron(
+        id,
+        PatronType.REGULAR,
+        "Patron Name",
+        "patron@email.com");
 
     assertEquals(id, patron.getId());
     assertEquals(PatronType.REGULAR, patron.getType());
@@ -21,7 +25,11 @@ public class PatronTest {
   @Test
   void should_create_successfully_researcher_patron() {
     UUID id = UUID.randomUUID();
-    Patron patron = new Patron(id, PatronType.RESEARCHER);
+    Patron patron = new Patron(
+        id,
+        PatronType.RESEARCHER,
+        "Patron Name",
+        "patron@email.com");
 
     assertEquals(id, patron.getId());
     assertTrue(patron.isResearcher());
@@ -30,14 +38,22 @@ public class PatronTest {
 
   @Test
   void should_return_true_when_patron_is_researcher() {
-    Patron patron = new Patron(UUID.randomUUID(), PatronType.RESEARCHER);
+    Patron patron = new Patron(
+        UUID.randomUUID(),
+        PatronType.RESEARCHER,
+        "Patron Name",
+        "patron@email.com");
 
     assertTrue(patron.isResearcher());
   }
 
   @Test
   void should_return_false_when_patron_is_not_researcher() {
-    Patron patron = new Patron(UUID.randomUUID(), PatronType.REGULAR);
+    Patron patron = new Patron(
+        UUID.randomUUID(),
+        PatronType.REGULAR,
+        "Patron Name",
+        "patron@email.com");
 
     assertFalse(patron.isResearcher());
   }

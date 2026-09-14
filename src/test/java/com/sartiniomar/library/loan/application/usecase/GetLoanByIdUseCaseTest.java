@@ -33,7 +33,7 @@ public class GetLoanByIdUseCaseTest {
 
   @Test
   void shouldExecuteGetLoanByIdSuccessfully() {
-    Clock clock = Clock.systemDefaultZone();
+    Clock clock = Clock.systemUTC();
 
     BookInstance bookInstance = new BookInstance(
         UUID.randomUUID(),

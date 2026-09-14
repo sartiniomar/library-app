@@ -31,11 +31,15 @@ public class GetAllLoansByPatronIdUseCaseTest {
 
   @Test
   void shouldExecuteSuccessfully() {
-    Patron patron = new Patron(UUID.randomUUID(), PatronType.REGULAR);
+    Patron patron = new Patron(
+        UUID.randomUUID(),
+        PatronType.REGULAR,
+        "Patron Name",
+        "patron@email.com");
     UUID patronId = patron.getId();
 
-    Loan existing0 = Loan.createReserve(patronId, UUID.randomUUID(), Clock.systemDefaultZone());
-    Loan existing1 = Loan.createLent(patronId, UUID.randomUUID(), Clock.systemDefaultZone(), 7);
+    Loan existing0 = Loan.createReserve(patronId, UUID.randomUUID(), Clock.systemUTC());
+    Loan existing1 = Loan.createLent(patronId, UUID.randomUUID(), Clock.systemUTC(), 7);
 
     when(loanRepository.findAllByPatronId(patronId)).thenReturn(List.of(existing0, existing1));
 

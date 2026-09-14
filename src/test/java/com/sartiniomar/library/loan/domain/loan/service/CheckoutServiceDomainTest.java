@@ -39,7 +39,12 @@ public class CheckoutServiceDomainTest {
     Instant now = Instant.parse("2026-08-27T19:00:00Z");
     Clock clock = Clock.fixed(now, ZoneOffset.UTC);
 
-    Patron patron = new Patron(UUID.randomUUID(), PatronType.REGULAR);
+    Patron patron = new Patron(
+        UUID.randomUUID(),
+        PatronType.REGULAR,
+        "Patron Name",
+        "patron@email.com");
+
     BookInstance book = new BookInstance(
         UUID.randomUUID(), UUID.randomUUID(), BookType.CIRCULATING, BookInstanceStatus.AVAILABLE);
 
@@ -56,10 +61,16 @@ public class CheckoutServiceDomainTest {
   }
 
   @Test void should_throw_exception_when_book_is_restricted_and_patron_is_regular() {
-    Patron patron = new Patron(UUID.randomUUID(), PatronType.REGULAR);
+    Patron patron = new Patron(
+        UUID.randomUUID(),
+        PatronType.REGULAR,
+        "Patron Name",
+        "patron@email.com");
+
     BookInstance book = new BookInstance(
         UUID.randomUUID(), UUID.randomUUID(), BookType.RESTRICTED, BookInstanceStatus.AVAILABLE);
-    CheckoutServiceDomain service = new CheckoutServiceDomain(Clock.systemDefaultZone());
+
+    CheckoutServiceDomain service = new CheckoutServiceDomain(Clock.systemUTC());
 
     OnlyResearcherCanLoanRestrictedBooksException ex =
         assertThrows(OnlyResearcherCanLoanRestrictedBooksException.class,
@@ -73,9 +84,15 @@ public class CheckoutServiceDomainTest {
   @MethodSource("provideDataForBookInstancesStateAreNotAvailable")
   @SneakyThrows
   void should_throw_exception_when_book_is_not_available(BookInstanceStatus state) {
-    Patron patron = new Patron(UUID.randomUUID(), PatronType.REGULAR);
+    Patron patron = new Patron(
+        UUID.randomUUID(),
+        PatronType.REGULAR,
+        "Patron Name",
+        "patron@email.com");
+
     BookInstance book = new BookInstance(UUID.randomUUID(), UUID.randomUUID(), BookType.CIRCULATING, state);
-    CheckoutServiceDomain service = new CheckoutServiceDomain(Clock.systemDefaultZone());
+
+    CheckoutServiceDomain service = new CheckoutServiceDomain(Clock.systemUTC());
 
     BookInstanceNotAvailableException ex =
         assertThrows(BookInstanceNotAvailableException.class,

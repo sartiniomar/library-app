@@ -62,7 +62,9 @@ public class CheckoutUseCaseTest {
 
     Patron patron = new Patron(
         UUID.randomUUID(),
-        PatronType.REGULAR
+        PatronType.REGULAR,
+        "Patron Name",
+        "patron@email.com"
     );
 
     BookInstance bookInstance = new BookInstance(
@@ -124,7 +126,9 @@ public class CheckoutUseCaseTest {
   void should_throw_exception_when_bookInstance_not_exist() {
     Patron patron = new Patron(
         UUID.randomUUID(),
-        PatronType.REGULAR
+        PatronType.REGULAR,
+        "Patron Name",
+        "patron@email.com"
     );
 
     when(patronRepository.findById(patron.getId()))
@@ -145,7 +149,9 @@ public class CheckoutUseCaseTest {
   void should_throw_exception_when_patron_reached_loan_limit() {
     Patron patron = new Patron(
         UUID.randomUUID(),
-        PatronType.REGULAR
+        PatronType.REGULAR,
+        "Patron Name",
+        "patron@email.com"
     );
 
     BookInstance bookInstance = new BookInstance(
@@ -183,7 +189,9 @@ public class CheckoutUseCaseTest {
   void should_not_check_active_loans_when_patron_is_not_regular() {
     Patron patron = new Patron(
         UUID.randomUUID(),
-        PatronType.RESEARCHER
+        PatronType.RESEARCHER,
+        "Patron Name",
+        "patron@email.com"
     );
 
     BookInstance bookInstance = new BookInstance(
@@ -226,7 +234,9 @@ public class CheckoutUseCaseTest {
   void should_not_persist_loan_when_domain_service_fails() {
     Patron patron = new Patron(
         UUID.randomUUID(),
-        PatronType.REGULAR
+        PatronType.REGULAR,
+        "Patron Name",
+        "patron@email.com"
     );
 
     BookInstance bookInstance = new BookInstance(
