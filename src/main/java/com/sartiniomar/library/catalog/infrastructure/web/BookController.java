@@ -12,6 +12,7 @@ import com.sartiniomar.library.catalog.infrastructure.web.dto.BookRequest;
 import com.sartiniomar.library.catalog.infrastructure.web.dto.BookResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,6 +27,7 @@ import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
+@Slf4j
 @RequestMapping("/books")
 public class BookController {
 
@@ -37,29 +39,34 @@ public class BookController {
   private final BookMapper bookMapper;
 
   @PostMapping
-  public ResponseEntity<BookResponse> create(@Valid @RequestBody BookRequest createBookRequest) {
-    CreateBookCommand cmd = bookMapper.bookRequestToCreateBookCommand(createBookRequest);
+  public ResponseEntity<BookResponse> create(@Valid @RequestBody BookRequest request) {
+    log.debug("Creating book. ISBN= {}", request.isbn());
+    CreateBookCommand cmd = bookMapper.bookRequestToCreateBookCommand(request);
     return ResponseEntity.ok(bookMapper.bookToBookResponse(createBook.execute(cmd)));
   }
 
   @PutMapping("/{id}")
-  public ResponseEntity<BookResponse> update(@PathVariable UUID id, @RequestBody BookRequest updateBookRequest) {
-    UpdateBookCommand cmd = bookMapper.bookRequestToUpdateBookCommand(updateBookRequest, id);
+  public ResponseEntity<BookResponse> update(@PathVariable UUID id, @RequestBody BookRequest request) {
+    log.debug("Updating book. Book Id= {}", id);
+    UpdateBookCommand cmd = bookMapper.bookRequestToUpdateBookCommand(request, id);
     return ResponseEntity.ok(bookMapper.bookToBookResponse(updateBook.execute(cmd)));
   }
 
   @GetMapping("/{id}")
   public ResponseEntity<BookResponse> getById(@PathVariable UUID id) {
+    log.debug("Getting book by id. Book Id= {}", id);
     return ResponseEntity.ok(bookMapper.bookToBookResponse(getBookById.execute(id)));
   }
 
   @GetMapping
   public ResponseEntity<BookResponse> getByIsbn(@RequestParam String isbn) {
+    log.debug("Getting book by ISBN. ISBN= {}", isbn);
     return ResponseEntity.ok(bookMapper.bookToBookResponse(getBookByIsbn.execute(isbn)));
   }
 
   @DeleteMapping("/{id}")
   public ResponseEntity<Void> delete(@PathVariable UUID id) {
+    log.debug("Deleting book. Book Id= {}", id);
     deleteBook.execute(id);
     return ResponseEntity.noContent().build();
   }

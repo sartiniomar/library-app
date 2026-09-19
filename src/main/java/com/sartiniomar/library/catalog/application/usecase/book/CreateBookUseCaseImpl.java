@@ -5,7 +5,9 @@ import com.sartiniomar.library.catalog.application.port.in.book.CreateBookUseCas
 import com.sartiniomar.library.catalog.application.port.out.BookRepository;
 import com.sartiniomar.library.catalog.domain.book.Book;
 import com.sartiniomar.library.catalog.domain.book.BookAlreadyExistsException;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class CreateBookUseCaseImpl implements CreateBookUseCase {
 
   private final BookRepository repository;
@@ -16,6 +18,7 @@ public class CreateBookUseCaseImpl implements CreateBookUseCase {
 
   @Override
   public Book execute(CreateBookCommand command) {
+    log.debug("Creating book in catalog. ISBN= {}", command.isbn());
 
     if (repository.existsByIsbn(command.isbn())) {
       throw new BookAlreadyExistsException("ISBN " + command.isbn() + " already exists");
@@ -27,6 +30,9 @@ public class CreateBookUseCaseImpl implements CreateBookUseCase {
         command.isbn()
     );
 
-    return repository.save(book);
+    repository.save(book);
+
+    log.debug("Book created. Book Id= {}", book.getId());
+    return book;
   }
 }

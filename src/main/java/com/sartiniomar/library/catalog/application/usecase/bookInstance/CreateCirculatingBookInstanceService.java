@@ -7,7 +7,9 @@ import com.sartiniomar.library.catalog.application.port.out.BookRepository;
 import com.sartiniomar.library.catalog.domain.book.Book;
 import com.sartiniomar.library.catalog.domain.book.BookNotFoundException;
 import com.sartiniomar.library.catalog.domain.bookInstance.BookInstance;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class CreateCirculatingBookInstanceService implements CreateCirculatingBookInstanceUseCase {
 
   private final BookInstanceRepository repository;
@@ -21,10 +23,15 @@ public class CreateCirculatingBookInstanceService implements CreateCirculatingBo
 
   @Override
   public BookInstance execute(CreateBookInstanceCommand command) {
+    log.debug("Creating book instance in catalog. Book Id= {}", command.bookId());
+
     Book book = bookRepository.findById(command.bookId())
         .orElseThrow(() -> new BookNotFoundException("Book not found with id: " + command.bookId().toString()));
+
     BookInstance bookInstance = BookInstance.circulating(book.getId());
     repository.save(bookInstance);
+
+    log.debug("Book instance created. Book Instance Id= {}", bookInstance.getId());
     return bookInstance;
   }
 }
