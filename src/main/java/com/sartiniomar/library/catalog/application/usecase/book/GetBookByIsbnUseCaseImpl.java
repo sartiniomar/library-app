@@ -4,7 +4,9 @@ import com.sartiniomar.library.catalog.application.port.in.book.GetBookByIsbnUse
 import com.sartiniomar.library.catalog.application.port.out.BookRepository;
 import com.sartiniomar.library.catalog.domain.book.Book;
 import com.sartiniomar.library.catalog.domain.book.BookNotFoundException;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class GetBookByIsbnUseCaseImpl implements GetBookByIsbnUseCase {
 
   private final BookRepository repository;
@@ -15,6 +17,12 @@ public class GetBookByIsbnUseCaseImpl implements GetBookByIsbnUseCase {
 
   @Override
   public Book execute(String isbn) {
-    return repository.findByIsbn(isbn).orElseThrow(() -> new BookNotFoundException("Book with ISBN " + isbn + " not found"));
+    log.debug("Finding book in catalog. ISBN= {}", isbn);
+
+    Book book = repository.findByIsbn(isbn).orElseThrow(
+        () -> new BookNotFoundException("Book with ISBN " + isbn + " not found"));
+
+    log.debug("Book found. ISBN= {}", isbn);
+    return book;
   }
 }

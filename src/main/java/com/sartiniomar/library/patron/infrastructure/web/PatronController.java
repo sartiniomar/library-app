@@ -13,6 +13,7 @@ import com.sartiniomar.library.patron.infrastructure.web.dto.PatronResponse;
 import com.sartiniomar.library.patron.infrastructure.web.dto.UpdatePatronRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,6 +27,7 @@ import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
+@Slf4j
 @RequestMapping("/patrons")
 public class PatronController {
 
@@ -37,31 +39,36 @@ public class PatronController {
   private final PatronMapper patronMapper;
 
   @PostMapping("/regular")
-  public ResponseEntity<PatronResponse> createRegular(@Valid @RequestBody CreatePatronRequest createPatronRequest) {
-    CreatePatronCommand cmd = patronMapper.createPatronRequestToCreatePatronCommand(createPatronRequest);
+  public ResponseEntity<PatronResponse> createRegular(@Valid @RequestBody CreatePatronRequest request) {
+    log.debug("Creating regular patron. Email= {}", request.email());
+    CreatePatronCommand cmd = patronMapper.createPatronRequestToCreatePatronCommand(request);
     return ResponseEntity.ok(patronMapper.patronToPatronResponse(createRegularPatron.execute(cmd)));
   }
 
   @PostMapping("/researcher")
-  public ResponseEntity<PatronResponse> createResearcher(@Valid @RequestBody CreatePatronRequest createPatronRequest) {
-    CreatePatronCommand cmd = patronMapper.createPatronRequestToCreatePatronCommand(createPatronRequest);
+  public ResponseEntity<PatronResponse> createResearcher(@Valid @RequestBody CreatePatronRequest request) {
+    log.debug("Creating researcher patron. Email= {}", request.email());
+    CreatePatronCommand cmd = patronMapper.createPatronRequestToCreatePatronCommand(request);
     return ResponseEntity.ok(patronMapper.patronToPatronResponse(createResearcherPatron.execute(cmd)));
   }
 
   @PutMapping("/{id}")
   public ResponseEntity<PatronResponse> update(@PathVariable UUID id,
-                                     @Valid @RequestBody UpdatePatronRequest updatePatronRequest) {
-    UpdatePatronCommand cmd = patronMapper.updatePatronRequestToUpdatePatronCommand(updatePatronRequest, id);
+                                     @Valid @RequestBody UpdatePatronRequest request) {
+    log.debug("Updating patron. Patron Id= {}", id);
+    UpdatePatronCommand cmd = patronMapper.updatePatronRequestToUpdatePatronCommand(request, id);
     return ResponseEntity.ok(patronMapper.patronToPatronResponse(updatePatron.execute(cmd)));
   }
 
   @GetMapping("/{id}")
   public ResponseEntity<PatronResponse> getById(@PathVariable UUID id) {
+    log.debug("Finding patron. Patron Id= {}", id);
     return ResponseEntity.ok(patronMapper.patronToPatronResponse(getPatronById.execute(id)));
   }
 
   @DeleteMapping("/{id}")
   public ResponseEntity<Void> delete(@PathVariable UUID id) {
+    log.debug("Deleting patron. Patron Id= {}", id);
     deletePatron.execute(id);
     return ResponseEntity.noContent().build();
   }

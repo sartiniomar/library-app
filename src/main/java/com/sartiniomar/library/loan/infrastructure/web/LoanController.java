@@ -14,6 +14,7 @@ import com.sartiniomar.library.loan.infrastructure.web.dto.LoanResponse;
 import com.sartiniomar.library.loan.infrastructure.web.dto.CreateLoanRequest;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,6 +28,7 @@ import java.util.UUID;
 
 @RestController
 @AllArgsConstructor
+@Slf4j
 @RequestMapping("/loans")
 public class LoanController {
 
@@ -41,38 +43,45 @@ public class LoanController {
 
   @PostMapping("/reserves")
   public ResponseEntity<LoanResponse> reserve(@Valid @RequestBody CreateLoanRequest request) {
+    log.debug("Creating reserve. Patron Id= {}, Book Instance Id= {}", request.getPatronId(), request.bookInstanceId());
     LoanCommand command = loanMapper.createLoanRequestToLoanCommand(request);
     return ResponseEntity.status(HttpStatus.CREATED).body(loanMapper.loanToLoanResponse(reserveUseCase.execute(command)));
   }
 
   @PostMapping("/{loanId}/cancels")
   public ResponseEntity<LoanResponse> cancel(@PathVariable UUID loanId) {
+    log.debug("Cancel reserve. Reserve Id= {}", loanId);
     return ResponseEntity.ok(loanMapper.loanToLoanResponse(cancelUseCase.execute(new LoanIdCommand(loanId))));
   }
 
   @PostMapping("/checkouts")
   public ResponseEntity<LoanResponse> checkout(@Valid @RequestBody CreateLoanRequest request) {
+    log.debug("Creating loan. Patron Id= {}, Book Instance Id= {}", request.getPatronId(), request.bookInstanceId());
     LoanCommand command = loanMapper.createLoanRequestToLoanCommand(request);
     return ResponseEntity.status(HttpStatus.CREATED).body(loanMapper.loanToLoanResponse(checkoutUseCase.execute(command)));
   }
 
   @PostMapping("/{loanId}/checkouts")
   public ResponseEntity<LoanResponse> checkoutReserve(@PathVariable UUID loanId) {
+    log.debug("Checkout reserve. Reserve Id= {}", loanId);
     return ResponseEntity.ok(loanMapper.loanToLoanResponse(checkoutReserveUseCase.execute(new LoanIdCommand(loanId))));
   }
 
   @PostMapping("/{loanId}/returns")
   public ResponseEntity<LoanResponse> returnLoan(@PathVariable UUID loanId) {
+    log.debug("Return loan. Loan Id= {}", loanId);
     return ResponseEntity.ok(loanMapper.loanToLoanResponse(returnUseCase.execute(new LoanIdCommand(loanId))));
   }
 
   @GetMapping("/{loanId}")
   public ResponseEntity<LoanResponse> getLoan(@PathVariable UUID loanId) {
+    log.debug("Find loan. Loan Id= {}", loanId);
     return ResponseEntity.ok(loanMapper.loanToLoanResponse(getLoanByIdUseCase.execute(new LoanIdCommand(loanId))));
   }
 
   @GetMapping
   public ResponseEntity<java.util.List<LoanResponse>> getAllLoansByPatronId(@RequestParam UUID patronId) {
+    log.debug("Find loans. Patron Id= {}", patronId);
     return ResponseEntity.ok(getAllLoansByPatronIdUseCase.execute(patronId).stream()
         .map(loanMapper::loanToLoanResponse)
         .toList());
