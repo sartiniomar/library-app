@@ -6,7 +6,9 @@ import com.sartiniomar.library.catalog.application.port.out.BookRepository;
 import com.sartiniomar.library.catalog.domain.book.BookAlreadyExistsException;
 import com.sartiniomar.library.catalog.domain.book.Book;
 import com.sartiniomar.library.catalog.domain.book.BookNotFoundException;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class UpdateBookUseCaseImpl implements UpdateBookUseCase {
 
   private final BookRepository bookRepository;
@@ -17,6 +19,7 @@ public class UpdateBookUseCaseImpl implements UpdateBookUseCase {
 
   @Override
   public Book execute(UpdateBookCommand command) {
+    log.debug("Updating book in catalog. Book Id= {}", command.id());
 
     Book existingBook = bookRepository.findById(command.id())
         .orElseThrow(() -> new BookNotFoundException("Book not found with id: " + command.id()));
@@ -36,6 +39,9 @@ public class UpdateBookUseCaseImpl implements UpdateBookUseCase {
         command.isbn()
     );
 
-    return bookRepository.save(existingBook);
+    bookRepository.save(existingBook);
+
+    log.debug("Book updated. Book Id= {}", existingBook.getId());
+    return existingBook;
   }
 }

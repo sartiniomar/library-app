@@ -5,9 +5,11 @@ import com.sartiniomar.library.catalog.application.port.out.BookInstanceReposito
 import com.sartiniomar.library.catalog.application.port.out.BookRepository;
 import com.sartiniomar.library.catalog.domain.book.BookNotFoundException;
 import com.sartiniomar.library.catalog.domain.bookInstance.BookInstance;
+import lombok.extern.slf4j.Slf4j;
 import java.util.List;
 import java.util.UUID;
 
+@Slf4j
 public class GetAllBookInstancesByBookIdService implements GetAllBookInstancesByBookIdUseCase {
 
   private final BookInstanceRepository repository;
@@ -21,7 +23,12 @@ public class GetAllBookInstancesByBookIdService implements GetAllBookInstancesBy
 
   @Override
   public List<BookInstance> execute(UUID command) {
+    log.debug("Finding book instances in catalog. Book Id= {}", command);
+
     bookRepository.findById(command).orElseThrow(() -> new BookNotFoundException("Book not found with id: " + command));
-    return repository.findAllByBookId(command);
+    List<BookInstance> bookInstances = repository.findAllByBookId(command);
+
+    log.debug("Book instances found. Book Id= {}", command);
+    return bookInstances;
   }
 }
