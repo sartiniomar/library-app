@@ -4,8 +4,10 @@ import com.sartiniomar.library.catalog.application.port.in.book.GetBookByIdUseCa
 import com.sartiniomar.library.catalog.application.port.out.BookRepository;
 import com.sartiniomar.library.catalog.domain.book.Book;
 import com.sartiniomar.library.catalog.domain.book.BookNotFoundException;
+import lombok.extern.slf4j.Slf4j;
 import java.util.UUID;
 
+@Slf4j
 public class GetBookByIdUseCaseImpl implements GetBookByIdUseCase {
 
   private final BookRepository repository;
@@ -16,6 +18,12 @@ public class GetBookByIdUseCaseImpl implements GetBookByIdUseCase {
 
   @Override
   public Book execute(UUID id) {
-    return repository.findById(id).orElseThrow(() -> new BookNotFoundException("Book not found with id: " + id.toString()));
+    log.debug("Finding book in catalog. Book Id= {}", id);
+
+    Book book = repository.findById(id).orElseThrow(
+        () -> new BookNotFoundException("Book not found with id: " + id.toString()));
+
+    log.debug("Book found. Book Id= {}", id);
+    return book;
   }
 }
