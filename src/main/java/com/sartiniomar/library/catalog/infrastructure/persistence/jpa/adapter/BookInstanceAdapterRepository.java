@@ -33,19 +33,20 @@ public class BookInstanceAdapterRepository implements BookInstanceRepository {
   @Override
   @Transactional
   public BookInstance save(BookInstance bookInstance) {
-    log.debug("Saving book instance. Book Instance Id= {}", bookInstance.getId());
     BookInstanceEntity bookInstanceEntity;
 
     Optional<BookInstanceEntity> entityOptional =
         bookInstanceJpaRepository.findById(bookInstance.getId());
 
     if (entityOptional.isPresent()) {
+      log.debug("Updating book instance. Book Instance Id= {}", bookInstance.getId());
       bookInstanceEntity = entityOptional.get();
       mapper.updateBookInstanceEntityFromBookInstance(
           bookInstance,
           bookInstanceEntity
       );
     } else {
+      log.debug("Saving book instance. Book Instance Id= {}", bookInstance.getId());
       bookInstanceEntity = mapper.toEntity(bookInstance);
     }
 
