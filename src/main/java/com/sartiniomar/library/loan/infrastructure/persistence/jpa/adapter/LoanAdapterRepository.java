@@ -12,6 +12,7 @@ import com.sartiniomar.library.patron.infrastructure.persistence.jpa.repository.
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -67,6 +68,14 @@ public class LoanAdapterRepository implements LoanRepository {
   public List<Loan> findAllByPatronId(UUID patronId) {
     log.debug("Finding all loans. Patron Id= {}", patronId);
     return repository.findAllByPatron_Id(patronId).stream()
+        .map(mapper::toDomain)
+        .collect(Collectors.toList());
+  }
+
+  @Override
+  public List<Loan> findLoansDue() {
+    log.debug("Finding all due loans.");
+    return repository.findLoansDue(LoanStatus.LENT, Instant.now()).stream()
         .map(mapper::toDomain)
         .collect(Collectors.toList());
   }
