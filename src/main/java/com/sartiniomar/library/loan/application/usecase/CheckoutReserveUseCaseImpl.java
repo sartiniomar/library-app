@@ -12,8 +12,10 @@ import com.sartiniomar.library.loan.domain.loan.LoanNotFoundException;
 import com.sartiniomar.library.loan.domain.loan.service.CheckoutReserveServiceDomain;
 import com.sartiniomar.library.loan.domain.patron.Patron;
 import com.sartiniomar.library.loan.domain.patron.PatronNotFoundException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 public class CheckoutReserveUseCaseImpl implements CheckoutReserveUseCase {
 
   private final LoanRepository loanRepository;
@@ -31,6 +33,8 @@ public class CheckoutReserveUseCaseImpl implements CheckoutReserveUseCase {
   @Override
   @Transactional
   public Loan execute(LoanIdCommand command) {
+    log.debug("Checkout reserve. Loan Id= {}", command.loanId());
+
     Loan loan = loanRepository.findById(command.loanId())
         .orElseThrow(() -> new LoanNotFoundException(command.loanId().toString()));
 
@@ -45,6 +49,7 @@ public class CheckoutReserveUseCaseImpl implements CheckoutReserveUseCase {
     loanRepository.save(result);
     bookInstanceRepository.save(bookInstance);
 
+    log.debug("Reserve checkout. Loan Id= {}", result.getId());
     return result;
   }
 }

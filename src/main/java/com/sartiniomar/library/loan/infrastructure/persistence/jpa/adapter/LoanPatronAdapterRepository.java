@@ -5,6 +5,7 @@ import com.sartiniomar.library.loan.domain.patron.Patron;
 import com.sartiniomar.library.loan.infrastructure.mapper.PatronLoanMapper;
 import com.sartiniomar.library.loan.infrastructure.mapper.PatronLoanMapperImpl;
 import com.sartiniomar.library.patron.infrastructure.persistence.jpa.repository.PatronJpaRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Import;
 import org.springframework.stereotype.Repository;
 import java.util.Optional;
@@ -12,6 +13,7 @@ import java.util.UUID;
 
 @Repository
 @Import(PatronLoanMapperImpl.class)
+@Slf4j
 public class LoanPatronAdapterRepository implements PatronLoanRepository {
 
   private final PatronJpaRepository jpaRepo;
@@ -25,12 +27,14 @@ public class LoanPatronAdapterRepository implements PatronLoanRepository {
 
   @Override
   public Optional<Patron> findById(UUID patronId) {
+    log.debug("Finding patron. Patron Id= {}", patronId);
     return jpaRepo.findById(patronId)
         .map(mapper::toDomain);
   }
 
   @Override
   public Patron save(Patron patron) {
+    log.debug("Saving patron. Patron Id= {}", patron.getId());
     return mapper.toDomain(jpaRepo.save(mapper.toEntity(patron)));
   }
 }

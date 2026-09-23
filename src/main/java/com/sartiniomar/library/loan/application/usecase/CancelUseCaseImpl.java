@@ -9,8 +9,10 @@ import com.sartiniomar.library.loan.domain.bookInstance.BookInstanceNotFoundExce
 import com.sartiniomar.library.loan.domain.loan.Loan;
 import com.sartiniomar.library.loan.domain.loan.LoanNotFoundException;
 import com.sartiniomar.library.loan.domain.loan.service.CancelServiceDomain;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 public class CancelUseCaseImpl implements CancelUseCase {
 
   private final CancelServiceDomain domainService;
@@ -26,6 +28,8 @@ public class CancelUseCaseImpl implements CancelUseCase {
   @Override
   @Transactional
   public Loan execute(LoanIdCommand command) {
+    log.debug("Canceling loan. Loan Id= {}", command.loanId());
+
     Loan loan = loanRepository.findById(command.loanId())
         .orElseThrow(() -> new LoanNotFoundException(command.loanId().toString()));
 
@@ -37,6 +41,7 @@ public class CancelUseCaseImpl implements CancelUseCase {
     loanRepository.save(result);
     bookInstanceRepository.save(bookInstance);
 
+    log.debug("Loan canceled. Loan Id= {}", result.getId());
     return result;
   }
 }
