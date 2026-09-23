@@ -5,6 +5,7 @@ import com.sartiniomar.library.loan.infrastructure.persistence.model.LoanEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
@@ -22,4 +23,15 @@ public interface LoanJpaRepository extends JpaRepository<LoanEntity, UUID> {
   );
 
   List<LoanEntity> findAllByPatron_Id(UUID patronId);
+
+  @Query("""
+    SELECT l
+    FROM LoanEntity l
+    WHERE l.status = :status
+      AND l.dueAt < :now
+    """)
+  List<LoanEntity> findLoansDue(
+      @Param("status") LoanStatus status,
+      @Param("now") Instant now
+  );
 }

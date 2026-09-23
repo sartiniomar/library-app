@@ -11,4 +11,5 @@ public interface LoanRepository {
   Loan save(Loan loan);
   Optional<Loan> findById(UUID id);
   List<Loan> findAllByPatronId(UUID patronId);
+  List<Loan> findLoansDue();
 }

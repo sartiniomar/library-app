@@ -14,6 +14,7 @@ import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneOffset;
+import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 import java.util.stream.Stream;
 
@@ -251,7 +252,7 @@ public class LoanTest {
         LoanStatus.LENT,
         Instant.now(),
         null,
-        null,
+        Instant.now().minus(1, ChronoUnit.DAYS),
         null);
     loan.delayed();
     assertEquals(LoanStatus.DELAYED, loan.getStatus());
@@ -268,7 +269,22 @@ public class LoanTest {
         status,
         Instant.now(),
         null,
+        Instant.now(),
+        null);
+
+    assertThrows(TransitionStatusException.class, loan::delayed);
+  }
+
+  @Test
+  void should_throw_exception_when_due_at_is_not_after_today() {
+    Loan loan = Loan.withId(
+        UUID.randomUUID(),
+        UUID.randomUUID(),
+        UUID.randomUUID(),
+        LoanStatus.LENT,
+        Instant.now(),
         null,
+        Instant.now(),
         null);
 
     assertThrows(TransitionStatusException.class, loan::delayed);
