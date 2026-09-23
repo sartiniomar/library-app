@@ -19,6 +19,8 @@ import org.mockito.ArgumentCaptor;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import java.time.Clock;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -182,7 +184,16 @@ public class LoanControllerTest extends LibraryApplicationTests {
   void shouldCreateLoanReturnDelayedResponse() {
     ArgumentCaptor<LoanIdCommand> loanIdCommandArgumentCaptor = ArgumentCaptor.forClass(LoanIdCommand.class);
 
-    Loan loan = new LoanTestDataBuilder().buildDefaultCheckout();
+    Loan loan = new LoanTestDataBuilder().buildLoan(
+        UUID.randomUUID(),
+        UUID.fromString("00000000-1111-2222-3333-444444444444"),
+        UUID.fromString("55555555-6666-7777-8888-999999999999"),
+        LoanStatus.LENT,
+        null,
+        Instant.now().minus(20, ChronoUnit.DAYS),
+        Instant.now().minus(5, ChronoUnit.DAYS),
+        null
+    );
     loan.delayed();
     loan.returned();
     when(returnUseCase.execute(loanIdCommandArgumentCaptor.capture())).thenReturn(loan);

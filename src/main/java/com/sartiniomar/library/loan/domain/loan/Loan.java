@@ -3,6 +3,8 @@ package com.sartiniomar.library.loan.domain.loan;
 import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.UUID;
 
@@ -149,7 +151,10 @@ public class Loan {
       throw new TransitionStatusException(
           "You cannot change from status " + this.status + " to status " + LoanStatus.DELAYED);
     }
-    this.status = LoanStatus.DELAYED;
+    if (!LocalDate.now().isAfter(this.dueAt.atZone(ZoneId.systemDefault()).toLocalDate())) {
+      throw new TransitionStatusException("Unexpired date.");
+    }
+      this.status = LoanStatus.DELAYED;
   }
 
   public void ensureCanBeCancelled() {
