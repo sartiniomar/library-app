@@ -79,4 +79,12 @@ public class LoanAdapterRepository implements LoanRepository {
         .map(mapper::toDomain)
         .collect(Collectors.toList());
   }
+
+  @Override
+  public List<Loan> findReservesDue() {
+    log.debug("Finding all due reserves.");
+    return repository.findLoansDue(LoanStatus.RESERVED, Instant.now()).stream()
+        .map(mapper::toDomain)
+        .collect(Collectors.toList());
+  }
 }

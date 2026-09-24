@@ -26,7 +26,7 @@ public class MarkOverdueLoansAsDelayedUseCaseTest {
   private MarkOverdueLoansAsDelayedUseCaseImpl useCase;
 
   @Test
-  void shouldExecuteMArkOverdueLoansSuccessfully() {
+  void shouldExecuteMarkOverdueLoansSuccessfully() {
     Loan loan1 = Loan.createLent(UUID.randomUUID(), UUID.randomUUID(), Clock.systemUTC(), -1);
     Loan loan2 = Loan.createLent(UUID.randomUUID(), UUID.randomUUID(), Clock.systemUTC(), -1);
 
