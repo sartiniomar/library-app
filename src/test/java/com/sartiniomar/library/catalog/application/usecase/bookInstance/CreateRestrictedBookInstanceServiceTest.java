@@ -4,6 +4,7 @@ import com.sartiniomar.library.catalog.application.port.in.bookInstance.CreateBo
 import com.sartiniomar.library.catalog.application.port.out.BookInstanceRepository;
 import com.sartiniomar.library.catalog.application.port.out.BookRepository;
 import com.sartiniomar.library.catalog.domain.book.Book;
+import com.sartiniomar.library.catalog.domain.book.BookNotFoundException;
 import com.sartiniomar.library.catalog.domain.bookInstance.BookInstance;
 import com.sartiniomar.library.catalog.domain.bookInstance.BookInstanceStatus;
 import com.sartiniomar.library.catalog.domain.bookInstance.BookType;
@@ -14,13 +15,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class CreateRestrictedBookInstanceServiceTest {
@@ -52,5 +53,18 @@ class CreateRestrictedBookInstanceServiceTest {
 
     verify(bookRepository, times(1)).findById(book.getId());
     verify(repository, times(1)).save(any());
+  }
+
+  @Test
+  void shouldThrowWhenBookNotFound() {
+    CreateBookInstanceCommand command = new CreateBookInstanceCommand(UUID.randomUUID());
+
+    when(bookRepository.findById(command.bookId())).thenReturn(Optional.empty());
+
+    assertThrows(BookNotFoundException.class,
+        () -> useCase.execute(command));
+
+    verify(bookRepository, times(1)).findById(command.bookId());
+    verify(repository, never()).save(any());
   }
 }
