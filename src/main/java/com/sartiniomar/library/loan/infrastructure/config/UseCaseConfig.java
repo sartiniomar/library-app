@@ -6,6 +6,7 @@ import com.sartiniomar.library.loan.application.port.in.CheckoutUseCase;
 import com.sartiniomar.library.loan.application.port.in.GetAllLoansByPatronIdUseCase;
 import com.sartiniomar.library.loan.application.port.in.GetLoanByIdUseCase;
 import com.sartiniomar.library.loan.application.port.in.MarkOverdueLoansAsDelayedUseCase;
+import com.sartiniomar.library.loan.application.port.in.MarkOverdueReservesAsCancelledUseCase;
 import com.sartiniomar.library.loan.application.port.in.ReserveUseCase;
 import com.sartiniomar.library.loan.application.port.in.ReturnUseCase;
 import com.sartiniomar.library.loan.application.port.out.BookInstanceLoanRepository;
@@ -17,6 +18,7 @@ import com.sartiniomar.library.loan.application.usecase.CheckoutUseCaseImpl;
 import com.sartiniomar.library.loan.application.usecase.GetAllLoansByPatronIdUseCaseImpl;
 import com.sartiniomar.library.loan.application.usecase.GetLoanByIdUseCaseImpl;
 import com.sartiniomar.library.loan.application.usecase.MarkOverdueLoansAsDelayedUseCaseImpl;
+import com.sartiniomar.library.loan.application.usecase.MarkOverdueReservesAsCancelledUseCaseImpl;
 import com.sartiniomar.library.loan.application.usecase.ReserveUseCaseImpl;
 import com.sartiniomar.library.loan.application.service.LoanLimitChecker;
 import com.sartiniomar.library.loan.application.usecase.ReturnUseCaseImpl;
@@ -118,5 +120,12 @@ public class UseCaseConfig {
   @Bean
   MarkOverdueLoansAsDelayedUseCase markOverdueLoansAsDelayedUseCase(LoanRepository loanRepository) {
     return new MarkOverdueLoansAsDelayedUseCaseImpl(loanRepository);
+  }
+
+  @Bean
+  MarkOverdueReservesAsCancelledUseCase markOverdueReservesAsCancelledUseCase(
+      LoanRepository loanRepository,
+      BookInstanceLoanRepository bookInstanceLoanRepository) {
+    return new MarkOverdueReservesAsCancelledUseCaseImpl(loanRepository, bookInstanceLoanRepository);
   }
 }
