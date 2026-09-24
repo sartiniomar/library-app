@@ -3,6 +3,7 @@ package com.sartiniomar.library.catalog.application.usecase.bookInstance;
 import com.sartiniomar.library.catalog.application.port.out.BookInstanceRepository;
 import com.sartiniomar.library.catalog.application.port.out.BookRepository;
 import com.sartiniomar.library.catalog.domain.book.Book;
+import com.sartiniomar.library.catalog.domain.book.BookNotFoundException;
 import com.sartiniomar.library.catalog.domain.bookInstance.BookInstance;
 import com.sartiniomar.library.catalog.domain.bookInstance.BookInstanceStatus;
 import com.sartiniomar.library.catalog.domain.bookInstance.BookType;
@@ -12,12 +13,14 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.times;
 
 @ExtendWith(MockitoExtension.class)
@@ -57,5 +60,16 @@ class GetAllBookInstancesByBookIdServiceTest {
     assertEquals(BookInstanceStatus.AVAILABLE, result.get(1).getStatus());
 
     verify(bookInstanceRepository, times(1)).findAllByBookId(bookId);
+  }
+
+  @Test
+  void shouldThrowWhenBookNotFound() {
+    UUID bookId = UUID.randomUUID();
+    when(bookRepository.findById(bookId)).thenReturn(Optional.empty());
+
+    assertThrows(BookNotFoundException.class,
+        () -> useCase.execute(bookId));
+
+    verify(bookRepository, times(1)).findById(bookId);
   }
 }
