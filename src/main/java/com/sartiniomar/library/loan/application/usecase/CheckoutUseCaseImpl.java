@@ -9,10 +9,12 @@ import com.sartiniomar.library.loan.application.service.LoanLimitChecker;
 import com.sartiniomar.library.loan.domain.bookInstance.BookInstance;
 import com.sartiniomar.library.loan.domain.bookInstance.BookInstanceNotFoundException;
 import com.sartiniomar.library.loan.domain.loan.Loan;
+import com.sartiniomar.library.loan.domain.loan.exception.ConcurrentLoanException;
 import com.sartiniomar.library.loan.domain.loan.service.CheckoutServiceDomain;
 import com.sartiniomar.library.loan.domain.patron.Patron;
 import com.sartiniomar.library.loan.domain.patron.PatronNotFoundException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
@@ -48,7 +50,12 @@ public class CheckoutUseCaseImpl implements CheckoutUseCase {
     Loan result = domainService.checkout(patron, bookInstance);
 
     loanRepository.save(result);
-    bookInstanceRepository.save(bookInstance);
+
+    try {
+      bookInstanceRepository.save(bookInstance);
+    } catch (ObjectOptimisticLockingFailureException e) {
+      throw new ConcurrentLoanException("Book instance is being modified by another operation");
+    }
 
     log.debug("Loan created. Loan Id= {}", result.getId());
     return result;

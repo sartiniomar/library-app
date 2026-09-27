@@ -1,6 +1,8 @@
 package com.sartiniomar.library.loan.domain.loan;
 
 import com.sartiniomar.library.loan.domain.bookInstance.BookInstance;
+import com.sartiniomar.library.loan.domain.loan.exception.LoanLimitExceededException;
+import com.sartiniomar.library.loan.domain.loan.exception.OnlyResearcherCanLoanRestrictedBooksException;
 import com.sartiniomar.library.loan.domain.patron.Patron;
 
 public class DomainPolicy {

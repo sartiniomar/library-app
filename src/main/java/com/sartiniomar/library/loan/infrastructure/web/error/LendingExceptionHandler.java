@@ -4,11 +4,12 @@ import com.sartiniomar.library.loan.domain.bookInstance.BookInstanceNotAvailable
 import com.sartiniomar.library.loan.domain.bookInstance.BookInstanceNotFoundException;
 import com.sartiniomar.library.commons.infrastructure.web.error.ErrorResponse;
 import com.sartiniomar.library.commons.infrastructure.web.error.Error;
-import com.sartiniomar.library.loan.domain.loan.LoanLimitExceededException;
-import com.sartiniomar.library.loan.domain.loan.LoanNotFoundException;
-import com.sartiniomar.library.loan.domain.loan.OnlyResearcherCanLoanRestrictedBooksException;
-import com.sartiniomar.library.loan.domain.loan.OperationNotPermittedException;
-import com.sartiniomar.library.loan.domain.loan.TransitionStatusException;
+import com.sartiniomar.library.loan.domain.loan.exception.ConcurrentLoanException;
+import com.sartiniomar.library.loan.domain.loan.exception.LoanLimitExceededException;
+import com.sartiniomar.library.loan.domain.loan.exception.LoanNotFoundException;
+import com.sartiniomar.library.loan.domain.loan.exception.OnlyResearcherCanLoanRestrictedBooksException;
+import com.sartiniomar.library.loan.domain.loan.exception.OperationNotPermittedException;
+import com.sartiniomar.library.loan.domain.loan.exception.TransitionStatusException;
 import com.sartiniomar.library.loan.domain.patron.PatronNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -86,6 +87,13 @@ LendingExceptionHandler {
 
   @ExceptionHandler(OperationNotPermittedException.class)
   public ResponseEntity<ErrorResponse> handleOperationNotPermittedException(OperationNotPermittedException ex) {
+    List<Error> errors = List.of(new Error(ex.getMessage()));
+
+    return ResponseEntity.status(409).body(new ErrorResponse(HttpStatus.CONFLICT.toString(), errors));
+  }
+
+  @ExceptionHandler(ConcurrentLoanException.class)
+  public ResponseEntity<ErrorResponse> handleConcurrentLoanException(ConcurrentLoanException ex) {
     List<Error> errors = List.of(new Error(ex.getMessage()));
 
     return ResponseEntity.status(409).body(new ErrorResponse(HttpStatus.CONFLICT.toString(), errors));
