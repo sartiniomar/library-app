@@ -8,8 +8,8 @@ import com.sartiniomar.library.loan.domain.bookInstance.BookInstanceNotFoundExce
 import com.sartiniomar.library.loan.domain.bookInstance.BookInstanceStatus;
 import com.sartiniomar.library.loan.domain.bookInstance.BookType;
 import com.sartiniomar.library.loan.domain.loan.Loan;
-import com.sartiniomar.library.loan.domain.loan.LoanNotFoundException;
-import com.sartiniomar.library.loan.domain.loan.TransitionStatusException;
+import com.sartiniomar.library.loan.domain.loan.exception.LoanNotFoundException;
+import com.sartiniomar.library.loan.domain.loan.exception.TransitionStatusException;
 import com.sartiniomar.library.loan.domain.loan.service.CancelServiceDomain;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

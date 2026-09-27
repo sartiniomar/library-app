@@ -3,7 +3,7 @@ package com.sartiniomar.library.loan.application.service;
 import com.sartiniomar.library.loan.application.port.out.LoanRepository;
 import com.sartiniomar.library.loan.domain.loan.DomainPolicy;
 import com.sartiniomar.library.loan.domain.loan.Loan;
-import com.sartiniomar.library.loan.domain.loan.LoanLimitExceededException;
+import com.sartiniomar.library.loan.domain.loan.exception.LoanLimitExceededException;
 import com.sartiniomar.library.loan.domain.patron.Patron;
 import com.sartiniomar.library.loan.domain.patron.PatronType;
 import org.junit.jupiter.api.Test;

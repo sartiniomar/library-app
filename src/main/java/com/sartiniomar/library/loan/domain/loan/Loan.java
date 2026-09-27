@@ -1,5 +1,8 @@
 package com.sartiniomar.library.loan.domain.loan;
 
+import com.sartiniomar.library.loan.domain.loan.exception.OperationNotPermittedException;
+import com.sartiniomar.library.loan.domain.loan.exception.TransitionStatusException;
+
 import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
