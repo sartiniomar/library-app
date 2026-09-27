@@ -5,7 +5,7 @@ import com.sartiniomar.library.loan.domain.bookInstance.BookInstanceStatus;
 import com.sartiniomar.library.loan.domain.bookInstance.BookType;
 import com.sartiniomar.library.loan.domain.loan.Loan;
 import com.sartiniomar.library.loan.domain.loan.LoanStatus;
-import com.sartiniomar.library.loan.domain.loan.OperationNotPermittedException;
+import com.sartiniomar.library.loan.domain.loan.exception.OperationNotPermittedException;
 import com.sartiniomar.library.loan.domain.patron.Patron;
 import com.sartiniomar.library.loan.domain.patron.PatronType;
 import lombok.SneakyThrows;

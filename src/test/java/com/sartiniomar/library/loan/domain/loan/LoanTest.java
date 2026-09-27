@@ -3,6 +3,7 @@ package com.sartiniomar.library.loan.domain.loan;
 import com.sartiniomar.library.loan.domain.bookInstance.BookInstance;
 import com.sartiniomar.library.loan.domain.bookInstance.BookInstanceStatus;
 import com.sartiniomar.library.loan.domain.bookInstance.BookType;
+import com.sartiniomar.library.loan.domain.loan.exception.TransitionStatusException;
 import com.sartiniomar.library.loan.domain.patron.Patron;
 import com.sartiniomar.library.loan.domain.patron.PatronType;
 import lombok.SneakyThrows;

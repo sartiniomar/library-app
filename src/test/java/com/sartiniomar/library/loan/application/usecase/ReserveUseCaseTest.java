@@ -11,11 +11,13 @@ import com.sartiniomar.library.loan.domain.bookInstance.BookInstanceNotFoundExce
 import com.sartiniomar.library.loan.domain.bookInstance.BookInstanceStatus;
 import com.sartiniomar.library.loan.domain.bookInstance.BookType;
 import com.sartiniomar.library.loan.domain.loan.Loan;
-import com.sartiniomar.library.loan.domain.loan.LoanLimitExceededException;
+import com.sartiniomar.library.loan.domain.loan.exception.ConcurrentLoanException;
+import com.sartiniomar.library.loan.domain.loan.exception.LoanLimitExceededException;
 import com.sartiniomar.library.loan.domain.loan.service.ReserveServiceDomain;
 import com.sartiniomar.library.loan.domain.patron.Patron;
 import com.sartiniomar.library.loan.domain.patron.PatronNotFoundException;
 import com.sartiniomar.library.loan.domain.patron.PatronType;
+import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -24,7 +26,13 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.time.Clock;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CyclicBarrier;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -54,6 +62,7 @@ public class ReserveUseCaseTest {
 
   @InjectMocks
   private ReserveUseCaseImpl useCase;
+  
 
   @Test
   void shouldExecuteReserveSuccessfully() {

@@ -8,7 +8,7 @@ import com.sartiniomar.library.loan.application.port.out.PatronLoanRepository;
 import com.sartiniomar.library.loan.domain.bookInstance.BookInstance;
 import com.sartiniomar.library.loan.domain.bookInstance.BookInstanceNotFoundException;
 import com.sartiniomar.library.loan.domain.loan.Loan;
-import com.sartiniomar.library.loan.domain.loan.LoanNotFoundException;
+import com.sartiniomar.library.loan.domain.loan.exception.LoanNotFoundException;
 import com.sartiniomar.library.loan.domain.loan.service.CheckoutReserveServiceDomain;
 import com.sartiniomar.library.loan.domain.patron.Patron;
 import com.sartiniomar.library.loan.domain.patron.PatronNotFoundException;
