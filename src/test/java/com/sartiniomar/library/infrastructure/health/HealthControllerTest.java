@@ -1,4 +1,4 @@
-package com.sartiniomar.library.health.infrastructure;
+package com.sartiniomar.library.infrastructure.health;
 
 import com.sartiniomar.library.LibraryApplicationTests;
 import lombok.SneakyThrows;
@@ -19,5 +19,4 @@ public class HealthControllerTest extends LibraryApplicationTests {
         .andExpect(content().contentType("application/vnd.spring-boot.actuator.v3+json"))
         .andReturn();
   }
-
 }
