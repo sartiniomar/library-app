@@ -7,7 +7,7 @@ import com.sartiniomar.library.loan.application.port.out.LoanRepository;
 import com.sartiniomar.library.loan.domain.bookInstance.BookInstance;
 import com.sartiniomar.library.loan.domain.bookInstance.BookInstanceNotFoundException;
 import com.sartiniomar.library.loan.domain.loan.Loan;
-import com.sartiniomar.library.loan.domain.loan.LoanNotFoundException;
+import com.sartiniomar.library.loan.domain.loan.exception.LoanNotFoundException;
 import com.sartiniomar.library.loan.domain.loan.service.CancelServiceDomain;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.transaction.annotation.Transactional;

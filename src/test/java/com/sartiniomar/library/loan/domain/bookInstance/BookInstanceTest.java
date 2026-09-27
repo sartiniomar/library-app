@@ -1,6 +1,6 @@
 package com.sartiniomar.library.loan.domain.bookInstance;
 
-import com.sartiniomar.library.loan.domain.loan.TransitionStatusException;
+import com.sartiniomar.library.loan.domain.loan.exception.TransitionStatusException;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;

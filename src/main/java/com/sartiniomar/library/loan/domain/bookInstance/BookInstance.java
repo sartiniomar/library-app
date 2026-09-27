@@ -1,6 +1,6 @@
 package com.sartiniomar.library.loan.domain.bookInstance;
 
-import com.sartiniomar.library.loan.domain.loan.TransitionStatusException;
+import com.sartiniomar.library.loan.domain.loan.exception.TransitionStatusException;
 import java.util.UUID;
 
 public class BookInstance {
